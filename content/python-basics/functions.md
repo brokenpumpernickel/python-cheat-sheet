@@ -36,6 +36,10 @@ m = mean([2, 4, 9])
 print(m)
 ```
 
+### See also
+
+- array-maths/functions-that-work-on-whole-arrays
+
 ## Default arguments
 
 PL: Argumenty domyślne
