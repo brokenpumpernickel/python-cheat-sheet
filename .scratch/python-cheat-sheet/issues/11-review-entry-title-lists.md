@@ -36,3 +36,7 @@ Accepted unchanged by the Author on 2026-10-25: "Keep the prototype's 29 Entry t
 - **Loops:** for over a collection · range · enumerate
 - **Functions:** Defining and calling · Default arguments · Returning several values · lambda
 - **Planned Areas:** NumPy (Arrays, Indexing, Random, Aggregates) · pandas (DataFrames, Selecting, Grouping) · Matplotlib (Plotting basics, Scatter plots, Subplots) · SciPy stats (Distributions, t-tests, Correlation)
+
+## Comments
+
+**Amended by ticket 13** (the Author's review of the live MVP): the `zip` Entry moved from Tuples to Loops as *Looping with zip* (`loops/looping-with-zip`), so Tuples now has only *Unpacking*. Ticket 13 also adds Entries (Number formats, Keys and values, Grouping with defaultdict, while loops) and the Standard library Area; its Comments list them.
