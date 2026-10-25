@@ -1,7 +1,7 @@
 """Reads the content folder (Area descriptions and Topic files) into plain data.
 
 This is the only parser of the Markdown content; the format is described in
-docs/content-format.md. Code examples are returned unexecuted; see build.py.
+docs/authoring-guide.md. Code examples are returned unexecuted; see build.py.
 """
 
 import re

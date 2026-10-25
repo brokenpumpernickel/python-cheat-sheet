@@ -1,3 +1,7 @@
+## Content
+
+For any content task (adding or editing an Area, Topic or Entry in `content/`, or its Polish), read `docs/authoring-guide.md` first and follow it. It has the file format, the writing and Polish rules, the build workflow and every validation error with its fix.
+
 ## Agent skills
 
 ### Issue tracker
