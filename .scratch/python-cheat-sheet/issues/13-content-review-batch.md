@@ -23,7 +23,7 @@
 
 ## Comments
 
-**Resolved.** All of the Author's notes are in one PR. Python Basics now has 33 Entries (29 + 5 new − 1 moved out of Tuples), and the new Standard library Area has 2.
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#13 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/13). All of the Author's notes are in that one PR. Python Basics now has 33 Entries (29 + 5 new − 1 moved out of Tuples), and the new Standard library Area has 2.
 
 New and moved Entries, for the Author to skim (English / Polish, `topic-id/entry-id`):
 
