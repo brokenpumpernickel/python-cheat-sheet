@@ -81,6 +81,60 @@ print((a < b).any(), (a < b).all())
 ### See also
 
 - indexing/boolean-masks
+- array-maths/true-and-false-as-numbers
+
+## True and False as numbers
+
+PL: True i False jako liczby
+
+In arithmetic `True` counts as 1 and `False` as 0, so an array of them goes straight into `sum`, `mean` and other maths: `.sum()` counts the `True` values and `.mean()` gives their proportion. Multiplying by such an array keeps the values where it is `True` and turns the rest into 0.
+
+PL: W rachunkach `True` liczy się jako 1, a `False` jako 0, więc tablica logiczna (boolean array) od razu nadaje się do `sum`, `mean` i innych działań: `.sum()` zlicza wartości `True`, a `.mean()` daje ich proporcję. Mnożenie przez taką tablicę zostawia wartości tam, gdzie jest `True`, a resztę zamienia na 0.
+
+```python
+import numpy as np
+
+scores = np.array([72, 45, 88, 91])
+passed = scores >= 50
+print(passed.astype(int))
+print(passed.sum())
+print(passed.mean())
+print(scores * passed)
+```
+
+### See also
+
+- aggregates/counting-and-proportions-with-a-mask
+- indexing/boolean-masks
+
+## Choosing between two arrays with np.where
+
+PL: Wybór między dwiema tablicami z np.where
+
+`np.where(condition, a, b)` builds a new array value by value: where the condition is `True` it takes the value from `a`, elsewhere from `b`. `a` and `b` can be whole arrays of the same shape, or single numbers.
+
+PL: `np.where(condition, a, b)` buduje nową tablicę (array) wartość po wartości: tam, gdzie warunek ma `True`, bierze wartość z `a`, a gdzie indziej z `b`. `a` i `b` mogą być całymi tablicami o tym samym kształcie (shape) albo pojedynczymi liczbami.
+
+```python
+import numpy as np
+
+first = np.array([72, 45, 88, 51])
+retake = np.array([65, 58, 90, 40])
+best = np.where(retake > first, retake, first)
+print(best)
+print(np.where(first >= 50, first, retake))
+```
+
+### Pitfall
+
+Both arrays are computed in full before `np.where` chooses between them, so `np.where(x > 0, np.log(x), 0)` still takes the logarithm of the zeros and negatives and warns about them. The result is right; the warning only says that values were computed and then thrown away.
+
+PL: Obie tablice są liczone w całości, zanim `np.where` wybierze między nimi, więc `np.where(x > 0, np.log(x), 0)` i tak liczy logarytm z zer i liczb ujemnych, a NumPy ostrzega (warning). Wynik jest dobry; ostrzeżenie mówi tylko, że policzono wartości, które potem odrzucono.
+
+### See also
+
+- indexing/changing-values-through-a-mask
+- array-maths/functions-that-work-on-whole-arrays
 
 ## Broadcasting
 
