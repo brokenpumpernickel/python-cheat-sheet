@@ -188,25 +188,23 @@ const slotStyle = (j: number) => ({
     font: 700 max(10px, calc(14 * var(--u)))/1.15 var(--font-round);
   }
 
+  /* Muted by their dashed outline and smaller type rather than by fading, so their text still meets
+     contrast: --ink-2 on the island's colour, --ink-3 on the sea of a planned Area. */
   .bubble.planned {
     --bubble: var(--planned-bubble);
     background: transparent;
     box-shadow: none;
     border: 2px dashed hsl(var(--hue) 25% 60% / 0.6);
+    color: var(--ink-2);
+  }
+  .island.planned .bubble.planned {
     color: var(--ink-3);
-    opacity: 0.8;
   }
   .bubble.planned .glyph {
     font-size: max(10px, calc(16 * var(--u)));
-    color: var(--ink-3);
+    color: inherit;
   }
   .bubble.planned .name {
     font-size: max(9px, calc(11 * var(--u)));
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .bubble {
-      transition: none;
-    }
   }
 </style>

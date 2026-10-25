@@ -100,12 +100,12 @@ const { pitfall } = entry;
     transform: rotate(4deg);
   }
   .pitfall {
-    --output-bg: color-mix(in srgb, var(--sticker) 30%, var(--card));
+    --output-bg: color-mix(in srgb, var(--sticker) var(--pitfall-output-tint), var(--card));
     --code-bg: color-mix(in srgb, var(--sticker) 8%, var(--card));
     margin-top: 14px;
     padding: 12px 16px;
     border-radius: 16px;
-    background: color-mix(in srgb, var(--sticker) 22%, var(--card));
+    background: color-mix(in srgb, var(--sticker) var(--pitfall-tint), var(--card));
     font-size: 15px;
   }
   .pitfall p {
@@ -140,8 +140,9 @@ const { pitfall } = entry;
     text-decoration: underline;
   }
 
-  /* A jump to the Entry focuses it (tabindex -1), and the flash marks it instead of a focus ring. */
-  .entry:focus {
+  /* A jump to the Entry focuses it (tabindex -1). After a click the flash marks it instead of a focus ring;
+     a keyboard user keeps the ring. */
+  .entry:focus:not(:focus-visible) {
     outline: none;
   }
 

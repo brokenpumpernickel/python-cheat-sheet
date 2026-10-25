@@ -116,14 +116,17 @@ def test_islands_wrap_to_fit_the_screen(page: Page, map_url, width):
     assert page.evaluate("document.documentElement.scrollWidth") <= width
 
 
-def test_planned_areas_and_topics_are_faded_and_not_links(page: Page, map_url):
+def test_planned_areas_and_topics_are_muted_and_not_links(page: Page, map_url):
     page.goto(map_url)
     later = page.locator('[data-area="later"]')
 
     expect(later.get_by_role("heading", name="Later")).to_contain_text("coming soon")
     expect(later.get_by_text("Later 1").filter(visible=True)).to_be_visible()
     expect(later.get_by_role("link")).to_have_count(0)
-    assert float(later.locator(".bubble").first.evaluate("(el) => getComputedStyle(el).opacity")) < 1
+    # Muted by a dashed outline with no fill, not by fading, so the text keeps its contrast (ticket 09).
+    bubble = later.locator(".bubble").first
+    expect(bubble).to_have_css("border-top-style", "dashed")
+    expect(bubble).to_have_css("background-color", "rgba(0, 0, 0, 0)")
 
 
 def test_fonts_are_self_hosted(page: Page, map_url):

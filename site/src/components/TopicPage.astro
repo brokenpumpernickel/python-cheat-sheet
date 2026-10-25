@@ -86,8 +86,14 @@ const { area, topic, previous, next, links } = Astro.props;
     margin: 0 auto;
     padding: 8px clamp(16px, 3vw, 32px) 64px;
   }
+  /* Focus moves to the page on zoom-in; a keyboard user sees it on the header rather than around the whole
+     page. */
   .topic:focus {
     outline: none;
+  }
+  .topic:focus-visible .hero {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
   }
 
   .hero {
@@ -229,11 +235,6 @@ const { area, topic, previous, next, links } = Astro.props;
     .stop {
       flex: 1 1 100%;
       font-size: 19px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .stop {
-      transition: none;
     }
   }
 </style>
