@@ -157,6 +157,13 @@ The UI direction was chosen through prototyping: variant **C4** ("Islands: map +
   - the Polish terminology rule
   - the glossary vocabulary
 - MVP content: the Python Basics Area with nine Topics in this Topic order: Variables, Strings, Conditionals, Lists, Tuples, Dictionaries, Sets, Loops, Functions. The prototype's 29 sample Python Basics Entries (with Polish) are the starting draft. A title-only Entry list per Topic is reviewed by the Author before final content is written.
+- The MVP also ships four **planned** Areas, so Students see what's coming and the Map isn't a single island on day one. Each lists planned Topics only:
+  - NumPy (Arrays, Indexing, Random, Aggregates)
+  - pandas (DataFrames, Selecting, Grouping)
+  - Matplotlib (Plotting basics, Scatter plots, Subplots)
+  - SciPy stats (Distributions, t-tests, Correlation)
+
+  Their titles need Polish too. The prototype has them: Tablice, Indeksowanie, Losowanie, Agregacje; Ramki danych, Wybieranie, Grupowanie; Podstawy wykresów, Wykresy punktowe, Podwykresy; Rozkłady, Testy t, Korelacja. The Matplotlib figure examples from the prototype are kept out of the MVP and come back with the Matplotlib spec. Figure capture is still covered by the content-build tests.
 
 ## Testing Decisions
 
@@ -191,7 +198,7 @@ The UI direction was chosen through prototyping: variant **C4** ("Islands: map +
 - Runnable or editable examples in the browser (e.g. Pyodide).
 - A printable or PDF version.
 - The glossary of Python **Terms** (definitions such as *iterable* that link to Entries): a later addition.
-- Content for NumPy, pandas, Matplotlib and SciPy stats beyond showing them as planned Areas. Their content comes in later specs.
+- Content for NumPy, pandas, Matplotlib and SciPy stats. The MVP shows them only as planned Areas, and their Entries come in later specs.
 - Languages other than English and Polish, and a manual light/dark toggle.
 - Accounts, analytics, comments, a CMS or any server-side component.
 - Offline/installable (PWA) support.
@@ -201,5 +208,4 @@ The UI direction was chosen through prototyping: variant **C4** ("Islands: map +
 
 - **Prototype**: the UI was decided by building throwaway mockups, kept on the `prototype/ui-mockups` branch (`prototype/`, served with `python -m http.server -d prototype`; variant switcher at the bottom, `?variant=C4`). Explored: A "Atlas" (editorial), B "Workbench" (IDE), C "Islands" (literal map), C2 (self-arranging islands + mini-map rail), C3 (Trail), C4 (C2 + Trail toggle). **Verdict: C4**, with ring-laid-out round islands, "Next stop" in both modes, Topic order with Loops after the collections, an EN | PL switch, and the rail expanding the current Topic's Entries. The prototype's code is a reference for behaviour and look, not code to promote. It was written without tests or error handling.
 - **Decisions recorded as ADRs**: 0001 semantic zoom instead of a free canvas, 0002 Outputs generated at build time, 0003 self-contained Entries, 0004 Astro plus a Python execution step, 0005 Polish as a second Language.
-- **Assumption to confirm**: the four library Areas (NumPy, pandas, Matplotlib, SciPy stats) ship in the MVP as planned Areas, so the Map isn't a single island on day one.
 - **Lessons from the prototype**: links must never be nested (a tile that contains other links breaks the page), and miniature or decorative copies of content must not be focusable.
