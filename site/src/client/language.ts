@@ -21,7 +21,7 @@ function applyLanguage(language: Language): void {
   for (const element of document.querySelectorAll<HTMLElement>("[data-label-attributes]")) {
     for (const pair of element.dataset.labelAttributes!.split(" ")) {
       const [name, key] = pair.split("=");
-      element.setAttribute(name, label(key as LabelKey, language));
+      element.setAttribute(name, key ? label(key as LabelKey, language) : element.getAttribute(`data-${name}-${language}`)!);
     }
   }
 }

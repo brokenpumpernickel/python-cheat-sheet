@@ -46,6 +46,7 @@ def test_valid_topic_produces_data_with_captured_output(full_syntax):
         "explain": "<code>data[start:stop]</code> takes a <em>part</em> of a list.",
         "code": "data = [10, 20, 30, 40]\nprint(data[1:3])\nprint(data[::2])",
         "raises": None,
+        "figure": None,
         "see": [],
         "pitfall": None,
         "output": {"text": "[20, 30]\n[10, 30]", "error": None, "figures": []},
@@ -53,6 +54,8 @@ def test_valid_topic_produces_data_with_captured_output(full_syntax):
             "title": "Wycinanie (slicing)",
             "explain": "<code>data[start:stop]</code> wybiera <em>fragment</em> listy.",
             "pitfall": None,
+            "figure": None,
+            "pitfallFigure": None,
         },
     }
 
@@ -64,6 +67,7 @@ def test_pitfall_and_see_also_are_parsed(full_syntax):
         "text": "<code>data = data.sort()</code> replaces your list with <code>None</code>.",
         "code": "data = [3, 1, 2]\ndata = data.sort()\nprint(data)",
         "raises": None,
+        "figure": None,
         "output": {"text": "None", "error": None, "figures": []},
     }
     assert sorting["pl"]["pitfall"] == (
@@ -135,6 +139,21 @@ def test_matplotlib_figures_are_captured_as_svg():
     assert len(closed["pitfall"]["output"]["figures"]) == 1
 
 
+def test_figure_descriptions_reach_the_data():
+    plots = build_content(FIXTURES / "figures")["areas"][0]["topics"][0]
+    shown, closed = plots["entries"]
+
+    # One description for the example, however many figures it draws; the Pitfall's is its own.
+    assert shown["figure"] == "A line rising ever faster through three points, then two bars, the second taller."
+    assert shown["pl"]["figure"] == "Linia rosnąca coraz szybciej przez trzy punkty, potem dwa słupki, drugi wyższy."
+    assert shown["pl"]["pitfallFigure"] is None
+    assert closed["figure"] is None
+    assert closed["pl"]["figure"] is None
+    assert closed["pitfall"]["figure"] == "A straight line rising between two points."
+    assert closed["pl"]["pitfallFigure"] == "Prosta linia rosnąca między dwoma punktami."
+    assert "line" not in shown  # the Entry's line is for messages only
+
+
 # One small content folder per rule in tests/fixtures/invalid/, and the exact message it must give.
 INVALID = {
     # Required fields
@@ -163,6 +182,14 @@ INVALID = {
     "wrong-error-type": "basics/names.md (names/binding): the example failed with IndexError: list index out of range (marked raises=KeyError)",
     "marked-without-error": "basics/names.md (names/binding): marked raises=KeyError, but the example ran without an error",
     "pitfall-unmarked-error": "basics/names.md (names/binding) Pitfall: the example failed with NameError: name 'y' is not defined",
+    # Figure descriptions, the figures' accessible names
+    "figure-without-description": "basics/names.md:10 (names/binding): the example draws a figure but has no description; add a '### Figure' section after its code",
+    "figure-description-without-figure": "basics/names.md:10 (names/binding) Figure: the example draws no figure; remove the '### Figure' description",
+    "figure-description-without-polish": "basics/names.md:10 (names/binding) Figure: expected one 'PL:' paragraph with the Polish text, found 0",
+    "figure-description-with-markdown": "basics/names.md:10 (names/binding) Figure: a figure description is plain text",
+    "figure-description-twice": "basics/names.md:31: '### Figure' appears twice",
+    "pitfall-figure-without-description": "basics/names.md:10 (names/binding) Pitfall: the example draws a figure but has no description",
+    "pitfall-figure-description-without-code": "basics/names.md:10 (names/binding) Pitfall Figure: the Pitfall has no code, so it draws no figure",
 }
 
 

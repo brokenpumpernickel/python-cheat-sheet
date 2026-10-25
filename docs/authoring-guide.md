@@ -10,7 +10,7 @@ The content build (`cheatsheet/content.py`, then `cheatsheet/build.py`) is the o
 - [Folder layout](#folder-layout)
 - [Area description](#area-description-_areamd)
 - [Topic file](#topic-file-topic-idmd)
-- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [Output](#output), [expected error](#expected-error), [figures](#figures), [Pitfall](#pitfall), [See also](#see-also)
+- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [Output](#output), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [Pitfall](#pitfall), [See also](#see-also)
 - [Topic order](#topic-order)
 - [Polish](#polish)
 - [New Areas: hue and glyphs](#new-areas-hue-and-glyphs)
@@ -92,7 +92,7 @@ pl:
 
 ## Entry
 
-Every Entry is a `##` section. **Pair rule:** every piece of English prose (the `##` title, the explanation, the Pitfall text) is immediately followed by its Polish counterpart, a paragraph that starts with `PL:`.
+Every Entry is a `##` section. **Pair rule:** every piece of English prose (the `##` title, the explanation, the Pitfall text, a figure description) is immediately followed by its Polish counterpart, a paragraph that starts with `PL:`.
 
 ````markdown
 ## Sorting
@@ -127,7 +127,7 @@ print(data)
 - functions/lambda
 ````
 
-Inside a Topic file there is nothing but Entries, and inside an Entry nothing but what is shown above, in that order: title, `PL:` title, explanation, `PL:` explanation, one code block, then optionally `### Pitfall` and `### See also`. No other headings, lists, quotes, tables, images or indented code.
+Inside a Topic file there is nothing but Entries, and inside an Entry nothing but what is shown above, in that order: title, `PL:` title, explanation, `PL:` explanation, one code block, then `### Figure` if that code draws a figure (see [Figure description](#figure-description)), then optionally `### Pitfall` (followed by a `### Figure` of its own if its code draws one) and `### See also`. No other headings, lists, quotes, tables, images or indented code.
 
 ### Title
 
@@ -175,7 +175,34 @@ Add `raises=<ExceptionType>` to the code block's info string: ` ```python raises
 
 ### Figures
 
-Matplotlib draws with a non-interactive backend. Every figure open at `plt.show()` or at the end of the example becomes an SVG in the Output; a figure closed with `plt.close()` does not. Figures are shared by both Languages, so keep text inside them (titles, axis labels, legends) to code names and numbers, or leave it out. Use one figure per Entry, at Matplotlib's default size.
+Matplotlib draws with a non-interactive backend. Every figure open at `plt.show()` or at the end of the example becomes an SVG in the Output; a figure closed with `plt.close()` does not. Figures are shared by both Languages, so keep text inside them (titles, axis labels, legends) to code names and numbers, or leave it out. Use one figure per Entry, at Matplotlib's default size. Every example that draws a figure needs a [figure description](#figure-description).
+
+### Figure description
+
+A Student using a screen reader can't see a figure, so every figure has a short description in both Languages, read out as the figure's name in the Language the Student chose. It goes in a `### Figure` section right after the code that draws the figure: one English paragraph and its `PL:` twin, nothing else.
+
+````markdown
+```python
+import matplotlib.pyplot as plt
+
+counts = {"heads": 7, "tails": 3}
+plt.bar(list(counts.keys()), list(counts.values()))
+plt.show()
+```
+
+### Figure
+
+Two bars, heads and tails; the heads bar is more than twice as tall.
+
+PL: Dwa słupki, heads i tails; słupek heads jest ponad dwa razy wyższy.
+````
+
+- **When:** exactly when the code draws a figure. The build runs the example and fails if it drew a figure without a description, or if a description sits on an example that drew none.
+- **A Pitfall's figure** gets its own `### Figure` after the Pitfall's code, below `### Pitfall`. A `### Figure` describes the code above it: before `### Pitfall` the Entry's, after it the Pitfall's.
+- **One per example:** if the code draws several figures, one description covers them all, in the order they appear.
+- **What to write:** one or two sentences saying what the plot shows and its notable shape, as a sighted Student would take it in at a glance: the kind of plot, what is on it, and the pattern that matters (a bell-shaped peak around 0, a line rising ever faster, the second bar tallest). Give a number only when the plot makes it stand out. Don't repeat the explanation, don't describe colours unless they carry meaning, and don't start with "Image of", "Figure showing" or "Wykres przedstawiający": the screen reader already says it's an image.
+- **Plain text:** no Markdown, not even backticks, since it is read out, not shown. Write a name plainly (x, heads) and describe the plot, not the code: "two bars", not "the Output of `plt.bar`".
+- **Polish:** the same facts in natural Polish, under the usual [Polish](#polish) rules.
 
 ### Pitfall
 
@@ -213,7 +240,7 @@ The `topics:` list in `_area.md` is the Topic order. It numbers the Trail and de
 
 ## Polish
 
-Polish is required everywhere (ADR 0005), and the build fails without it: Area title and blurb, Topic title and summary (a planned Topic needs only its title), and every Entry's title, explanation and Pitfall text. Code and Outputs exist once and are shared.
+Polish is required everywhere (ADR 0005), and the build fails without it: Area title and blurb, Topic title and summary (a planned Topic needs only its title), and every Entry's title, explanation, Pitfall text and figure description. Code and Outputs exist once and are shared.
 
 - **Terminology rule:** name a Python concept in Polish with the English term in parentheses at its first mention, e.g. "krotka (tuple)", "Wycinanie (slicing)", "Wyrażenia listowe (list comprehensions)". Students meet the English term in error messages and documentation. "First mention" is per Entry, since Students land on single Entries from search: the first time the term appears in the Entry's Polish title, explanation or Pitfall text, whichever comes first. After that, write the Polish term alone; repeating the parentheses isn't an error, just noise. The Topic's Polish summary gets it once too. Ordinary words that aren't Python terms don't get it: "Sortowanie", "Podsumowania".
 - Keep code as code: keywords, names, values and exception types stay in backticks and in English (`None`, `True`, `KeyError`, `.append()`).
@@ -287,7 +314,7 @@ Manage Python only with uv: `uv run`, `uv add`. Don't use `pip` or a system Pyth
 
 ## Validation rules
 
-Every rule below stops the build with `Content error:`. The message starts with the place (left out in the table): a file such as `python-basics/lists.md`, often `:line`, and for an Entry `(topic-id/entry-id)`, followed by ` Pitfall` or ` See also` when the problem is there. `<…>` stands for the part that varies.
+Every rule below stops the build with `Content error:`. The message starts with the place (left out in the table): a file such as `python-basics/lists.md`, often `:line`, and for an Entry `(topic-id/entry-id)`, followed by ` Pitfall`, ` Figure`, ` Pitfall Figure` or ` See also` when the problem is there. `<…>` stands for the part that varies.
 
 ### Areas and the Area order
 
@@ -328,8 +355,8 @@ Every rule below stops the build with `Content error:`. The message starts with 
 | `expected an Entry ('## Title') before any other content` | Text, or a `#` heading, before the first `##` | Delete it; the Topic's intro is its `summary`. |
 | `two Entries have the id '<id>'; ids come from the titles, so change one title` | Two titles slugify alike (`Sorting` / `sorting!`) | Rename one. |
 | `an Entry title needs letters or digits, since the Entry id is made from it` | Title like `## ???` | Use a word title. |
-| `unexpected heading '<text>'; inside an Entry only '### Pitfall' and '### See also' are allowed` | Any other heading level or text, e.g. `### Example`, `#### Note`, `### Pitfalls` | Remove it, or spell it exactly `### Pitfall` / `### See also`. |
-| `'### <section>' appears twice` | Two Pitfalls or two See-also sections | Keep one; an Entry has at most one Pitfall. |
+| `unexpected heading '<text>'; inside an Entry only '### Figure', '### Pitfall' and '### See also' are allowed` | Any other heading level or text, e.g. `### Example`, `#### Note`, `### Pitfalls` | Remove it, or spell it exactly `### Figure` / `### Pitfall` / `### See also`. |
+| `'### <section>' appears twice` | Two Pitfalls, two See-also sections, or two figure descriptions for the same code | Keep one; an Entry has at most one Pitfall, and one description covers all the figures of an example. |
 | `the heading must be followed by a 'PL: <Polish title>' paragraph` | No `PL:` line right after `##`, or it's in the wrong place | Add `PL: <Polish title>` as the next paragraph. |
 | `the 'PL:' paragraph after the heading is empty; write the Polish title` | `PL:` with nothing after it | Write the Polish title. |
 | `expected one English paragraph, found <n>` | Explanation (or Pitfall text) split into paragraphs, or missing | Join it into one paragraph of 1–3 sentences, or write it. |
@@ -343,6 +370,16 @@ Every rule below stops the build with `Content error:`. The message starts with 
 | `unknown code block option '<option>'; the only option is raises=<ExceptionType>` | e.g. `raises KeyError`, `raises=KeyError,ValueError`, `title=…` | Write `raises=KeyError` with no spaces, one type. |
 | `the code block at line <n> is empty` | ` ```python ` with nothing inside | Write the example. |
 
+### Figure descriptions
+
+The place ends in ` Figure` for the Entry's description and ` Pitfall Figure` for the Pitfall's. The pair-rule messages above apply here too, e.g. `Figure: expected one 'PL:' paragraph with the Polish text, found 0` when the Polish is missing.
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `a figure description has no code block; it describes the figures of the code above it` | A ` ```python ` block inside `### Figure` | Move the code above `### Figure`; the section holds the two paragraphs only. |
+| ``a figure description is plain text, read out as the figure's name; remove the Markdown (`code`, *emphasis*)`` | Backticks, `*`, a link or other Markdown in the description | Write it as plain text (see [Figure description](#figure-description)). |
+| `the Pitfall has no code, so it draws no figure; remove the '### Figure' description` | A `### Figure` after a Pitfall without code | Remove it, or move it above `### Pitfall` if it describes the Entry's figure. |
+
 ### See also
 
 | Message | Cause | Fix |
@@ -355,7 +392,7 @@ Every rule below stops the build with `Content error:`. The message starts with 
 
 ### Running the examples
 
-These are checked only after everything parses, and all failures are listed at once. The place is `<file> (topic-id/entry-id)`, plus ` Pitfall` for the Pitfall's code.
+These are checked only after everything parses, and all failures are listed at once. The place is `<file> (topic-id/entry-id)`, plus ` Pitfall` for the Pitfall's code; the two figure checks also give the Entry's line, `<file>:<line> (topic-id/entry-id)`.
 
 | Message | Cause | Fix |
 | --- | --- | --- |
@@ -363,6 +400,8 @@ These are checked only after everything parses, and all failures are listed at o
 | `the example failed with <Error>: <message> (marked raises=<Other>)` | It raises a different type than marked | Mark the exact type from the message, or fix the code so it raises the one you meant. |
 | `marked raises=<Error>, but the example ran without an error` | Marked, but nothing raised | Make the line that should raise actually raise, or remove the marker. |
 | `the example timed out after 60 s` | It was still running after 60 seconds: an endless loop, a long `sleep`, or too much data | Make it smaller; an example should finish in about a second. |
+| `the example draws a figure but has no description; add a '### Figure' section after its code` (or `draws <n> figures`) | The code drew a figure, and no `### Figure` follows it | Add a [figure description](#figure-description) right after the code block (after the Pitfall's code when the place ends in ` Pitfall`). |
+| `Figure: the example draws no figure; remove the '### Figure' description` | A description on code that drew nothing: no plotting, or every figure closed with `plt.close()` | Remove the section, or fix the code if it should draw. |
 
 **Not caught by the build** (check them yourself): an empty Output from a missing `print`, warnings (stderr is ignored), Output that changes between builds, length, tone, Topic order and the quality of the Polish.
 
@@ -493,6 +532,12 @@ counts = {"heads": 7, "tails": 3}
 plt.bar(list(counts.keys()), list(counts.values()))
 plt.show()
 ```
+
+### Figure
+
+Two bars, heads and tails; the heads bar is more than twice as tall.
+
+PL: Dwa słupki, heads i tails; słupek heads jest ponad dwa razy wyższy.
 ````
 
 What it shows:
@@ -502,14 +547,15 @@ What it shows:
 3. **Creating and accessing** is a plain Entry with a **See-also link**. Its id is `creating-and-accessing`. The explanation is two sentences with the syntax in backticks; the Polish one gives "słownik (dictionary)", "klucz (key)" and "wartość (value)" at their first mention. The example prints both a single value and the whole dictionary, so the Output shows both things the explanation mentions.
 4. **Missing keys** has an **expected error** and a **Pitfall without code**. The working alternative (`.get`) is printed first, and the line that raises comes last, so the Output is `0.0` and then `KeyError: 'sd'`. The Pitfall's point fits in one sentence, so it has no code.
 5. **Counting occurrences** has a **Pitfall with code that raises**: it shows the mistake, not the fix, and is marked `raises=KeyError`, so its Output is `KeyError: 'heads'`. The Entry uses a `for` loop although Loops comes later. That is fine under the [Topic order](#topic-order) rule, and once Loops has Entries this Entry gets `- loops/for-over-a-collection` under `### See also`. Adding that link now would fail the build, because Loops is planned.
-6. **Plotting counts** has a **figure**: no `print`, the bar chart is the Output, and it has no title or labels to translate. (In the real content figures belong in the Matplotlib Area; this one is here so the example covers every feature.)
+6. **Plotting counts** has a **figure**: no `print`, the bar chart is the Output, and it has no title or labels to translate. Its **figure description** says what a Student would see at a glance, two bars with heads clearly taller, in plain text and in both Languages. (In the real content figures belong in the Matplotlib Area; this one is here so the example covers every feature.)
 
 ## Before you finish
 
 - [ ] Every Entry: a title of one to four words, an explanation of 1–3 sentences in one paragraph, one self-contained ` ```python ` example that prints what it shows.
 - [ ] Every Output comes from the build, is not empty, and shows what the explanation promises; no warnings.
 - [ ] Expected errors only where the error is the point, with the raising line last.
+- [ ] Every example that draws a figure has a `### Figure` description in both Languages: what the plot shows and its shape, in plain text.
 - [ ] Pitfalls only for real, common mistakes; See-also links where an Entry relies on another.
-- [ ] Polish for every title, summary, blurb, explanation and Pitfall, with "polski termin (English term)" at first mention.
+- [ ] Polish for every title, summary, blurb, explanation, Pitfall and figure description, with "polski termin (English term)" at first mention.
 - [ ] The Topic is in its Area's `topics:`, after the Topics its examples rely on.
 - [ ] `uv run cheatsheet build` passes, you've looked at the Topic in `uv run cheatsheet serve` in both Languages, and `uv run pytest` passes.

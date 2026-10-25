@@ -116,7 +116,7 @@ def test_figure_output_sits_on_a_white_card(page: Page, site_url, scheme):
     page.emulate_media(color_scheme=scheme)
     page.goto(f"{site_url}#charts")
 
-    figure = entry(page, "charts/line-chart").get_by_role("img", name="Figure drawn by the code above")
+    figure = entry(page, "charts/line-chart").get_by_role("img", name="A line rising ever faster through three points.")
     expect(figure).to_be_visible()
     expect(figure.locator("svg")).to_have_count(1)
     expect(figure).to_have_css("background-color", "rgb(255, 255, 255)")

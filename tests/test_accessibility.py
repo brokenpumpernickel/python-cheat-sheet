@@ -138,8 +138,9 @@ def test_the_audit_catches_faint_text_on_the_sea(page: Page, site_url):
     assert "color-contrast" in audit(page)
 
 
-def test_the_figure_topic_passes_too(page: Page, site_url):
-    page.goto(f"{site_url}#charts")
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_the_figure_topic_passes_too(page: Page, site_url, language):
+    page.goto(f"{site_url}?lang={language}#charts")
     expect(topic_page(page, "charts")).to_be_visible()
 
     problems = audit(page)
@@ -160,15 +161,23 @@ def hue_entry(topic_id: str, see: str) -> dict:
         "explain": "Use <code>print</code> to show values.",
         "code": "# a comment\nx = [1, 'a', len('b')]\nprint(x)",
         "raises": None,
+        "figure": None,
         "output": {"text": "[1, 'a', 1]\n", "error": None, "figures": []},
         "see": [see],
         "pitfall": {
             "text": "Indexes start at <code>0</code>.",
             "code": "x = []\nx[0]",
             "raises": "IndexError",
+            "figure": None,
             "output": {"text": "", "error": "IndexError: list index out of range", "figures": []},
         },
-        "pl": {"title": "Wartości", "explain": "Użyj <code>print</code>.", "pitfall": "Indeksy od <code>0</code>."},
+        "pl": {
+            "title": "Wartości",
+            "explain": "Użyj <code>print</code>.",
+            "pitfall": "Indeksy od <code>0</code>.",
+            "figure": None,
+            "pitfallFigure": None,
+        },
     }
 
 

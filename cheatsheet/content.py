@@ -176,15 +176,18 @@ def _parse_entry(
         raise ContentError(f"{where}:{heading.line}: an Entry title needs letters or digits, since the Entry id is made from it")
     here = f"{where}:{heading.line} ({topic_id}/{entry_id})"
 
+    # A '### Figure' describes the figures of the code before it: the Entry's, or after '### Pitfall' the Pitfall's.
     parts: dict[str, list[_Block]] = {"": []}
     current = ""
     for block in body:
         if block.kind == "heading":
-            if block.level != 3 or block.text not in ("Pitfall", "See also"):
-                raise ContentError(f"{where}:{block.line}: unexpected heading '{block.text}'; inside an Entry only '### Pitfall' and '### See also' are allowed")
-            if block.text in parts:
+            if block.level != 3 or block.text not in ("Figure", "Pitfall", "See also"):
+                raise ContentError(
+                    f"{where}:{block.line}: unexpected heading '{block.text}'; inside an Entry only '### Figure', '### Pitfall' and '### See also' are allowed"
+                )
+            current = "Pitfall Figure" if block.text == "Figure" and "Pitfall" in parts else block.text
+            if current in parts:
                 raise ContentError(f"{where}:{block.line}: '### {block.text}' appears twice")
-            current = block.text
             parts[current] = []
         else:
             parts[current].append(block)
@@ -199,14 +202,20 @@ def _parse_entry(
     if len(fences) != 1:
         raise ContentError(f"{here}: an Entry needs exactly one ```python code block, found {len(fences)}")
     code, raises = _example(fences[0], here)
+    figure, pl_figure = _figure(parts["Figure"], f"{here} Figure") if "Figure" in parts else (None, None)
 
-    pitfall = pl_pitfall = None
+    pitfall = pl_pitfall = pl_pitfall_figure = None
     if "Pitfall" in parts:
         text, pl_pitfall, pitfall_fences = _prose_and_code(parts["Pitfall"], f"{here} Pitfall")
         if len(pitfall_fences) > 1:
             raise ContentError(f"{here} Pitfall: at most one ```python code block, found {len(pitfall_fences)}")
         pitfall_code, pitfall_raises = _example(pitfall_fences[0], f"{here} Pitfall") if pitfall_fences else (None, None)
-        pitfall = {"text": text, "code": pitfall_code, "raises": pitfall_raises}
+        pitfall_figure = None
+        if "Pitfall Figure" in parts:
+            if not pitfall_code:
+                raise ContentError(f"{here} Pitfall Figure: the Pitfall has no code, so it draws no figure; remove the '### Figure' description")
+            pitfall_figure, pl_pitfall_figure = _figure(parts["Pitfall Figure"], f"{here} Pitfall Figure")
+        pitfall = {"text": text, "code": pitfall_code, "raises": pitfall_raises, "figure": pitfall_figure}
 
     see = _see_also(parts["See also"], here) if "See also" in parts else []
     references.extend((here, reference) for reference in see)
@@ -217,14 +226,39 @@ def _parse_entry(
         "explain": explain,
         "code": code,
         "raises": raises,
+        "figure": figure,
         "see": see,
         "pitfall": pitfall,
-        "pl": {"title": pl_title, "explain": pl_explain, "pitfall": pl_pitfall},
+        "pl": {
+            "title": pl_title,
+            "explain": pl_explain,
+            "pitfall": pl_pitfall,
+            "figure": pl_figure,
+            "pitfallFigure": pl_pitfall_figure,
+        },
+        "line": heading.line,  # for the build's messages; not part of the content data
     }
 
 
 def _prose_and_code(blocks: list[_Block], here: str) -> tuple[str, str, list[_Block]]:
     """One English paragraph, its PL: counterpart, and any code blocks. Prose is returned as inline HTML."""
+    english, polish, fences = _paragraphs(blocks, here)
+    return _MD.renderInline(english), _MD.renderInline(polish), fences
+
+
+def _figure(blocks: list[_Block], here: str) -> tuple[str, str]:
+    """A figure description and its PL: twin. They become the figures' accessible names, so they are plain text."""
+    english, polish, fences = _paragraphs(blocks, here)
+    if fences:
+        raise ContentError(f"{here}: a figure description has no code block; it describes the figures of the code above it")
+    for text in (english, polish):
+        if any(token.type not in ("text", "softbreak") for token in _MD.parseInline(text)[0].children):
+            raise ContentError(f"{here}: a figure description is plain text, read out as the figure's name; remove the Markdown (`code`, *emphasis*)")
+    return " ".join(english.split()), " ".join(polish.split())
+
+
+def _paragraphs(blocks: list[_Block], here: str) -> tuple[str, str, list[_Block]]:
+    """One English paragraph, its PL: counterpart (both as Markdown source), and any code blocks."""
     english, polish, fences = [], [], []
     for block in blocks:
         if block.kind == "fence":
@@ -239,7 +273,7 @@ def _prose_and_code(blocks: list[_Block], here: str) -> tuple[str, str, list[_Bl
         raise ContentError(f"{here}: expected one '{POLISH}' paragraph with the Polish text, found {len(polish)}")
     if not _strip_polish(polish[0].text):
         raise ContentError(f"{here}: the '{POLISH}' paragraph at line {polish[0].line} is empty; write the Polish text")
-    return _MD.renderInline(english[0].text), _MD.renderInline(_strip_polish(polish[0].text)), fences
+    return english[0].text, _strip_polish(polish[0].text), fences
 
 
 def _example(fence: _Block, here: str) -> tuple[str, str | None]:

@@ -22,3 +22,9 @@ plt.plot([1, 2, 3], [1, 4, 9])
 plt.show()
 print("one figure")
 ```
+
+### Figure
+
+A line rising ever faster through three points.
+
+PL: Linia rosnąca coraz szybciej przez trzy punkty.
