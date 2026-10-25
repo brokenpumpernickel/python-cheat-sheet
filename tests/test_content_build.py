@@ -142,6 +142,7 @@ INVALID = {
     "empty-field": "basics/names.md: 'summary' is required and must be text",
     "empty-code": "basics/names.md:10 (names/binding): the code block at line 18 is empty",
     "two-code-blocks": "basics/names.md:10 (names/binding): an Entry needs exactly one ```python code block, found 2",
+    "bare-code-fence": "basics/names.md:10 (names/binding): the code block at line 18 has no language; fence examples as ```python",
     "duplicate-entry-ids": "basics/names.md:23: two Entries have the id 'binding'",
     # Polish counterparts (ADR 0005)
     "missing-polish-title": "basics/names.md:10 (names/binding): the heading must be followed by a 'PL: <Polish title>' paragraph",
@@ -178,4 +179,14 @@ def test_every_failing_example_is_reported_at_once():
     assert str(failure.value).splitlines() == [
         "basics/names.md (names/binding): the example failed with ZeroDivisionError: division by zero",
         "basics/names.md (names/rebinding): the example failed with NameError: name 'z' is not defined",
+    ]
+
+
+def test_an_example_over_the_timeout_is_reported_with_the_other_failures():
+    with pytest.raises(ContentError) as failure:
+        build_content(FIXTURES / "invalid" / "slow-example", timeout=1)
+
+    assert str(failure.value).splitlines() == [
+        "basics/names.md (names/waiting): the example timed out after 1 s",
+        "basics/names.md (names/dividing): the example failed with ZeroDivisionError: division by zero",
     ]

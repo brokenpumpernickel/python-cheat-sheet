@@ -12,7 +12,7 @@ from pathlib import Path
 from jupyter_client import AsyncKernelManager
 from jupyter_client.kernelspec import KernelSpecManager
 
-TIMEOUT_SECONDS = 60
+TIMEOUT_SECONDS = 60  # per example, and for the kernel to start
 _KERNEL_NAME = "cheatsheet-python"
 
 # Matplotlib draws with the non-interactive inline backend, which sends every figure open at
@@ -30,23 +30,25 @@ class Run:
     error_type: str | None = None
     error: str | None = None  # the final traceback line, e.g. "KeyError: 'sd'"
     figures: tuple[str, ...] = ()  # SVG documents, in the order they were shown
+    timed_out: bool = False  # still running after the timeout, so it was stopped
 
 
-def run_example(code: str) -> Run:
+def run_example(code: str, timeout: float = TIMEOUT_SECONDS) -> Run:
     """Run `code` in a new kernel of this environment's Python, then shut the kernel down.
 
     The kernel starts in an empty working directory with a private IPython profile, so an
     example sees neither other examples' variables nor the repository or user startup files.
-    It is safe to call from several threads at once; each call gets its own kernel.
+    It is safe to call from several threads at once; each call gets its own kernel. Code still
+    running after `timeout` seconds is stopped with the kernel and returns a timed-out Run.
     """
     # The kernel is driven from a worker thread with its own short-lived event loop, so this works
     # even when the caller already runs one (e.g. Playwright in the browser tests). A selector loop
     # is what pyzmq needs; the kernel itself is started with subprocess.Popen, not by the loop.
     with ThreadPoolExecutor(max_workers=1) as worker:
-        return worker.submit(asyncio.run, _run(code), loop_factory=asyncio.SelectorEventLoop).result()
+        return worker.submit(asyncio.run, _run(code, timeout), loop_factory=asyncio.SelectorEventLoop).result()
 
 
-async def _run(code: str) -> Run:
+async def _run(code: str, timeout: float) -> Run:
     with tempfile.TemporaryDirectory(prefix="cheatsheet-kernel-") as scratch:
         root = Path(scratch)
         (root / "cwd").mkdir()
@@ -72,14 +74,21 @@ async def _run(code: str) -> Run:
                     svg = content["data"]["image/svg+xml"]
                     figures.append(svg[svg.index("<svg") :])  # without the XML prolog, so it can sit inline in HTML
 
-            await client.execute_interactive(
-                code, store_history=False, allow_stdin=False, timeout=TIMEOUT_SECONDS, output_hook=collect
-            )
+            try:
+                await client.execute_interactive(
+                    code, store_history=False, allow_stdin=False, timeout=timeout, output_hook=collect
+                )
+            except TimeoutError:
+                timed_out = True
+            else:
+                timed_out = False
         finally:
             client.stop_channels()
             await manager.shutdown_kernel(now=True)
 
     text = "".join(stdout).rstrip("\n")
+    if timed_out:
+        return Run(stdout=text, timed_out=True)
     if not errors:
         return Run(stdout=text, figures=tuple(figures))
     name, value = errors[0]["ename"], errors[0]["evalue"]

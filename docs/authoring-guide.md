@@ -256,7 +256,7 @@ To add an Area:
    Content error: python-basics/lists.md:56 (lists/sorting) See also: 'lists/sortng' names no Entry of Topic 'lists'; its Entries are: ...
    ```
 
-   Parsing stops at the first problem, so fix it and build again; several parse problems take several builds. Examples run only when everything parses, and then every failing example is listed, one per line. Look the message up in [Validation rules](#validation-rules). A Python traceback instead of `Content error:` means the build itself broke (see the notes under the table).
+   Parsing stops at the first problem, so fix it and build again; several parse problems take several builds. Examples run only when everything parses, and then every failing example is listed, one per line. Look the message up in [Validation rules](#validation-rules). A Python traceback instead of `Content error:` means the build itself broke, not the content; report it rather than working around it.
 
 5. **Check the Outputs.** A clean build doesn't mean a good Output: an empty Output means a missing `print`, and an Output that doesn't show what the explanation promises means the example needs work. Look on the page (step 6), or list every Output from `generated/content.json`, one line per example (the Pitfall's on the line after its Entry's), in a POSIX shell such as Git Bash:
 
@@ -336,6 +336,7 @@ Every rule below stops the build with `Content error:`. The message starts with 
 | `unexpected <kind> at line <n>; use paragraphs and ```python blocks only` | A bullet or ordered list, quote, rule or indented code in the explanation or Pitfall | Rewrite as one sentence-paragraph; code goes in the ` ```python ` block. |
 | `an Entry needs exactly one ```python code block, found <n>` | No code block, or more than one | Keep exactly one; merge them or split the Entry. |
 | `Pitfall: at most one ```python code block, found <n>` | Two blocks in the Pitfall | Keep one. |
+| `the code block at line <n> has no language; fence examples as ```python` | A bare ```` ``` ```` fence | Write ` ```python `. |
 | `code blocks must be ```python, not ```<lang> (line <n>)` | ` ```py `, ` ```pycon `, ` ```text `… | Use ` ```python `. Output isn't written in the file at all. |
 | `unknown code block option '<option>'; the only option is raises=<ExceptionType>` | e.g. `raises KeyError`, `raises=KeyError,ValueError`, `title=…` | Write `raises=KeyError` with no spaces, one type. |
 | `the code block at line <n> is empty` | ` ```python ` with nothing inside | Write the example. |
@@ -359,10 +360,9 @@ These are checked only after everything parses, and all failures are listed at o
 | `the example failed with <Error>: <message>` | The code raises and isn't marked | Fix the code; it must run in a fresh kernel on its own (missing import, a variable from another Entry, a typo). If the error is the point, add `raises=<Error>`. |
 | `the example failed with <Error>: <message> (marked raises=<Other>)` | It raises a different type than marked | Mark the exact type from the message, or fix the code so it raises the one you meant. |
 | `marked raises=<Error>, but the example ran without an error` | Marked, but nothing raised | Make the line that should raise actually raise, or remove the marker. |
+| `the example timed out after 60 s` | It was still running after 60 seconds: an endless loop, a long `sleep`, or too much data | Make it smaller; an example should finish in about a second. |
 
 **Not caught by the build** (check them yourself): an empty Output from a missing `print`, warnings (stderr is ignored), Output that changes between builds, length, tone, Topic order and the quality of the Polish.
-
-**A traceback instead of `Content error:`:** a bare ```` ``` ```` fence with no language crashes the parser with `ValueError: not enough values to unpack`; write ` ```python `. An example that runs longer than 60 seconds stops the build with a timeout traceback; make it smaller.
 
 ## Complete example Topic
 
