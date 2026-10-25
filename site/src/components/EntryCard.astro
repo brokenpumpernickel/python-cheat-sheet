@@ -1,0 +1,161 @@
+---
+// One Entry as a card: title, explanation, code and Output, then its Pitfall (a "Watch out!" sticker
+// and a callout, with code and Output of its own when it has them) and See-also chips.
+// Deep links find the card by data-entry="topic/entry".
+import type { Entry } from "../content";
+import { label } from "../labels";
+import CodeBlock from "./CodeBlock.astro";
+import OutputBlock from "./OutputBlock.astro";
+
+export interface SeeAlso {
+  href: string;
+  title: string;
+  hue: number; // the linked Entry's Area hue
+}
+
+interface Props {
+  topicId: string;
+  entry: Entry;
+  see: SeeAlso[];
+}
+
+const { topicId, entry, see } = Astro.props;
+const id = `${topicId}/${entry.id}`;
+const headingId = `entry-${topicId}-${entry.id}`;
+const { pitfall } = entry;
+---
+
+<section class="entry" data-entry={id} aria-labelledby={headingId}>
+  {pitfall && <span class="sticker" aria-hidden="true">{label("watchOut")}</span>}
+  <h2 id={headingId}>{entry.title}</h2>
+  <p class="explain" set:html={entry.explain} />
+  <CodeBlock code={entry.code} />
+  <OutputBlock output={entry.output} />
+
+  {
+    pitfall && (
+      <aside class="pitfall" aria-label={label("pitfall")}>
+        <p>
+          <strong>{label("pitfall")}:</strong> <Fragment set:html={pitfall.text} />
+        </p>
+        {pitfall.code && <CodeBlock code={pitfall.code} />}
+        {pitfall.output && <OutputBlock output={pitfall.output} />}
+      </aside>
+    )
+  }
+
+  {
+    see.length > 0 && (
+      <nav class="see" aria-label={label("seeAlso")}>
+        <span class="see-label" aria-hidden="true">
+          {label("seeAlso")}
+        </span>
+        {see.map((link) => (
+          <a href={link.href} style={{ "--hue": link.hue }}>
+            {link.title}
+          </a>
+        ))}
+      </nav>
+    )
+  }
+</section>
+
+<style>
+  .entry {
+    position: relative;
+    break-inside: avoid;
+    margin: 0 0 20px;
+    padding: 22px 24px 20px;
+    border-radius: 24px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+  h2 {
+    margin: 0 0 6px;
+    font: 700 22px/1.2 var(--font-round);
+    color: hsl(var(--hue) 55% var(--deep-l));
+  }
+  .explain {
+    margin: 0 0 14px;
+    color: var(--ink-2);
+  }
+  .entry :global(p code) {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--code-bg);
+    font-size: 0.86em;
+  }
+
+  .sticker {
+    position: absolute;
+    top: -12px;
+    right: 18px;
+    padding: 4px 12px;
+    border-radius: 10px;
+    background: var(--sticker);
+    box-shadow: 0 3px 0 rgb(0 0 0 / 0.12);
+    color: #3d2e00;
+    font: 700 13px var(--font-round);
+    transform: rotate(4deg);
+  }
+  .pitfall {
+    --output-bg: color-mix(in srgb, var(--sticker) 30%, var(--card));
+    --code-bg: color-mix(in srgb, var(--sticker) 8%, var(--card));
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--sticker) 22%, var(--card));
+    font-size: 15px;
+  }
+  .pitfall p {
+    margin: 0 0 8px;
+  }
+  .pitfall p:last-child {
+    margin: 0;
+  }
+
+  .see {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .see-label {
+    margin-right: 4px;
+    font: 800 11px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+  .see a {
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: hsl(var(--hue) var(--isl-s) var(--isl-l));
+    font: 700 13px var(--font-body);
+    text-decoration: none;
+  }
+  .see a:hover {
+    text-decoration: underline;
+  }
+
+  /* A jump to the Entry (client/motion.ts) flashes it in its Area's hue; with reduced motion, a still ring. */
+  .entry:global(.flash) {
+    animation: flash 1.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  @keyframes flash {
+    0% {
+      transform: scale(0.97);
+      box-shadow: 0 0 0 6px hsl(var(--hue) 70% 60%);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .entry:global(.flash) {
+      animation: none;
+      box-shadow: 0 0 0 4px hsl(var(--hue) 70% 60%);
+    }
+  }
+</style>

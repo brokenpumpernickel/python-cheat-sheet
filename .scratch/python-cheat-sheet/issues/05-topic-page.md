@@ -4,11 +4,29 @@
 
 **Blocked by:** 01 (Tracer bullet).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] All Entry parts render for text Output, expected-error Output, figure Output, Pitfall with and without code, and See-also.
-- [ ] Copy puts the exact example code on the clipboard and confirms briefly.
-- [ ] Previous/Next stop follow Topic order and skip planned Topics; the first and last Topics show only one of the two.
-- [ ] Layout is comfortable at laptop width beside Jupyter and usable at phone width without horizontal page scroll (code blocks may scroll on their own).
-- [ ] Browser tests cover Next stop order, See-also navigation, Entry highlight on deep link and copy.
-- [ ] All labels ("Output", "Pitfall", "Watch out!", "See also", "Next stop", …) come from the bilingual label table.
+- [x] All Entry parts render for text Output, expected-error Output, figure Output, Pitfall with and without code, and See-also.
+- [x] Copy puts the exact example code on the clipboard and confirms briefly.
+- [x] Previous/Next stop follow Topic order and skip planned Topics; the first and last Topics show only one of the two.
+- [x] Layout is comfortable at laptop width beside Jupyter and usable at phone width without horizontal page scroll (code blocks may scroll on their own).
+- [x] Browser tests cover Next stop order, See-also navigation, Entry highlight on deep link and copy.
+- [x] All labels ("Output", "Pitfall", "Watch out!", "See also", "Next stop", …) come from the bilingual label table.
+
+## Comments
+
+**Resolved.** The page is `TopicPage.astro` (header, sticky Entry chips, cards, Previous/Next stop), built from `EntryCard`, `CodeBlock` and `OutputBlock`. `TopicView.astro` works out the Topic order (`stops`: non-planned Topics, Area by Area) and the See-also lookup. Code is highlighted at build time by Astro's own `<Code>` (Shiki, so no new dependency). The theme in `site/src/code/theme.ts` maps grammar scopes to the `--tk-*` colours in `theme.css`. Client: `client/copy.ts` handles copy, and `flash()` in `client/motion.ts` flashes the Entry, called from `scrollTo` in `views.ts`. Tests: `tests/test_topic_page.py`. `tests/fixtures/site` now has a second Area (Plots › Charts, with a figure), an expected error, Pitfalls with and without code, and See-also links in both directions.
+
+- **For 06 (search):** to open a result, set `location.hash = "#topic/entry"`. The page then scrolls the Entry in below the chips and flashes it. If the result is the Entry already in the hash, no `hashchange` fires, so call `flash()` yourself. `entry.code` is plain text; `explain` and the Pitfall `text` are HTML.
+- **For 07 (rail, scroll spy):** Entry cards are `[data-entry]` sections. The chips are `[data-chips]`, sticky at `top: 0`, and `scrollTo` subtracts their height. If the top bar or the rail strip becomes sticky above them, change both. The Trail can number Topics with the same `stops` order as Previous/Next.
+- **For 08 (Language):** every label is rendered with `label()` at build time, including the `aria-label`s (Entries, See also, Pitfall, Topic order, figure). The copy confirmation reads `<html lang>` at click time, so it already follows a switch. The copy text sits in the button's `[aria-live]` span. Content that needs its Polish twin: the header, chip and card titles, explanations, Pitfall text, See-also chip titles (the target Entry's `pl.title`), and the Previous/Next Topic titles.
+- **For 09 (accessibility, devices):**
+  - Copy buttons hide until hover only on `(hover: hover)` devices; on touch screens they always show.
+  - Without the Clipboard API, copy falls back to `execCommand`.
+  - Code blocks scroll on their own and are focusable (Shiki adds `tabindex="0"`).
+  - Error lines wrap; printed text keeps its layout and scrolls.
+  - Below 600 px, the chips become one row that scrolls sideways.
+  - With reduced motion, the flash is a still ring.
+  - The sticker is `aria-hidden`, because the Pitfall `aside` is labelled.
+  - Figures are `role="img"` with a generic label; real alt text would need a content field.
+- **Clipboard on Windows:** the clipboard stores line breaks as CRLF, so the copy test normalises them before comparing.

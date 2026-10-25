@@ -24,6 +24,10 @@ print(9 + 10)
 print(11 + 12)
 ```
 
+### See also
+
+- strings/joining
+
 ## Subtraction
 
 PL: Odejmowanie
@@ -73,6 +77,16 @@ print(5 / 6)
 print(7 / 8)
 print(9 / 10)
 print(11 / 12)
+```
+
+### Pitfall
+
+Dividing by zero raises an error.
+
+PL: Dzielenie przez zero zgłasza błąd.
+
+```python raises=ZeroDivisionError
+print(1 / 0)
 ```
 
 ## Powers

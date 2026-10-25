@@ -35,3 +35,4 @@ def test_every_label_exists_in_english_and_polish(labels):
 def test_agreed_polish_labels(labels):
     assert labels["pl"]["map"] == "Mapa"
     assert labels["pl"]["output"] == "Wynik"
+    assert labels["pl"]["pitfall"] == "Pułapka"

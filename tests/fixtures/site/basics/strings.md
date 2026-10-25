@@ -18,3 +18,26 @@ PL: `+` łączy dwa napisy.
 ```python
 print("ab" + "cd")
 ```
+
+### Pitfall
+
+`+` adds no space between the strings.
+
+PL: `+` nie dodaje spacji między napisami.
+
+### See also
+
+- numbers/addition
+
+## Mixing types
+
+PL: Mieszanie typów
+
+A string and a number don't join with `+`; convert the number with `str()` first.
+
+PL: Napis i liczba nie łączą się przez `+`; najpierw zamień liczbę przez `str()`.
+
+```python raises=TypeError
+print("total: " + str(3))
+print("total: " + 3)
+```

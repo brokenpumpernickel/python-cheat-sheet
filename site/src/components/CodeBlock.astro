@@ -1,0 +1,59 @@
+---
+// A code example, syntax-highlighted at build time, with a button that copies the exact code
+// (client/copy.ts). The block scrolls sideways on its own instead of widening the page.
+import { Code } from "astro:components";
+import { codeTheme } from "../code/theme";
+import { label } from "../labels";
+
+interface Props {
+  code: string;
+}
+
+const { code } = Astro.props;
+---
+
+<div class="code">
+  <button class="copy" type="button" data-copy={code}><span aria-live="polite">{label("copy")}</span></button>
+  <Code code={code} lang="python" theme={codeTheme} />
+</div>
+
+<style>
+  .code {
+    position: relative;
+  }
+  .code :global(pre) {
+    margin: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border-radius: 14px;
+    font: 14px/1.6 var(--font-mono);
+  }
+  .copy {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 10px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    color: var(--ink-2);
+    font: 700 12px var(--font-body);
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: var(--ink);
+  }
+  /* Where there is a pointer to hover with, the button stays out of the way until it's wanted. */
+  @media (hover: hover) {
+    .copy {
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .code:hover .copy,
+    .copy:focus-visible,
+    .copy[data-state] {
+      opacity: 1;
+    }
+  }
+</style>

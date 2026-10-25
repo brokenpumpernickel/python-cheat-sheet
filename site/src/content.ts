@@ -64,6 +64,7 @@ export type Content = z.infer<typeof Content>;
 export type Area = z.infer<typeof Area>;
 export type Topic = z.infer<typeof Topic>;
 export type Entry = z.infer<typeof Entry>;
+export type Output = z.infer<typeof Output>;
 
 const path = process.env.CHEATSHEET_CONTENT_DATA ?? resolve("../generated/content.json");
 
