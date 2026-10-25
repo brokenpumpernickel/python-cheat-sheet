@@ -175,7 +175,10 @@ const { area, topic, previous, next, links } = Astro.props;
   .cards {
     columns: 2 440px;
     column-gap: 20px;
-    padding-top: 12px; /* room for a Pitfall sticker on a column's first card */
+    /* The cards are inline-blocks (EntryCard), one per line; the default 2 would keep a two-card Topic
+       in one column. */
+    orphans: 1;
+    widows: 1;
   }
 
   .stops {

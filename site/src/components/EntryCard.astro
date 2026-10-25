@@ -62,10 +62,16 @@ const { pitfall } = entry;
 </section>
 
 <style>
+  /* An inline-block so that its top margin, the room for the Pitfall sticker above it, stays with the card.
+     In CSS columns a block's margin is dropped at the top of a column, and the sticker sticking out above
+     a card that starts the second column was then drawn again at the bottom of the first. */
   .entry {
     position: relative;
+    display: inline-block;
+    width: 100%;
+    vertical-align: top;
     break-inside: avoid;
-    margin: 0 0 20px;
+    margin: 14px 0 6px;
     padding: 22px 24px 20px;
     border-radius: 24px;
     background: var(--card);

@@ -145,11 +145,44 @@ def test_pitfall_without_code_is_just_the_callout(page: Page, site_url):
     expect(entry(page, "numbers/addition").get_by_text("Watch out!")).to_have_count(0)
 
 
-@pytest.mark.parametrize(("width", "columns"), [(1280, 2), (900, 1), (375, 1)])
-def test_cards_take_two_columns_only_on_wide_screens_and_never_widen_the_page(page: Page, site_url, width, columns):
+@pytest.mark.parametrize(
+    ("topic", "width", "columns"),
+    [("numbers", 1280, 2), ("numbers", 900, 1), ("numbers", 375, 1), ("strings", 1280, 2)],  # Strings: two cards
+)
+def test_cards_take_two_columns_only_on_wide_screens_and_never_widen_the_page(
+    page: Page, site_url, topic, width, columns
+):
     page.set_viewport_size({"width": width, "height": 800})
-    page.goto(f"{site_url}#numbers")
+    page.goto(f"{site_url}#{topic}")
 
     lefts = {round(box["x"]) for box in (card.bounding_box() for card in page.locator(".entry:visible").all())}
     assert len(lefts) == columns
     assert page.evaluate("document.documentElement.scrollWidth") <= width
+
+
+STICKER_PIECES = """
+() => [...document.querySelectorAll('.sticker')].filter((s) => s.offsetParent).map((s) => {
+  const card = s.closest('[data-entry]').getBoundingClientRect();
+  return {
+    entry: s.closest('[data-entry]').dataset.entry,
+    card: [card.left, card.right],
+    pieces: [...s.getClientRects()].map((r) => [r.left, r.right]),
+  };
+})
+"""
+
+
+@pytest.mark.parametrize("topic", ["numbers", "strings"])
+def test_a_pitfall_sticker_is_drawn_once_on_its_own_card_in_two_columns(page: Page, site_url, topic):
+    # In CSS columns, anything sticking out above a card that starts a column used to be drawn a second
+    # time at the bottom of the previous column.
+    page.set_viewport_size({"width": 1440, "height": 900})
+    page.goto(f"{site_url}#{topic}")
+    expect(topic_page(page, topic)).to_be_visible()
+
+    stickers = page.evaluate(STICKER_PIECES)
+    assert stickers, "the Topic should have a Pitfall sticker"
+    for sticker in stickers:
+        assert len(sticker["pieces"]) == 1, sticker
+        (left, right), (card_left, card_right) = sticker["pieces"][0], sticker["card"]
+        assert card_left <= left and right <= card_right + 20, sticker  # it may overhang the corner a little
