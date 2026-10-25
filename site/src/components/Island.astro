@@ -1,0 +1,198 @@
+---
+// One Area on the Map: a round island in the Area's hue with its Topics as bubbles on rings.
+// Planned Areas and Topics are drawn faded and dashed, and aren't links.
+import type { Area } from "../content";
+import { label } from "../labels";
+import { BUBBLE, PLANNED_BUBBLE, ringLayout } from "../map/rings";
+
+interface Props {
+  area: Area;
+  index: number; // position on the Map, which varies each island's tilt and shape a little
+}
+
+const { area, index } = Astro.props;
+const bubble = area.topics.some((topic) => !topic.planned) ? BUBBLE : PLANNED_BUBBLE;
+const { points, size } = ringLayout(area.topics.length, bubble);
+
+// Slightly irregular, still round outlines, so the islands don't look stamped out.
+const BLOBS = [
+  "50% 47% 52% 49% / 48% 52% 49% 51%",
+  "48% 52% 49% 51% / 51% 48% 52% 49%",
+  "52% 48% 50% 50% / 49% 51% 48% 52%",
+];
+const num = (n: number) => Number(n.toFixed(1));
+const islandStyle = {
+  "--hue": area.hue,
+  "--size": num(size),
+  "--bubble": bubble,
+  "--blob": BLOBS[index % BLOBS.length],
+  "--drift": num(Math.sin(index * 1.7) * 18),
+  "--tilt": `${num(Math.sin(index * 2.3) * 2)}deg`,
+};
+const slotStyle = (j: number) => ({
+  "--x": num(points[j].x),
+  "--y": num(points[j].y),
+  "--bob": num(Math.sin(j * 2.1) * 5),
+});
+---
+
+<section class:list={["island", { planned: area.planned }]} data-area={area.id} style={islandStyle}>
+  <h2 class="flag">
+    <span>{area.title}</span>
+    {area.planned && <small>{label("comingSoon")}</small>}
+  </h2>
+  <ul class="bubbles">
+    {
+      area.topics.map((topic, j) => (
+        <li class="slot" style={slotStyle(j)}>
+          {topic.planned ? (
+            <span class="bubble planned">
+              <span class="glyph" aria-hidden="true">
+                {topic.glyph}
+              </span>
+              <span class="name">{topic.title}</span>
+              {!area.planned && <span class="sr-only">({label("comingSoon")})</span>}
+            </span>
+          ) : (
+            <a class="bubble" href={`#${topic.id}`} data-tile={topic.id}>
+              <span class="glyph" aria-hidden="true">
+                {topic.glyph}
+              </span>
+              <span class="name">{topic.title}</span>
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  /* Lengths are the ring layout's px numbers times --u, which the Map shrinks on narrow screens. */
+  .island {
+    --land: hsl(var(--hue) var(--isl-s) var(--isl-l));
+    position: relative;
+    flex: none;
+    width: calc(var(--size) * var(--u));
+    height: calc(var(--size) * var(--u));
+    border-radius: var(--blob);
+    background: var(--land);
+    box-shadow:
+      0 0 0 calc(10 * var(--u)) hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.35),
+      0 0 0 calc(22 * var(--u)) hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.14),
+      0 24px 40px rgb(20 40 70 / 0.12);
+    transform: translateY(calc(var(--drift) * var(--u))) rotate(var(--tilt));
+  }
+  .island.planned {
+    background: transparent;
+    box-shadow: none;
+    border: 2.5px dashed hsl(var(--hue) 25% 60% / 0.7);
+  }
+
+  .flag {
+    position: absolute;
+    z-index: 1;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    white-space: nowrap;
+    text-align: center;
+    font-weight: normal;
+    line-height: 1.3;
+  }
+  .flag span {
+    display: inline-block;
+    font: 700 21px var(--font-round);
+    color: hsl(var(--hue) 55% var(--deep-l));
+    background: var(--card);
+    padding: 3px 14px 4px;
+    border-radius: 999px;
+    box-shadow: 0 3px 0 hsl(var(--hue) 40% 50% / 0.35);
+  }
+  .planned .flag span {
+    font-size: 18px;
+    color: var(--ink-3);
+    background: var(--sea);
+    box-shadow: none;
+  }
+  .flag small {
+    display: block;
+    font: 800 11px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+
+  .bubbles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .slot {
+    position: absolute;
+    left: calc(50% + var(--x) * var(--u));
+    top: calc(50% + var(--y) * var(--u));
+  }
+
+  .bubble {
+    position: absolute;
+    width: calc(var(--bubble) * var(--u));
+    height: calc(var(--bubble) * var(--u));
+    translate: -50% calc(-50% + var(--bob) * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--ink);
+    text-decoration: none;
+    text-align: center;
+    box-shadow:
+      0 6px 0 hsl(var(--hue) 40% 45% / 0.35),
+      0 14px 24px rgb(20 40 70 / 0.12);
+    transition:
+      transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1),
+      box-shadow 0.2s;
+  }
+  a.bubble:hover,
+  a.bubble:focus-visible {
+    transform: translateY(-6px) scale(1.08);
+    box-shadow:
+      0 10px 0 hsl(var(--hue) 40% 45% / 0.35),
+      0 22px 30px rgb(20 40 70 / 0.18);
+  }
+  .glyph {
+    font: 700 max(13px, calc(24 * var(--u))) var(--font-mono);
+    letter-spacing: -0.04em;
+    color: hsl(var(--hue) 60% var(--deep-l));
+  }
+  .name {
+    max-width: 88%;
+    font: 700 max(10px, calc(14 * var(--u)))/1.15 var(--font-round);
+  }
+
+  .bubble.planned {
+    --bubble: var(--planned-bubble);
+    background: transparent;
+    box-shadow: none;
+    border: 2px dashed hsl(var(--hue) 25% 60% / 0.6);
+    color: var(--ink-3);
+    opacity: 0.8;
+  }
+  .bubble.planned .glyph {
+    font-size: max(10px, calc(16 * var(--u)));
+    color: var(--ink-3);
+  }
+  .bubble.planned .name {
+    font-size: max(9px, calc(11 * var(--u)));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bubble {
+      transition: none;
+    }
+  }
+</style>

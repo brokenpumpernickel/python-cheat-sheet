@@ -1,34 +1,10 @@
 """Seam 2: the site built from a fixture content folder, driven in a real browser."""
 
 import platform
-import threading
 from importlib.metadata import version
-from pathlib import Path
 
 import pytest
 from playwright.sync_api import Page, expect
-
-from cheatsheet.build import build_content, build_site, write_content_data
-from cheatsheet.serve import make_server
-
-FIXTURES = Path(__file__).parent / "fixtures"
-
-
-@pytest.fixture(scope="session")
-def site_url(tmp_path_factory):
-    root = tmp_path_factory.mktemp("site")
-    write_content_data(build_content(FIXTURES / "site"), root / "content.json")
-    build_site(root / "content.json", root / "dist")
-    server = make_server(root / "dist")
-    threading.Thread(target=server.serve_forever, daemon=True).start()
-    yield f"http://127.0.0.1:{server.server_port}/"
-    server.shutdown()
-
-
-@pytest.fixture(scope="session")
-def browser_context_args(browser_context_args):
-    # Short enough that a later Entry starts below the fold.
-    return {**browser_context_args, "viewport": {"width": 900, "height": 500}}
 
 
 def overview(page: Page):
