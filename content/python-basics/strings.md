@@ -34,6 +34,25 @@ n = 120
 print("n = " + n)
 ```
 
+## Number formats
+
+PL: Formaty liczb
+
+`format(x, spec)` formats a number the way `f"{x:spec}"` does. In the table, `.2f` gives 2 decimals, `.3g` 3 significant digits, `10` a width of 10 (`010` pads with zeros), `,` a thousands separator, `%` a percentage and `e` scientific notation.
+
+PL: `format(x, spec)` formatuje liczbę tak samo jak `f"{x:spec}"`. W tabeli `.2f` daje 2 miejsca po przecinku, `.3g` 3 cyfry znaczące, `10` szerokość 10 znaków (`010` dopełnia zerami), `,` separator tysięcy, `%` procent, a `e` notację wykładniczą (scientific notation).
+
+```python
+n = 1234.5678
+p = 0.04567
+for spec in [".2f", ".3g", "10.2f", "010.2f", ",.2f", ".1%", ".2e"]:
+    print(f"{spec:8}{format(n, spec):14}{format(p, spec)}")
+```
+
+### See also
+
+- loops/for-over-a-collection
+
 ## Cleaning and splitting
 
 PL: Czyszczenie i dzielenie

@@ -1,10 +1,10 @@
 ---
 title: Tuples
 glyph: "( )"
-summary: "Fixed, unchangeable groups of values: unpacking and zip."
+summary: "Fixed, unchangeable groups of values: creating and unpacking."
 pl:
   title: Krotki
-  summary: "Krotki (tuples): stałe, niezmienne grupy wartości — rozpakowywanie i zip."
+  summary: "Krotki (tuples): stałe, niezmienne grupy wartości — tworzenie i rozpakowywanie."
 ---
 
 ## Unpacking
@@ -32,22 +32,6 @@ point = (2.5, -1.0)
 point[0] = 3
 ```
 
-## zip
-
-PL: zip
-
-`zip(xs, ys)` pairs up items from several lists by position, giving one tuple per position. It stops at the end of the shortest list.
-
-PL: `zip(xs, ys)` łączy w pary elementy kilku list (lists) według pozycji i daje jedną krotkę (tuple) na każdą pozycję. Kończy się wraz z najkrótszą listą.
-
-```python
-xs = [1, 2, 3]
-ys = [2.1, 3.9, 6.2]
-print(list(zip(xs, ys)))
-for x, y in zip(xs, ys):
-    print(x, y)
-```
-
 ### See also
 
-- loops/for-over-a-collection
+- loops/looping-with-zip
