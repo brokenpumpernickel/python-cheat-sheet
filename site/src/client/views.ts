@@ -24,13 +24,15 @@ export function startViews(): void {
     return tiles.find((tile) => tile.getClientRects().length > 0) ?? null;
   };
 
-  // Scrolls the Entry in just below the page's sticky Entry chips, and flashes it.
+  // Scrolls the Entry in just below the page's sticky Entry chips, flashes it and moves focus to it, so
+  // Tab continues from the Entry jumped to.
   function scrollTo(page: HTMLElement, entry: string | null) {
     const target =
       entry && page.querySelector<HTMLElement>(`[data-entry="${CSS.escape(`${page.dataset.topic}/${entry}`)}"]`);
     if (!target) return window.scrollTo(0, 0);
     const chips = page.querySelector<HTMLElement>("[data-chips]")?.offsetHeight ?? 0;
     window.scrollTo(0, target.getBoundingClientRect().top + window.scrollY - chips - ENTRY_GAP);
+    target.focus({ preventScroll: true });
     flash(target);
   }
 

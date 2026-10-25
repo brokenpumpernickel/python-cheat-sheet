@@ -29,3 +29,10 @@ export function goToOverview(): void {
   history.pushState(null, "", location.pathname + location.search);
   window.dispatchEvent(new HashChangeEvent("hashchange"));
 }
+
+/** Navigates to `hash` ("#topic" or "#topic/entry"). If that is already the route, it is shown again,
+ * which scrolls back to its Entry and flashes it. */
+export function goTo(hash: string): void {
+  if (location.hash === hash) window.dispatchEvent(new HashChangeEvent("hashchange"));
+  else location.hash = hash;
+}

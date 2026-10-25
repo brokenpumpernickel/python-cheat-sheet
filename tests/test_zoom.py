@@ -91,6 +91,7 @@ def test_back_zooms_out_to_the_tile_and_focuses_it(page: Page, site_url):
 def test_keyboard_tabs_to_a_tile_enter_zooms_in_and_esc_zooms_out(page: Page, site_url):
     page.goto(site_url)
 
+    page.keyboard.press("Tab")  # the top bar's search pill
     page.keyboard.press("Tab")
     expect(tile(page, "Numbers")).to_be_focused()
     page.keyboard.press("Tab")
