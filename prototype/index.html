@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+  PROTOTYPE - throwaway. Three structurally different UI directions for the cheat sheet,
+  switchable via ?variant=A|B|C and the floating bar at the bottom (or the ← → keys).
+  Rebuild sample content: uv run prototype/build_content.py
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python Cheat Sheet (mockups)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="switcher.css">
+  <script>
+    window.VARIANTS = [
+      { key: "A", name: "Atlas (editorial, light)" },
+      { key: "B", name: "Workbench (IDE, dark)" },
+      { key: "C", name: "Islands (soft, playful)" },
+      { key: "C2", name: "Islands: archipelago + mini-map" },
+      { key: "C3", name: "Islands: trail" },
+      { key: "C4", name: "Islands: map + trail" },
+    ];
+    const key = (new URLSearchParams(location.search).get("variant") || "A").toUpperCase();
+    window.VARIANT = VARIANTS.some((v) => v.key === key) ? key : "A";
+    document.documentElement.dataset.variant = VARIANT;
+    document.write(`<link rel="stylesheet" href="variant-${VARIANT.toLowerCase()}.css">`);
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="content.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    if (/^C\d/.test(VARIANT)) document.write(`<script src="c-common.js"><\/script>`);
+    document.write(`<script src="variant-${VARIANT.toLowerCase()}.js"><\/script>`);
+  </script>
+  <script>CS.mountSwitcher(VARIANTS, VARIANT);</script>
+</body>
+</html>

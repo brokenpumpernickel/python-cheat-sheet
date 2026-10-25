@@ -1,0 +1,67 @@
+/* PROTOTYPE - Variant C4: C2's layout plus C3's trail, switched by a Map | Trail toggle. */
+@import url("variant-c2.css");
+@import url("variant-c3.css");
+
+html.c3-locked { overflow: auto; }
+
+/* Map | Trail toggle */
+.c4-toggle { display: flex; background: var(--card); border-radius: 999px; padding: 4px; box-shadow: var(--shadow); margin-right: auto; margin-left: 8px; }
+.c4-toggle button { border: 0; background: none; cursor: pointer; font: 700 14px var(--round); color: var(--ink-3); border-radius: 999px; padding: 6px 16px; }
+.c4-toggle button:hover { color: var(--ink); }
+.c4-toggle button[aria-checked="true"] { background: var(--ink); color: var(--card); }
+
+.c4-toggle:has(+ .c4-toggle) { margin-right: 0; }
+.c4-toggle + .c4-toggle { margin-left: auto; margin-right: 0; }
+html[lang="pl"] .c2-pin.is-here::after, html[lang="pl"] .c4-mt a.is-here::after { content: "tu jesteś"; }
+.c4-toggle button[data-lang] { padding: 6px 12px; }
+
+/* current Topic's Entries, expanded under its pin in the rail */
+.c4-ents { display: flex; flex-direction: column; gap: 1px; margin: 4px 0 8px 14px; padding-left: 10px; border-left: 2px solid hsl(var(--hue) 45% 55% / .5); flex-basis: 100%; }
+.c4-ents a { text-decoration: none; font: 600 12.5px/1.35 var(--body); color: var(--ink-2); padding: 3px 8px; border-radius: 8px; }
+.c4-ents a:hover { color: var(--ink); background: var(--card); }
+.c4-ents a.is-cur { color: var(--ink); background: var(--card); box-shadow: inset 3px 0 0 hsl(var(--hue) 55% var(--deep-l)); }
+.c4-mt .c4-ents { margin-left: 0; }
+
+/* round islands with ring-laid-out bubbles */
+.c4-island { flex: none; padding: 0; }
+.c4-island .c-flag { top: -18px; z-index: 1; }
+.c4-island .c-bubble { position: absolute; transform: translate(-50%, -50%) translateY(calc(sin(var(--j) * 2.1) * 5px)); }
+.c4-island .c-bubble:hover, .c4-island .c-bubble:focus-visible { transform: translate(-50%, -50%) translateY(-6px) scale(1.08); }
+.c4-island.is-ph { padding: 0; }
+
+/* which overview / rail is showing */
+.c2-layout.view-map #trail, .c2-layout.view-trail #sea { display: none; }
+.c2-layout.is-topic .c4-overview { display: none !important; }
+.c2-layout:not(.is-topic) .c3-rail { display: flex; }
+.c2-layout.is-topic .c3-rail { display: none; }
+.view-map .c4-rail-trail, .view-trail .c4-rail-map { display: none; }
+.c4-rail-map, .c4-rail-trail { display: flex; flex-direction: column; gap: 18px; }
+@media (max-width: 900px) { .c2-layout:not(.is-topic) .c3-rail { display: none; } }
+
+/* compact mini-trail in the rail */
+.c4-mt > b { display: flex; align-items: center; gap: 8px; font: 700 15px var(--round); color: hsl(var(--hue) 55% var(--deep-l)); margin: 0 0 4px; }
+.c4-mt > b::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: hsl(var(--hue) 50% 62%); }
+.c4-mt.is-ph > b { color: var(--ink-3); }
+.c4-mt.is-ph > b::before { background: transparent; border: 2px dashed hsl(var(--hue) 25% 60%); width: 8px; height: 8px; }
+.c4-mt ol { list-style: none; margin: 0 0 0 5px; padding: 0 0 0 14px; border-left: 3px dotted hsl(var(--hue) 45% 55% / .5); }
+.c4-mt li { margin: 3px 0; }
+.c4-mt a { display: flex; align-items: center; gap: 8px; text-decoration: none; font: 700 14px var(--body); padding: 3px 10px 3px 3px; border-radius: 999px; margin-left: -27px; transition: background .15s; }
+.c4-mt a:hover { background: hsl(var(--hue) var(--isl-s) var(--isl-l)); }
+.c4-mt i { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 11.5px var(--round); font-style: normal; background: var(--card); color: hsl(var(--hue) 55% var(--deep-l)); box-shadow: 0 0 0 3px var(--sea), 0 2px 0 3px hsl(var(--hue) 40% 45% / .25); }
+.c4-mt a.is-here { background: hsl(var(--hue) 55% var(--deep-l)); color: var(--card); }
+.c4-mt a.is-here i { background: var(--card); }
+.c4-mt a.is-here::after { content: "you are here"; font: 800 9.5px var(--body); text-transform: uppercase; letter-spacing: .08em; opacity: .8; margin-left: auto; }
+.c4-mt li.is-ph { display: flex; align-items: center; gap: 8px; font: 600 13px var(--body); color: var(--ink-3); margin-left: -24px; }
+.c4-mt li.is-ph i { width: 16px; height: 16px; border-radius: 50%; border: 2px dashed var(--line); background: var(--sea); box-shadow: none; }
+
+@media (max-width: 860px) {
+  .c4-toggle { margin-right: 0; }
+  .c4-top .c-logo { display: none; }
+  .c4-rail-map, .c4-rail-trail { flex-direction: row; }
+  .c4-mt { flex: none; }
+  .c4-mt > b { display: none; }
+  .c4-mt ol { display: flex; gap: 6px; border: 0; padding: 0; margin: 0; }
+  .c4-mt a { margin: 0; background: var(--card); white-space: nowrap; }
+  .c4-mt li.is-ph { display: none; }
+  .c4-ents { display: none; }
+}

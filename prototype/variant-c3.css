@@ -1,0 +1,90 @@
+/* PROTOTYPE - Variant C3 "Trail": builds on C's tokens, cards and palette. */
+@import url("variant-c.css");
+
+html.c3-locked { overflow: hidden; }
+.c3-top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px clamp(16px, 3vw, 32px); background: linear-gradient(var(--sea) 75%, transparent); }
+
+/* left rail of Areas */
+.c3-rail { position: fixed; left: 18px; top: 50%; transform: translateY(-50%); z-index: 9; display: flex; flex-direction: column; gap: 6px; }
+.c3-rail button { display: flex; align-items: center; gap: 10px; border: 0; background: none; cursor: pointer; font: 700 13px var(--round); color: var(--ink-3); padding: 4px; text-align: left; }
+.c3-rail i { width: 14px; height: 14px; border-radius: 50%; background: hsl(var(--hue) 50% 62%); box-shadow: 0 0 0 4px hsl(var(--hue) 50% 62% / .2); flex: none; transition: transform .2s; }
+.c3-rail .is-ph i { background: transparent; border: 2px dashed hsl(var(--hue) 25% 60%); box-shadow: none; }
+.c3-rail span { opacity: 0; transform: translateX(-6px); transition: .2s; white-space: nowrap; }
+.c3-rail:hover span, .c3-rail .is-on span, .c3-rail button:focus-visible span { opacity: 1; transform: none; }
+.c3-rail .is-on { color: var(--ink); }
+.c3-rail .is-on i { transform: scale(1.35); }
+@media (max-width: 900px) { .c3-rail { display: none; } }
+
+/* the trail */
+.c3-trail { max-width: 860px; margin: 0 auto; padding: 0 16px 140px; }
+.c3-start { text-align: center; font: 700 22px var(--round); margin: 10px 0 0; }
+.c3-start span { display: block; font-size: 26px; color: var(--ink-3); animation: c3-bob 1.6s ease-in-out infinite; }
+.c3-start small { display: block; font: 600 13.5px var(--body); color: var(--ink-3); }
+@keyframes c3-bob { 50% { transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) { .c3-start span { animation: none; } }
+
+.c3-land { position: relative; margin-top: 36px; padding: 26px 0 10px; border-radius: 48px; background: linear-gradient(hsl(var(--hue) var(--isl-s) var(--isl-l) / .75), hsl(var(--hue) var(--isl-s) var(--isl-l) / .35)); scroll-margin-top: 80px; }
+.c3-land.is-ph { background: none; border: 2.5px dashed hsl(var(--hue) 25% 60% / .6); }
+.c3-sign { text-align: center; }
+.c3-sign b { display: inline-block; font: 700 26px var(--round); color: hsl(var(--hue) 55% var(--deep-l)); background: var(--card); border-radius: 999px; padding: 4px 22px 6px; box-shadow: 0 4px 0 hsl(var(--hue) 40% 50% / .35); }
+.c3-sign span { display: block; margin-top: 8px; color: var(--ink-2); font-weight: 600; font-size: 15px; }
+.c3-sign em { display: block; font: 800 11px var(--body); text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); font-style: normal; margin-top: 2px; }
+.c3-land.is-ph .c3-sign b { color: var(--ink-3); background: transparent; box-shadow: none; }
+.c3-path { position: relative; margin: 0 4%; }
+.c3-path svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.c3-path path { fill: none; stroke: hsl(var(--hue) 45% 55% / .55); stroke-width: 5; stroke-dasharray: 2 14; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.c3-land.is-ph .c3-path path { stroke: var(--line); }
+
+.c3-stone {
+  position: absolute; transform: translate(-50%, -50%); width: 104px; height: 104px; border-radius: 50%;
+  display: grid; place-items: center; text-decoration: none; background: var(--card);
+  box-shadow: 0 7px 0 hsl(var(--hue) 40% 45% / .4), 0 16px 26px rgba(20, 40, 70, .14);
+  transition: transform .2s cubic-bezier(.3, 1.6, .5, 1), box-shadow .2s;
+}
+.c3-stone:hover, .c3-stone:focus-visible { transform: translate(-50%, -54%) scale(1.08); }
+.c3-stone i { position: absolute; top: -4px; left: -4px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: hsl(var(--hue) 55% var(--deep-l)); color: var(--card); font: 700 13px var(--round); font-style: normal; }
+.c3-glyph { font: 700 26px var(--mono); color: hsl(var(--hue) 60% var(--deep-l)); letter-spacing: -.04em; }
+.c3-label { position: absolute; left: calc(100% + 16px); top: 50%; transform: translateY(-50%); width: 210px; font: 600 13px/1.35 var(--body); color: var(--ink-2); }
+.c3-label b { display: block; font: 700 18px var(--round); color: var(--ink); }
+.c3-stone.is-right .c3-label { left: auto; right: calc(100% + 16px); text-align: right; }
+.c3-stone.is-ph { width: 74px; height: 74px; background: transparent; box-shadow: none; border: 2px dashed hsl(var(--hue) 25% 60% / .6); }
+.c3-stone.is-ph .c3-glyph { font-size: 16px; color: var(--ink-3); }
+.c3-stone.is-ph .c3-label { width: auto; white-space: nowrap; font: 700 13px var(--round); color: var(--ink-3); }
+@media (max-width: 600px) { .c3-label { width: 120px; } .c3-label { font-size: 0; } .c3-label b { font-size: 15px; } }
+
+/* topic page: a linear walk through the Entries */
+.c3-page { position: fixed; inset: 0; z-index: 20; overflow-y: auto; outline: none; background: radial-gradient(1200px 700px at 30% 20%, var(--sea), var(--sea-2)); }
+.c3-wrap { max-width: 1060px; margin: 0 auto; padding: 18px clamp(16px, 3vw, 32px) 130px; }
+.c3-head { position: relative; text-align: center; padding: 30px 20px 34px; border-radius: 40px; background: hsl(var(--hue) var(--isl-s) var(--isl-l)); }
+.c3-back { position: absolute; left: 16px; top: 16px; text-decoration: none; font: 700 14px var(--round); background: var(--card); border-radius: 999px; padding: 6px 14px; box-shadow: 0 3px 0 hsl(var(--hue) 40% 45% / .35); }
+.c3-head-stone { width: 92px; height: 92px; margin: 10px auto 10px; border-radius: 50%; background: var(--card); display: grid; place-items: center; font: 700 28px var(--mono); color: hsl(var(--hue) 60% var(--deep-l)); box-shadow: 0 6px 0 hsl(var(--hue) 40% 45% / .4); }
+.c3-head small { font: 800 12px var(--body); text-transform: uppercase; letter-spacing: .12em; color: hsl(var(--hue) 50% var(--deep-l)); }
+.c3-head h1 { font: 700 clamp(40px, 6vw, 60px)/1 var(--round); margin: 4px 0 6px; }
+.c3-head p { margin: 0; color: var(--ink-2); font-weight: 600; }
+@media (max-width: 600px) { .c3-back { position: static; display: inline-block; } }
+
+.c3-steps { list-style: none; counter-reset: step; margin: 30px 0 0; padding: 0 0 0 46px; position: relative; }
+.c3-steps::before { content: ""; position: absolute; left: 15px; top: 10px; bottom: 10px; border-left: 4px dotted hsl(var(--hue) 45% 55% / .5); }
+.c3-card { counter-increment: step; position: relative; background: var(--card); border-radius: 26px; padding: 22px 24px 20px; margin-bottom: 22px; box-shadow: var(--shadow); scroll-margin-top: 20px; }
+.c3-card::before { content: counter(step); position: absolute; left: -46px; top: 18px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: hsl(var(--hue) 55% var(--deep-l)); color: var(--card); font: 700 15px var(--round); box-shadow: 0 0 0 5px var(--sea); }
+.c3-card h2 { font: 700 23px/1.2 var(--round); margin: 0 0 4px; color: hsl(var(--hue) 55% var(--deep-l)); }
+.c3-card > p { margin: 0 0 14px; color: var(--ink-2); max-width: 70ch; }
+.c3-io { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.c3-io.has-fig { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.c3-io .cs-code pre { height: 100%; }
+.c3-out { position: relative; background: hsl(var(--hue) var(--isl-s) var(--isl-l) / .55); border-radius: 14px; padding: 12px 14px; min-width: 0; }
+.c3-out > span { display: block; font: 800 11px var(--body); text-transform: uppercase; letter-spacing: .1em; color: hsl(var(--hue) 45% var(--deep-l)); margin-bottom: 4px; }
+.c3-out::before { content: ""; position: absolute; left: -10px; top: 18px; border: 6px solid transparent; border-right-color: hsl(var(--hue) var(--isl-s) var(--isl-l) / .55); border-left: 0; }
+@media (max-width: 760px) { .c3-io, .c3-io.has-fig { grid-template-columns: 1fr; } .c3-out::before { display: none; } .c3-steps { padding-left: 0; } .c3-steps::before, .c3-card::before { display: none; } }
+.c3-pit { margin-top: 14px; border-radius: 18px; padding: 12px 16px 14px; background: color-mix(in srgb, var(--sticker) 20%, var(--card)); border: 2px solid color-mix(in srgb, var(--sticker) 60%, transparent); }
+.c3-pit-tag { display: inline-block; background: var(--sticker); color: #3d2e00; font: 700 12.5px var(--round); padding: 2px 10px; border-radius: 8px; transform: rotate(-2deg); margin-bottom: 6px; }
+.c3-pit p { margin: 0 0 8px; }
+.c3-pit .c3-out { background: color-mix(in srgb, var(--sticker) 28%, var(--card)); }
+.c3-pit .c3-out::before { border-right-color: color-mix(in srgb, var(--sticker) 28%, var(--card)); }
+.c3-pit .c3-out > span { color: var(--ink-2); }
+
+.c3-next { display: flex; justify-content: space-between; gap: 16px; margin-top: 30px; }
+.c3-next a { text-decoration: none; border-radius: 24px; padding: 14px 24px; font: 700 22px var(--round); background: var(--card); box-shadow: var(--shadow); }
+.c3-next small { display: block; font: 800 11px var(--body); text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3); }
+.c3-next .is-next { margin-left: auto; text-align: right; background: hsl(var(--hue) var(--isl-s) var(--isl-l)); box-shadow: 0 6px 0 hsl(var(--hue) 40% 45% / .35); }
+.c3-next a:hover { transform: translateY(-2px); }
