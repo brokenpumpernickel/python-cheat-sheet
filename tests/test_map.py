@@ -138,8 +138,35 @@ def test_fonts_are_self_hosted(page: Page, map_url):
         "document.fonts.ready.then((fonts) => [...fonts].filter((f) => f.status === 'loaded').map((f) => f.family))"
     )
 
-    assert {"Fredoka Variable", "Nunito Variable", "JetBrains Mono Variable"} <= {f.strip("\"'") for f in loaded}
+    assert {"Baloo 2 Variable", "Nunito Variable", "JetBrains Mono Variable"} <= {f.strip("\"'") for f in loaded}
     assert all(url.startswith(map_url) for url in requests)
+
+
+POLISH = "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ"
+
+# A letter the font lacks is drawn by the fallback after it, so its width then depends on which fallback
+# that is: different widths behind a serif and behind a monospace fallback mean the letter is missing.
+MISSING_LETTERS = """
+async ([variable, letters]) => {
+  const family = getComputedStyle(document.documentElement).getPropertyValue(variable).split(",")[0].trim();
+  await document.fonts.load(`700 40px ${family}`, letters);
+  const ctx = document.createElement("canvas").getContext("2d");
+  const width = (fallback, letter) => {
+    ctx.font = `700 40px ${family}, ${fallback}`;
+    return ctx.measureText(letter).width;
+  };
+  return [family, [...letters].filter((letter) => width("serif", letter) !== width("monospace", letter))];
+}
+"""
+
+
+@pytest.mark.parametrize("variable", ["--font-round", "--font-body", "--font-mono"])
+def test_every_font_draws_every_polish_letter_itself(page: Page, map_url, variable):
+    page.goto(map_url)
+
+    family, missing = page.evaluate(MISSING_LETTERS, [variable, POLISH])
+
+    assert missing == [], f"{family} lacks {''.join(missing)}"
 
 
 @pytest.mark.parametrize(("scheme", "sea"), [("light", "#e9f2f7"), ("dark", "#121a2b")])

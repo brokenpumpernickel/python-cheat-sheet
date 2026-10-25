@@ -34,7 +34,9 @@
   --tk-bi: #6a1b9a;
   --tk-op: #475569;
 
-  --font-round: "Fredoka Variable", "Nunito Variable", system-ui, sans-serif;
+  /* Every font here must draw all Polish letters (tests/test_map.py), or the browser borrows them from
+     the next font in the list and they look out of place. Fredoka was dropped for that reason. */
+  --font-round: "Baloo 2 Variable", "Nunito Variable", system-ui, sans-serif;
   --font-body: "Nunito Variable", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 }
