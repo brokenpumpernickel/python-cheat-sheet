@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-human
+**Status:** resolved
 
 Prototype titles:
 
@@ -19,9 +19,20 @@ Prototype titles:
 - **Functions:** Defining and calling · Default arguments · Returning several values · lambda
 - **Planned Areas:** NumPy (Arrays, Indexing, Random, Aggregates) · pandas (DataFrames, Selecting, Grouping) · Matplotlib (Plotting basics, Scatter plots, Subplots) · SciPy stats (Distributions, t-tests, Correlation)
 
-- [ ] Final Entry title list per Topic recorded under "Decision".
-- [ ] Planned Area/Topic names confirmed.
+- [x] Final Entry title list per Topic recorded under "Decision".
+- [x] Planned Area/Topic names confirmed.
 
 ## Decision
 
-_(to be filled in by the Author)_
+Accepted unchanged by the Author on 2026-10-25: "Keep the prototype's 29 Entry titles and the planned Topic names as they are." The final lists, in Topic order:
+
+- **Variables:** Assigning values · Updating a variable · Converting types
+- **Strings:** f-strings · Cleaning and splitting
+- **Conditionals:** if / elif / else · Combining conditions
+- **Lists:** Creating and indexing · Slicing · Adding and removing · Sorting · List comprehensions · Summaries
+- **Tuples:** Unpacking · zip
+- **Dictionaries:** Creating and accessing · Missing keys · Adding and updating · Looping over items · Counting occurrences
+- **Sets:** Unique values · Set operations
+- **Loops:** for over a collection · range · enumerate
+- **Functions:** Defining and calling · Default arguments · Returning several values · lambda
+- **Planned Areas:** NumPy (Arrays, Indexing, Random, Aggregates) · pandas (DataFrames, Selecting, Grouping) · Matplotlib (Plotting basics, Scatter plots, Subplots) · SciPy stats (Distributions, t-tests, Correlation)
