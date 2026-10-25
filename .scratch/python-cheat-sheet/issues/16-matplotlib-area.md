@@ -70,7 +70,7 @@ Conventions from tickets 12–14 apply: Outputs show values, not English sentenc
 
 ## Comments
 
-**Resolved** in this PR. The Matplotlib Area is real: six Topics, 25 Entries, 27 figures (25 Entries and 2 Pitfalls), each with a figure description in English and Polish. The Area blurb now names the six kinds of plot.
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#19 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/19). The Matplotlib Area is real: six Topics, 25 Entries, 27 figures (25 Entries and 2 Pitfalls), each with a figure description in English and Polish. The Area blurb now names the six kinds of plot.
 
 Every Entry with its Polish title and English figure description, for the Author to skim (the Polish descriptions say the same):
 
