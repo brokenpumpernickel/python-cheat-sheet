@@ -140,9 +140,9 @@ print(names[scores.argmin()])
 
 PL: Zliczanie i proporcje z maską
 
-In arithmetic `True` counts as 1 and `False` as 0, so `mask.sum()` counts the values that meet a condition and `mask.mean()` gives their proportion.
+In arithmetic `True` counts as 1 and `False` as 0, so `mask.sum()` counts the values that meet a condition and `mask.mean()` gives their proportion. With `axis` it does this per row or per column: on a matrix of students × tests, `(scores >= 50).mean(axis=0)` is the share of students who passed each test.
 
-PL: W rachunkach `True` liczy się jako 1, a `False` jako 0, więc `mask.sum()` zlicza wartości spełniające warunek, a `mask.mean()` daje ich proporcję, gdzie `mask` to maska logiczna (boolean mask).
+PL: W rachunkach `True` liczy się jako 1, a `False` jako 0, więc `mask.sum()` zlicza wartości spełniające warunek, a `mask.mean()` daje ich proporcję, gdzie `mask` to maska logiczna (boolean mask). Z `axis` robi to osobno dla każdego wiersza lub kolumny: na macierzy (matrix) studenci × testy `(scores >= 50).mean(axis=0)` to odsetek studentów, którzy zaliczyli każdy test.
 
 ```python
 import numpy as np
@@ -152,9 +152,15 @@ sixes = rolls == 6
 print(sixes.sum())
 print(sixes.mean())
 print((rolls >= 4).mean())
+
+scores = np.array([[72, 45, 88], [91, 58, 64], [40, 62, 95], [55, 30, 70]])
+print((scores >= 50).mean(axis=0))
+print((scores >= 50).sum(axis=1))
 ```
 
 ### See also
 
+- array-maths/true-and-false-as-numbers
+- aggregates/along-an-axis
 - indexing/boolean-masks
 - dictionaries/counting-occurrences
