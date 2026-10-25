@@ -230,11 +230,12 @@ const numbers = stopNumbers(area.topics);
     background: transparent;
     border: 2px dashed hsl(var(--hue) 25% 60% / 0.6);
     box-shadow: none;
-    opacity: 0.8;
   }
+  /* Muted by the dashed outline and smaller type rather than by fading, so the text still meets contrast:
+     --ink-2 on the Area's colour, --ink-3 on the sea of a planned Area. */
   .stone.planned .glyph {
     font-size: 16px;
-    color: var(--ink-3);
+    color: var(--ink-2);
   }
   .stone.planned .label {
     width: auto;
@@ -242,6 +243,9 @@ const numbers = stopNumbers(area.topics);
   }
   .stone.planned .label b {
     font-size: 14px;
+    color: var(--ink-2);
+  }
+  .land.planned .stone.planned :is(.glyph, .label b) {
     color: var(--ink-3);
   }
 
@@ -262,12 +266,6 @@ const numbers = stopNumbers(area.topics);
     }
     .summary {
       display: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .stone {
-      transition: none;
     }
   }
 </style>

@@ -3,6 +3,7 @@
 // bar's toggle chose. The Map shows each Area as a mini island with Topic pins, the Trail as a numbered
 // mini-trail. client/rail.ts marks the current Topic "you are here" (aria-current), which expands its
 // Entries, and highlights the Entry in view. On a phone the rail is a strip that scrolls sideways.
+// Planned Topics aren't links; screen readers hear that they're coming soon.
 import type { Area } from "../content";
 import { labelAttributes } from "../labels";
 import { stopNumbers } from "../map/trail";
@@ -31,6 +32,9 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
               topic.planned ? (
                 <li class="planned">
                   <Text en={topic.title} pl={topic.pl.title} />
+                  <span class="sr-only">
+                    (<Text label="comingSoon" />)
+                  </span>
                 </li>
               ) : (
                 <li>
@@ -68,6 +72,9 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
                   <li class="planned">
                     <i aria-hidden="true" />
                     <Text en={topic.title} pl={topic.pl.title} />
+                    <span class="sr-only">
+                      (<Text label="comingSoon" />)
+                    </span>
                   </li>
                 ) : (
                   <li>
@@ -123,7 +130,6 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
     font: 800 9.5px var(--font-body);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    opacity: 0.85;
   }
   [aria-current="page"] .here {
     display: inline;
@@ -184,8 +190,11 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
     padding: 3px 10px;
     border: 1.5px dashed var(--line);
     border-radius: 999px;
-    color: var(--ink-3);
+    color: var(--ink-2); /* on the island's colour */
     font: 600 12px var(--font-body);
+  }
+  .mini.planned .pins .planned {
+    color: var(--ink-3);
   }
 
   /* Trail: a dotted line of numbered steps. */
@@ -327,13 +336,6 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
     }
     .step .here {
       margin-left: 0;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pin,
-    .step {
-      transition: none;
     }
   }
 </style>

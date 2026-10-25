@@ -23,6 +23,14 @@ import Text from "./Text.astro";
       <label lang="pl"><input type="radio" name="language" value="pl" autocomplete="off" data-language-choice /><span>PL</span></label>
     </div>
   </div>
+  <script is:inline>
+    // Checks the choices the page head's script applied, before the first paint, so the default segments
+    // don't show for a moment while the client modules load.
+    for (const [name, value] of [["arrangement", document.documentElement.dataset.arrangement], ["language", document.documentElement.lang]]) {
+      const choice = document.querySelector(`input[name="${name}"][value="${value}"]`);
+      if (choice) choice.checked = true;
+    }
+  </script>
 </header>
 
 <style>

@@ -108,7 +108,7 @@ def test_expected_error_output_shows_text_then_the_error_line(page: Page, site_u
 
     output = entry(page, "strings/mixing-types").locator("[data-output]")
     expect(output.locator("pre")).to_have_text(["total: 3", 'TypeError: can only concatenate str (not "int") to str'])
-    expect(output.locator("pre").last).to_have_css("color", "rgb(198, 40, 40)")  # --err
+    expect(output.locator("pre").last).to_have_css("color", "rgb(183, 28, 28)")  # --err
 
 
 @pytest.mark.parametrize("scheme", ["light", "dark"])

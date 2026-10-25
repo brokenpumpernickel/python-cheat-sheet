@@ -8,26 +8,31 @@
   --wave: #c9dde9;
   --card: #ffffff;
   --ink: #233041;
-  --ink-2: #4f5f73;
-  --ink-3: #6f7f93;
+  /* Text colours meet WCAG AA (4.5:1) on every surface they're used on, in both themes and for any Area
+     hue: --ink-3 on the neutral surfaces (sea, cards, code), --ink-2 and --ink also on an Area's colour. */
+  --ink-2: #475569;
+  --ink-3: #586779;
   --line: #e4e9f0;
   --code-bg: #f4f6fb;
-  --err: #c62828;
+  --err: #b71c1c;
   --shadow: 0 10px 30px rgb(35 48 65 / 0.1);
   /* An Area's island colour is hsl(var(--hue) var(--isl-s) var(--isl-l)); text in its hue uses --deep-l. */
   --isl-s: 55%;
   --isl-l: 86%;
-  --deep-l: 30%;
+  --deep-l: 25%;
   --focus: hsl(200 80% 45%);
   --sticker: #ffd43b;
+  /* How much of the sticker's yellow tints a Pitfall callout, and the Output inside it. */
+  --pitfall-tint: 22%;
+  --pitfall-output-tint: 30%;
   /* Syntax colours, used by the code theme in src/code/theme.ts. */
   --tk-kw: #c2185b;
   --tk-str: #2e7d32;
-  --tk-num: #d84315;
-  --tk-com: #6f7f93;
+  --tk-num: #bf360c;
+  --tk-com: #586779;
   --tk-fn: #1565c0;
   --tk-bi: #6a1b9a;
-  --tk-op: #4f5f73;
+  --tk-op: #475569;
 
   --font-round: "Fredoka Variable", "Nunito Variable", system-ui, sans-serif;
   --font-body: "Nunito Variable", system-ui, sans-serif;
@@ -41,24 +46,26 @@
     --wave: #1c2740;
     --card: #1a2336;
     --ink: #e8eef7;
-    --ink-2: #b4c1d2;
-    --ink-3: #8595ab;
+    --ink-2: #c8d3e0;
+    --ink-3: #8d9db3;
     --line: #263149;
     --code-bg: #121a2b;
-    --err: #ff8a80;
+    --err: #ffaaa3;
     --shadow: 0 10px 30px rgb(0 0 0 / 0.35);
     --isl-s: 38%;
     --isl-l: 26%;
     --deep-l: 80%;
     --focus: hsl(200 90% 65%);
     --sticker: #f2c94c;
+    --pitfall-tint: 16%;
+    --pitfall-output-tint: 22%;
     --tk-kw: #ff79c6;
     --tk-str: #8be28b;
     --tk-num: #ffb86c;
-    --tk-com: #8595ab;
+    --tk-com: #8d9db3;
     --tk-fn: #82aaff;
     --tk-bi: #c3a6ff;
-    --tk-op: #b4c1d2;
+    --tk-op: #c8d3e0;
   }
 }
 
@@ -100,6 +107,18 @@ a {
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
+}
+
+/* Reduced motion: nothing moves anywhere, whatever a component's own styles say. Every state still
+   changes, only at once (the semantic zoom checks the same setting in client/motion.ts). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 code,
