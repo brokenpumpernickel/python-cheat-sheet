@@ -1,14 +1,14 @@
 ---
 title: NumPy
-blurb: "Fast arrays and vectorised maths."
+blurb: "Fast arrays of numbers: matrices, vectorised maths, sample statistics and simulations."
 hue: 210
-planned: true
 topics:
   - arrays
   - indexing
-  - random
+  - array-maths
   - aggregates
+  - random
 pl:
   title: NumPy
-  blurb: "Szybkie tablice (arrays) i obliczenia wektorowe."
+  blurb: "Szybkie tablice (arrays) liczb: macierze, obliczenia wektorowe, statystyki z próby i symulacje."
 ---

@@ -101,6 +101,7 @@ print([x for x in data if x % 2 == 0])
 ### See also
 
 - loops/for-over-a-collection
+- array-maths/element-wise-arithmetic
 
 ## Summaries
 
@@ -115,3 +116,7 @@ data = [4, 8, 15, 16, 23, 42]
 print(len(data), sum(data), min(data), max(data))
 print(sum(data) / len(data))
 ```
+
+### See also
+
+- aggregates/sum-mean-min-and-max
