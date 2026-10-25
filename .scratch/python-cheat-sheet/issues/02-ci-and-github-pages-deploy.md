@@ -9,7 +9,7 @@
 - [x] Workflow runs on push to `main` and on pull requests; deploys only from `main`.
 - [x] Python version and libraries come from the pinned uv project; Node dependencies from a lockfile.
 - [x] Jupyter-kernel execution and Playwright browser tests both work in CI.
-- [ ] The tracer-bullet page is live at the repository's GitHub Pages URL, and the URL is in the README and the repo description. (URL is in both; the page goes live on the first push to `main`, see Comments.)
+- [x] The tracer-bullet page is live at the repository's GitHub Pages URL, and the URL is in the README and the repo description. (Live since PR #2 merged; confirmed by the Author.)
 - [x] A deliberately broken example on a branch makes the PR check fail (verified once, then reverted).
 
 ## Comments

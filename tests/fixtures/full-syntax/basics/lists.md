@@ -63,3 +63,15 @@ data = [1, 2]
 print(data[0])
 print(data[5])
 ```
+
+### Pitfall
+
+A dictionary has no missing-item default either.
+
+PL: Słownik też nie ma domyślnej wartości dla brakującego klucza.
+
+```python raises=KeyError
+stats = {"mean": 2.5}
+print(stats["mean"])
+print(stats["sd"])
+```
