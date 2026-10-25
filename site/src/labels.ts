@@ -11,6 +11,7 @@ const en = {
   comingSoon: "coming soon",
   hintDive: "Click a bubble to dive in",
   hintBack: "to come back up",
+  hintSearch: "to search",
   output: "Output",
   figure: "Figure drawn by the code above",
   pitfall: "Pitfall",
@@ -24,6 +25,15 @@ const en = {
   previousStop: "Previous stop",
   nextStop: "Next stop",
   examplesRunWith: "Examples run with",
+  search: "Search",
+  searchPrompt: "Search Topics, Entries and code",
+  searchResults: "Results",
+  searchLoading: "Loading…",
+  searchFailed: "Search didn't load. Close it and try again.",
+  searchNoMatches: "No matches for",
+  searchMove: "move",
+  searchOpen: "open",
+  searchClose: "close",
 };
 
 export type LabelKey = keyof typeof en;
@@ -34,6 +44,7 @@ const pl: Record<LabelKey, string> = {
   comingSoon: "wkrótce",
   hintDive: "Kliknij bąbel, aby wejść",
   hintBack: "powrót",
+  hintSearch: "wyszukiwanie",
   output: "Wynik",
   figure: "Wykres narysowany przez powyższy kod",
   pitfall: "Pułapka",
@@ -47,6 +58,15 @@ const pl: Record<LabelKey, string> = {
   previousStop: "Poprzedni przystanek",
   nextStop: "Następny przystanek",
   examplesRunWith: "Wersje użyte w przykładach:",
+  search: "Szukaj",
+  searchPrompt: "Szukaj tematów, haseł i kodu",
+  searchResults: "Wyniki",
+  searchLoading: "Wczytywanie…",
+  searchFailed: "Nie udało się wczytać wyszukiwania. Zamknij je i spróbuj ponownie.",
+  searchNoMatches: "Brak wyników dla",
+  searchMove: "wybór",
+  searchOpen: "otwórz",
+  searchClose: "zamknij",
 };
 
 export const labels: Record<Language, Record<LabelKey, string>> = { en, pl };

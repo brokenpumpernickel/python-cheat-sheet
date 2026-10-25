@@ -1,13 +1,9 @@
 // Copy buttons on code examples: the button carries the exact code (data-copy), puts it on the
 // clipboard and says so briefly, in the page's Language.
-import { defaultLanguage, label, languages, type Language, type LabelKey } from "../labels";
+import { label, type LabelKey } from "../labels";
+import { pageLanguage } from "./language";
 
 const CONFIRM_MS = 1500;
-
-function language(): Language {
-  const lang = document.documentElement.lang as Language;
-  return languages.includes(lang) ? lang : defaultLanguage;
-}
 
 async function writeClipboard(text: string): Promise<void> {
   if (navigator.clipboard) return navigator.clipboard.writeText(text);
@@ -27,7 +23,7 @@ export function startCopy(): void {
   const timers = new WeakMap<HTMLElement, number>();
 
   const show = (button: HTMLElement, key: LabelKey, state?: string) => {
-    button.querySelector("[aria-live]")!.textContent = label(key, language());
+    button.querySelector("[aria-live]")!.textContent = label(key, pageLanguage());
     if (state) button.dataset.state = state;
     else delete button.dataset.state;
   };

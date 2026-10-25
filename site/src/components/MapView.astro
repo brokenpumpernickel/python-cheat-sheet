@@ -20,7 +20,9 @@ const widest = Math.max(
   <div class="sea">
     {areas.map((area, index) => <Island area={area} index={index} />)}
   </div>
-  <p class="hint">{label("hintDive")} · <kbd>Esc</kbd> {label("hintBack")}</p>
+  <p class="hint">
+    {label("hintDive")} · <kbd data-shortcut>Ctrl K</kbd> {label("hintSearch")} · <kbd>Esc</kbd> {label("hintBack")}
+  </p>
 </div>
 
 <style>

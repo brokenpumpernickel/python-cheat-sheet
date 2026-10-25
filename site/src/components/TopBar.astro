@@ -1,11 +1,16 @@
 ---
-// The bar across the top of every view. Later tickets add the search pill (06), the Map | Trail
-// toggle (07) and the EN | PL switch (08) here.
+// The bar across the top of every view, with the search pill (the pop-up itself is Search.astro).
+// Later tickets add the Map | Trail toggle (07) and the EN | PL switch (08) here.
 import { label } from "../labels";
 ---
 
 <header class="top-bar">
   <p class="logo"><span class="badge" aria-hidden="true">py</span> {label("siteTitle")}</p>
+  <button class="search-pill" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /" data-search-open>
+    <span class="icon" aria-hidden="true">⌕</span>
+    <span class="prompt">{label("searchPrompt")}</span>
+    <kbd aria-hidden="true" data-shortcut>Ctrl K</kbd>
+  </button>
 </header>
 
 <style>
@@ -30,5 +35,51 @@ import { label } from "../labels";
     color: var(--sea);
     font-size: 18px;
     transform: rotate(-6deg);
+  }
+
+  .search-pill {
+    flex: 0 1 460px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    padding: 12px 14px 12px 18px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    color: var(--ink-3);
+    font: 600 15px var(--font-body);
+    text-align: left;
+    cursor: pointer;
+  }
+  .search-pill:hover {
+    color: var(--ink-2);
+  }
+  .icon {
+    font-size: 20px;
+    line-height: 1;
+    color: var(--ink-2);
+  }
+  .search-pill kbd {
+    margin-left: auto;
+  }
+  /* On a phone the pill is just its icon; the prompt stays as its accessible name. */
+  @media (max-width: 640px) {
+    .search-pill {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+    }
+    .prompt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .search-pill kbd {
+      display: none;
+    }
   }
 </style>

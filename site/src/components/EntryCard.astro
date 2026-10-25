@@ -1,7 +1,7 @@
 ---
 // One Entry as a card: title, explanation, code and Output, then its Pitfall (a "Watch out!" sticker
 // and a callout, with code and Output of its own when it has them) and See-also chips.
-// Deep links find the card by data-entry="topic/entry".
+// Deep links find the card by data-entry="topic/entry", and focus it (tabindex -1).
 import type { Entry } from "../content";
 import { label } from "../labels";
 import CodeBlock from "./CodeBlock.astro";
@@ -25,7 +25,7 @@ const headingId = `entry-${topicId}-${entry.id}`;
 const { pitfall } = entry;
 ---
 
-<section class="entry" data-entry={id} aria-labelledby={headingId}>
+<section class="entry" data-entry={id} aria-labelledby={headingId} tabindex="-1">
   {pitfall && <span class="sticker" aria-hidden="true">{label("watchOut")}</span>}
   <h2 id={headingId}>{entry.title}</h2>
   <p class="explain" set:html={entry.explain} />
@@ -137,6 +137,11 @@ const { pitfall } = entry;
   }
   .see a:hover {
     text-decoration: underline;
+  }
+
+  /* A jump to the Entry focuses it (tabindex -1), and the flash marks it instead of a focus ring. */
+  .entry:focus {
+    outline: none;
   }
 
   /* A jump to the Entry (client/motion.ts) flashes it in its Area's hue; with reduced motion, a still ring. */
