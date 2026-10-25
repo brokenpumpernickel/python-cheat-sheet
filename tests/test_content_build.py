@@ -1,6 +1,8 @@
 """Seam 1: a content folder goes in, the generated content data comes out."""
 
 import platform
+import re
+import xml.etree.ElementTree as ElementTree
 from importlib.metadata import version
 from pathlib import Path
 
@@ -81,6 +83,13 @@ def test_expected_error_ends_output_with_its_final_line(full_syntax):
     }
 
 
+def test_pitfall_code_runs_like_entry_code(full_syntax):
+    missing = full_syntax["areas"][0]["topics"][0]["entries"][2]
+
+    assert missing["pitfall"]["raises"] == "KeyError"
+    assert missing["pitfall"]["output"] == {"text": "2.5", "error": "KeyError: 'sd'", "figures": []}
+
+
 def test_planned_areas_and_topics_have_no_entries(full_syntax):
     basics, later = full_syntax["areas"]
 
@@ -113,6 +122,60 @@ def test_entries_cannot_see_each_others_variables():
     assert fresh["output"]["text"] == "False"
 
 
-def test_unmarked_error_fails_naming_the_entry():
-    with pytest.raises(ContentError, match=r"names/dividing.*ZeroDivisionError: division by zero"):
-        build_content(FIXTURES / "unmarked-error")
+def test_matplotlib_figures_are_captured_as_svg():
+    plots = build_content(FIXTURES / "figures")["areas"][0]["topics"][0]
+    shown, closed = plots["entries"]
+
+    assert shown["output"]["text"] == "two figures"
+    assert len(shown["output"]["figures"]) == 2  # one at plt.show(), one still open at the end
+    for svg in shown["output"]["figures"]:
+        assert ElementTree.fromstring(svg).tag == "{http://www.w3.org/2000/svg}svg"
+    assert closed["output"]["figures"] == []
+    assert closed["pitfall"]["output"]["error"] == "ValueError: invalid literal for int() with base 10: 'two'"
+    assert len(closed["pitfall"]["output"]["figures"]) == 1
+
+
+# One small content folder per rule in tests/fixtures/invalid/, and the exact message it must give.
+INVALID = {
+    # Required fields
+    "missing-field": "basics/names.md: 'glyph' is required and must be text",
+    "empty-field": "basics/names.md: 'summary' is required and must be text",
+    "empty-code": "basics/names.md:10 (names/binding): the code block at line 18 is empty",
+    "two-code-blocks": "basics/names.md:10 (names/binding): an Entry needs exactly one ```python code block, found 2",
+    "duplicate-entry-ids": "basics/names.md:23: two Entries have the id 'binding'",
+    # Polish counterparts (ADR 0005)
+    "missing-polish-title": "basics/names.md:10 (names/binding): the heading must be followed by a 'PL: <Polish title>' paragraph",
+    "missing-polish-explanation": "basics/names.md:10 (names/binding): expected one 'PL:' paragraph with the Polish text, found 0",
+    "missing-polish-pitfall": "basics/names.md:10 (names/binding) Pitfall: expected one 'PL:' paragraph with the Polish text, found 0",
+    "missing-polish-summary": "basics/names.md pl: 'summary' is required and must be text",
+    "missing-polish-blurb": "basics/_area.md pl: 'blurb' is required and must be text",
+    # References
+    "see-also-unknown-entry": "basics/names.md:23 (names/rebinding) See also: 'names/unbinding' names no Entry of Topic 'names'",
+    "see-also-unknown-topic": "basics/names.md:10 (names/binding) See also: 'loops/for-over-a-list' names Topic 'loops', which does not exist",
+    "see-also-planned-topic": "basics/names.md:10 (names/binding) See also: 'sets/union' points into planned Topic 'sets'",
+    "topic-order-unknown": "basics/_area.md: Topic order names 'loops', but there is no basics/loops.md",
+    "topic-not-in-order": "basics/extra.md: Topic is not listed in the Topic order of basics/_area.md",
+    "area-not-in-order": "numpy/: Area folder is not listed in areas.yaml",
+    "planned-area-with-entries": "basics/names.md: a planned Area lists only planned Topics",
+    # Running the examples
+    "unmarked-error": "basics/names.md (names/dividing): the example failed with ZeroDivisionError: division by zero",
+    "wrong-error-type": "basics/names.md (names/binding): the example failed with IndexError: list index out of range (marked raises=KeyError)",
+    "marked-without-error": "basics/names.md (names/binding): marked raises=KeyError, but the example ran without an error",
+    "pitfall-unmarked-error": "basics/names.md (names/binding) Pitfall: the example failed with NameError: name 'y' is not defined",
+}
+
+
+@pytest.mark.parametrize("fixture", INVALID)
+def test_invalid_content_fails_naming_the_place(fixture):
+    with pytest.raises(ContentError, match=re.escape(INVALID[fixture])):
+        build_content(FIXTURES / "invalid" / fixture)
+
+
+def test_every_failing_example_is_reported_at_once():
+    with pytest.raises(ContentError) as failure:
+        build_content(FIXTURES / "invalid" / "two-failing-examples")
+
+    assert str(failure.value).splitlines() == [
+        "basics/names.md (names/binding): the example failed with ZeroDivisionError: division by zero",
+        "basics/names.md (names/rebinding): the example failed with NameError: name 'z' is not defined",
+    ]

@@ -6,6 +6,7 @@ import os
 import platform
 import shutil
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from importlib.metadata import version
 from pathlib import Path
 
@@ -21,23 +22,42 @@ SITE_OUT_DIR = SITE_DIR / "dist"
 # Libraries the examples use, shown in the footer: display name -> distribution name.
 EXAMPLE_LIBRARIES = {"NumPy": "numpy", "Matplotlib": "matplotlib"}
 
+# Kernels running at once. Starting a kernel is mostly waiting, so a few per core is fine.
+PARALLEL_KERNELS = min(8, 2 * (os.cpu_count() or 1))
+
 log = logging.getLogger(__name__)
 
 
 def build_content(content_dir: Path) -> dict:
-    """Parse the content folder and run every example; return the generated content data."""
+    """Parse the content folder and run every example; return the generated content data.
+
+    Examples run in parallel, each in its own fresh kernel. If any fail, one ContentError lists
+    them all in content order, so every broken example can be fixed in one go.
+    """
     areas = parse_content(content_dir)
+    examples = []  # (the dict that gets the Output, code, raises, where)
     for area in areas:
         for topic in area["topics"]:
             for entry in topic["entries"]:
                 where = f"{area['id']}/{topic['id']}.md ({topic['id']}/{entry['id']})"
-                entry["output"] = _output(entry["code"], entry["raises"], where)
+                examples.append((entry, entry["code"], entry["raises"], where))
                 pitfall = entry["pitfall"]
                 if pitfall:
-                    pitfall["output"] = (
-                        _output(pitfall["code"], pitfall["raises"], f"{where} Pitfall") if pitfall["code"] else None
-                    )
-                log.info("ran %s/%s", topic["id"], entry["id"])
+                    pitfall["output"] = None
+                    if pitfall["code"]:
+                        examples.append((pitfall, pitfall["code"], pitfall["raises"], f"{where} Pitfall"))
+
+    failures = []
+    with ThreadPoolExecutor(max_workers=PARALLEL_KERNELS) as pool:
+        runs = [pool.submit(_output, code, raises, where) for _, code, raises, where in examples]
+        for (target, _, _, where), run in zip(examples, runs):
+            try:
+                target["output"] = run.result()
+                log.info("ran %s", where)
+            except ContentError as error:
+                failures.append(str(error))
+    if failures:
+        raise ContentError("\n".join(failures))
     return {"areas": areas, "meta": {"versions": _versions()}}
 
 
@@ -70,7 +90,7 @@ def _output(code: str, raises: str | None, where: str) -> dict:
         raise ContentError(f"{where}: the example failed with {run.error}{expected}")
     if raises and not run.error:
         raise ContentError(f"{where}: marked raises={raises}, but the example ran without an error")
-    return {"text": run.stdout, "error": run.error, "figures": []}
+    return {"text": run.stdout, "error": run.error, "figures": list(run.figures)}
 
 
 def _versions() -> list[dict]:

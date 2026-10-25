@@ -42,7 +42,13 @@ def parse_content(content_dir: Path) -> list[dict]:
     area_ids = _load_yaml(order_file, order_file.name)
     if not isinstance(area_ids, list) or not all(isinstance(a, str) for a in area_ids):
         raise ContentError(f"{AREA_ORDER_FILE}: expected a list of Area ids")
-    areas = [_parse_area(content_dir, area_id) for area_id in area_ids]
+    for area_id in _duplicates(area_ids):
+        raise ContentError(f"{AREA_ORDER_FILE}: Area '{area_id}' is listed twice")
+    for folder in sorted(p.name for p in content_dir.iterdir() if p.is_dir()):
+        if folder not in area_ids:
+            raise ContentError(f"{folder}/: Area folder is not listed in {AREA_ORDER_FILE}")
+    references: list[tuple[str, str]] = []
+    areas = [_parse_area(content_dir, area_id, references) for area_id in area_ids]
 
     seen: dict[str, str] = {}
     for area in areas:
@@ -52,10 +58,28 @@ def parse_content(content_dir: Path) -> list[dict]:
                     f"{area['id']}/{topic['id']}.md: Topic id '{topic['id']}' is also used in Area '{seen[topic['id']]}'"
                 )
             seen[topic["id"]] = area["id"]
+
+    topics = {topic["id"]: topic for area in areas for topic in area["topics"]}
+    for here, reference in references:
+        _check_reference(reference, topics, here)
     return areas
 
 
-def _parse_area(content_dir: Path, area_id: str) -> dict:
+def _check_reference(reference: str, topics: dict[str, dict], here: str) -> None:
+    topic_id, entry_id = reference.split("/")
+    topic = topics.get(topic_id)
+    if topic is None:
+        raise ContentError(f"{here} See also: '{reference}' names Topic '{topic_id}', which does not exist")
+    entry_ids = [entry["id"] for entry in topic["entries"]]
+    if entry_id not in entry_ids:
+        if topic["planned"]:
+            raise ContentError(f"{here} See also: '{reference}' points into planned Topic '{topic_id}', which has no Entries yet")
+        raise ContentError(
+            f"{here} See also: '{reference}' names no Entry of Topic '{topic_id}'; its Entries are: {', '.join(entry_ids)}"
+        )
+
+
+def _parse_area(content_dir: Path, area_id: str, references: list[tuple[str, str]]) -> dict:
     where = f"{area_id}/{AREA_FILE}"
     path = content_dir / area_id / AREA_FILE
     if not path.is_file():
@@ -67,6 +91,8 @@ def _parse_area(content_dir: Path, area_id: str) -> dict:
     topic_ids = meta.get("topics")
     if not isinstance(topic_ids, list) or not all(isinstance(t, str) for t in topic_ids):
         raise ContentError(f"{where}: 'topics' must be a list of Topic ids (the Topic order)")
+    for topic_id in _duplicates(topic_ids):
+        raise ContentError(f"{where}: Topic order lists '{topic_id}' twice")
     on_disk = {p.stem for p in path.parent.glob("*.md") if p.name != AREA_FILE}
     for topic_id in topic_ids:
         if topic_id not in on_disk:
@@ -78,18 +104,22 @@ def _parse_area(content_dir: Path, area_id: str) -> dict:
     hue = meta.get("hue")
     if not isinstance(hue, int) or isinstance(hue, bool) or not 0 <= hue <= 360:
         raise ContentError(f"{where}: 'hue' must be a whole number from 0 to 360")
-    return {
+    area = {
         "id": _checked_id(area_id, where),
         "title": _text(meta, "title", where),
         "blurb": _text(meta, "blurb", where),
         "hue": hue,
         "planned": _flag(meta, "planned", where),
         "pl": {"title": _text(pl, "title", f"{where} pl"), "blurb": _text(pl, "blurb", f"{where} pl")},
-        "topics": [_parse_topic(path.parent / f"{t}.md", f"{area_id}/{t}.md") for t in topic_ids],
+        "topics": [_parse_topic(path.parent / f"{t}.md", f"{area_id}/{t}.md", references) for t in topic_ids],
     }
+    for topic in area["topics"]:
+        if area["planned"] and not topic["planned"]:
+            raise ContentError(f"{area_id}/{topic['id']}.md: a planned Area lists only planned Topics; add 'planned: true'")
+    return area
 
 
-def _parse_topic(path: Path, where: str) -> dict:
+def _parse_topic(path: Path, where: str, references: list[tuple[str, str]]) -> dict:
     topic_id = _checked_id(path.stem, where)
     meta, body, body_line = _split_frontmatter(path, where)
     planned = _flag(meta, "planned", where)
@@ -101,7 +131,7 @@ def _parse_topic(path: Path, where: str) -> dict:
             raise ContentError(f"{where}:{blocks[0].line}: a planned Topic has no Entries")
         entries = []
     else:
-        entries = _parse_entries(blocks, topic_id, where)
+        entries = _parse_entries(blocks, topic_id, where, references)
         if not entries:
             raise ContentError(f"{where}: a Topic needs at least one Entry (a '## ' section) unless it is planned")
 
@@ -119,7 +149,7 @@ def _parse_topic(path: Path, where: str) -> dict:
     }
 
 
-def _parse_entries(blocks: list[_Block], topic_id: str, where: str) -> list[dict]:
+def _parse_entries(blocks: list[_Block], topic_id: str, where: str, references: list[tuple[str, str]]) -> list[dict]:
     sections: list[tuple[_Block, list[_Block]]] = []
     for block in blocks:
         if block.kind == "heading" and block.level == 2:
@@ -131,15 +161,19 @@ def _parse_entries(blocks: list[_Block], topic_id: str, where: str) -> list[dict
 
     entries: list[dict] = []
     for heading, body in sections:
-        entry = _parse_entry(heading, body, topic_id, where)
+        entry = _parse_entry(heading, body, topic_id, where, references)
         if any(e["id"] == entry["id"] for e in entries):
-            raise ContentError(f"{where}:{heading.line}: two Entries have the id '{entry['id']}'")
+            raise ContentError(f"{where}:{heading.line}: two Entries have the id '{entry['id']}'; ids come from the titles, so change one title")
         entries.append(entry)
     return entries
 
 
-def _parse_entry(heading: _Block, body: list[_Block], topic_id: str, where: str) -> dict:
+def _parse_entry(
+    heading: _Block, body: list[_Block], topic_id: str, where: str, references: list[tuple[str, str]]
+) -> dict:
     entry_id = _slug(heading.text)
+    if not entry_id:
+        raise ContentError(f"{where}:{heading.line}: an Entry title needs letters or digits, since the Entry id is made from it")
     here = f"{where}:{heading.line} ({topic_id}/{entry_id})"
 
     parts: dict[str, list[_Block]] = {"": []}
@@ -159,6 +193,8 @@ def _parse_entry(heading: _Block, body: list[_Block], topic_id: str, where: str)
     if not main or not _is_polish(main[0]):
         raise ContentError(f"{here}: the heading must be followed by a '{POLISH} <Polish title>' paragraph")
     pl_title = _strip_polish(main[0].text)
+    if not pl_title:
+        raise ContentError(f"{here}: the '{POLISH}' paragraph after the heading is empty; write the Polish title")
     explain, pl_explain, fences = _prose_and_code(main[1:], here)
     if len(fences) != 1:
         raise ContentError(f"{here}: an Entry needs exactly one ```python code block, found {len(fences)}")
@@ -169,10 +205,11 @@ def _parse_entry(heading: _Block, body: list[_Block], topic_id: str, where: str)
         text, pl_pitfall, pitfall_fences = _prose_and_code(parts["Pitfall"], f"{here} Pitfall")
         if len(pitfall_fences) > 1:
             raise ContentError(f"{here} Pitfall: at most one ```python code block, found {len(pitfall_fences)}")
-        pitfall_code, pitfall_raises = _example(pitfall_fences[0], here) if pitfall_fences else (None, None)
+        pitfall_code, pitfall_raises = _example(pitfall_fences[0], f"{here} Pitfall") if pitfall_fences else (None, None)
         pitfall = {"text": text, "code": pitfall_code, "raises": pitfall_raises}
 
     see = _see_also(parts["See also"], here) if "See also" in parts else []
+    references.extend((here, reference) for reference in see)
 
     return {
         "id": entry_id,
@@ -200,6 +237,8 @@ def _prose_and_code(blocks: list[_Block], here: str) -> tuple[str, str, list[_Bl
         raise ContentError(f"{here}: expected one English paragraph, found {len(english)}")
     if len(polish) != 1:
         raise ContentError(f"{here}: expected one '{POLISH}' paragraph with the Polish text, found {len(polish)}")
+    if not _strip_polish(polish[0].text):
+        raise ContentError(f"{here}: the '{POLISH}' paragraph at line {polish[0].line} is empty; write the Polish text")
     return _MD.renderInline(english[0].text), _MD.renderInline(_strip_polish(polish[0].text)), fences
 
 
@@ -213,6 +252,8 @@ def _example(fence: _Block, here: str) -> tuple[str, str | None]:
         if not match:
             raise ContentError(f"{here}: unknown code block option '{attribute}'; the only option is raises=<ExceptionType>")
         raises = match.group(1)
+    if not fence.text.strip():
+        raise ContentError(f"{here}: the code block at line {fence.line} is empty")
     return fence.text.rstrip("\n"), raises
 
 
@@ -308,6 +349,10 @@ def _checked_id(value: str, where: str) -> str:
     if not _ID.match(value):
         raise ContentError(f"{where}: '{value}' is not a valid id (lowercase letters, digits and '-')")
     return value
+
+
+def _duplicates(ids: list[str]) -> list[str]:
+    return sorted({i for i in ids if ids.count(i) > 1})
 
 
 def _is_polish(block: _Block) -> bool:
