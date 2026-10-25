@@ -4,7 +4,7 @@ A zoomable, bilingual (English/Polish) Python reference for students in a statis
 
 **Live site:** https://brokenpumpernickel.github.io/python-cheat-sheet/ (in Polish: https://brokenpumpernickel.github.io/python-cheat-sheet/?lang=pl)
 
-Content lives in `content/` as Markdown (see `docs/content-format.md`). A Python content build runs every example in a fresh Jupyter kernel and writes `generated/content.json`; Astro (`site/`) renders it into one static page.
+Content lives in `content/` as Markdown (see the authoring guide, `docs/authoring-guide.md`). A Python content build runs every example in a fresh Jupyter kernel and writes `generated/content.json`; Astro (`site/`) renders it into one static page.
 
 ## Building locally
 
