@@ -16,6 +16,7 @@ A list holds items in order inside `[]`. Indexing starts at 0, and negative inde
 PL: Lista przechowuje elementy po kolei w `[]`. Indeksy zaczynają się od 0, a ujemne liczą od końca.
 
 ```python
+print(undefined_name)
 data = [3, 1, 4, 1, 5]
 print(data[0])
 print(data[-1])
