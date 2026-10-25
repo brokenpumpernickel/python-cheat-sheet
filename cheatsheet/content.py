@@ -243,6 +243,8 @@ def _prose_and_code(blocks: list[_Block], here: str) -> tuple[str, str, list[_Bl
 
 
 def _example(fence: _Block, here: str) -> tuple[str, str | None]:
+    if not fence.info.strip():
+        raise ContentError(f"{here}: the code block at line {fence.line} has no language; fence examples as ```python")
     language, *attributes = fence.info.split()
     if language != "python":
         raise ContentError(f"{here}: code blocks must be ```python, not ```{language} (line {fence.line})")

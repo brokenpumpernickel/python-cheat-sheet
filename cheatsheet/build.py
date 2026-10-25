@@ -11,7 +11,7 @@ from importlib.metadata import version
 from pathlib import Path
 
 from cheatsheet.content import ContentError, parse_content
-from cheatsheet.execute import run_example
+from cheatsheet.execute import TIMEOUT_SECONDS, run_example
 
 REPO = Path(__file__).resolve().parent.parent
 CONTENT_DIR = REPO / "content"
@@ -28,11 +28,12 @@ PARALLEL_KERNELS = min(8, 2 * (os.cpu_count() or 1))
 log = logging.getLogger(__name__)
 
 
-def build_content(content_dir: Path) -> dict:
+def build_content(content_dir: Path, timeout: float = TIMEOUT_SECONDS) -> dict:
     """Parse the content folder and run every example; return the generated content data.
 
     Examples run in parallel, each in its own fresh kernel. If any fail, one ContentError lists
-    them all in content order, so every broken example can be fixed in one go.
+    them all in content order, so every broken example can be fixed in one go. An example still
+    running after `timeout` seconds is stopped and counts as failing.
     """
     areas = parse_content(content_dir)
     examples = []  # (the dict that gets the Output, code, raises, where)
@@ -49,7 +50,7 @@ def build_content(content_dir: Path) -> dict:
 
     failures = []
     with ThreadPoolExecutor(max_workers=PARALLEL_KERNELS) as pool:
-        runs = [pool.submit(_output, code, raises, where) for _, code, raises, where in examples]
+        runs = [pool.submit(_output, code, raises, where, timeout) for _, code, raises, where in examples]
         for (target, _, _, where), run in zip(examples, runs):
             try:
                 target["output"] = run.result()
@@ -88,8 +89,10 @@ def build_site(content_data: Path, out_dir: Path, base: str = "/") -> None:
     shutil.copytree(staging, out_dir)
 
 
-def _output(code: str, raises: str | None, where: str) -> dict:
-    run = run_example(code)
+def _output(code: str, raises: str | None, where: str, timeout: float) -> dict:
+    run = run_example(code, timeout)
+    if run.timed_out:
+        raise ContentError(f"{where}: the example timed out after {timeout:g} s")
     if run.error and run.error_type != raises:
         expected = f" (marked raises={raises})" if raises else ""
         raise ContentError(f"{where}: the example failed with {run.error}{expected}")
