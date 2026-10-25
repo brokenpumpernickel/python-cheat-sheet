@@ -1,0 +1,336 @@
+---
+// The Index rail beside a Topic page: the Overview shrunk to a side column, in the arrangement the top
+// bar's toggle chose. The Map shows each Area as a mini island with Topic pins, the Trail as a numbered
+// mini-trail. client/rail.ts marks the current Topic "you are here" (aria-current), which expands its
+// Entries, and highlights the Entry in view. On a phone the rail is a strip that scrolls sideways.
+import type { Area } from "../content";
+import { label } from "../labels";
+import { stopNumbers } from "../map/trail";
+import RailEntries from "./RailEntries.astro";
+
+interface Props {
+  areas: Area[];
+}
+
+const { areas } = Astro.props;
+
+const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30px"];
+---
+
+<nav class="rail" data-rail aria-label={label("index")}>
+  <div class="arrangement" data-arrangement="map">
+    {
+      areas.map((area, i) => (
+        <div class:list={["mini", { planned: area.planned }]} style={{ "--hue": area.hue, "--blob": BLOBS[i % BLOBS.length] }}>
+          <p class="area" id={`rail-map-${area.id}`}>
+            {area.title}
+          </p>
+          <ul class="pins" aria-labelledby={`rail-map-${area.id}`}>
+            {area.topics.map((topic) =>
+              topic.planned ? (
+                <li class="planned">{topic.title}</li>
+              ) : (
+                <li>
+                  <a class="pin" href={`#${topic.id}`} data-pin={topic.id}>
+                    <span class="glyph" aria-hidden="true">
+                      {topic.glyph}
+                    </span>
+                    {topic.title}
+                    <span class="here" aria-hidden="true">
+                      {label("youAreHere")}
+                    </span>
+                  </a>
+                  <RailEntries topic={topic} />
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="arrangement" data-arrangement="trail">
+    {
+      areas.map((area) => {
+        const numbers = stopNumbers(area.topics);
+        return (
+          <div class:list={["mini-trail", { planned: area.planned }]} style={{ "--hue": area.hue }}>
+            <p class="area" id={`rail-trail-${area.id}`}>
+              {area.title}
+            </p>
+            <ol class="steps" aria-labelledby={`rail-trail-${area.id}`}>
+              {area.topics.map((topic, j) =>
+                topic.planned ? (
+                  <li class="planned">
+                    <i aria-hidden="true" />
+                    {topic.title}
+                  </li>
+                ) : (
+                  <li>
+                    <a class="step" href={`#${topic.id}`} data-pin={topic.id}>
+                      <span class="number">{numbers[j]}</span> {topic.title}
+                      <span class="here" aria-hidden="true">
+                        {label("youAreHere")}
+                      </span>
+                    </a>
+                    <RailEntries topic={topic} />
+                  </li>
+                ),
+              )}
+            </ol>
+          </div>
+        );
+      })
+    }
+  </div>
+</nav>
+
+<style>
+  /* Stays in view beside the page, scrolling on its own when it's taller than the screen. */
+  .rail {
+    position: sticky;
+    top: 12px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    padding: 14px 12px 48px 10px;
+    scrollbar-width: thin;
+  }
+  .arrangement {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .area {
+    margin: 0 0 8px 4px;
+    font: 700 15px var(--font-round);
+    color: hsl(var(--hue) 55% var(--deep-l));
+  }
+  .planned .area {
+    color: var(--ink-3);
+  }
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .here {
+    display: none;
+    font: 800 9.5px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+  [aria-current="page"] .here {
+    display: inline;
+  }
+
+  /* Map: mini islands with pins. */
+  .mini {
+    padding: 12px 14px 14px;
+    border-radius: var(--blob);
+    background: hsl(var(--hue) var(--isl-s) var(--isl-l));
+    box-shadow: 0 0 0 6px hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.3);
+  }
+  .mini.planned {
+    background: transparent;
+    box-shadow: none;
+    border: 2px dashed hsl(var(--hue) 25% 60% / 0.6);
+  }
+  .pins {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  /* The current Topic's pin takes a row of its own, with its Entries under it. */
+  .pins > li:has(> [aria-current="page"]) {
+    flex-basis: 100%;
+  }
+  .pin {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px 4px 5px;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: 0 2px 0 hsl(var(--hue) 40% 45% / 0.3);
+    font: 700 13px var(--font-body);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.15s;
+  }
+  .pin:hover {
+    transform: translateY(-1px);
+  }
+  .glyph {
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: hsl(var(--hue) var(--isl-s) var(--isl-l));
+    color: hsl(var(--hue) 60% var(--deep-l));
+    font: 700 11px var(--font-mono);
+  }
+  .pin[aria-current="page"] {
+    background: hsl(var(--hue) 55% var(--deep-l));
+    color: var(--card);
+  }
+  .pin[aria-current="page"] .glyph {
+    background: var(--card);
+  }
+  .pins .planned {
+    padding: 3px 10px;
+    border: 1.5px dashed var(--line);
+    border-radius: 999px;
+    color: var(--ink-3);
+    font: 600 12px var(--font-body);
+  }
+
+  /* Trail: a dotted line of numbered steps. */
+  .mini-trail .area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 0;
+  }
+  .mini-trail .area::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: hsl(var(--hue) 50% 62%);
+  }
+  .mini-trail.planned .area::before {
+    width: 8px;
+    height: 8px;
+    background: transparent;
+    border: 2px dashed hsl(var(--hue) 25% 60%);
+  }
+  .steps {
+    margin-left: 5px;
+    padding-left: 14px;
+    border-left: 3px dotted hsl(var(--hue) 45% 55% / 0.5);
+  }
+  .steps > li {
+    margin: 3px 0;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: -27px;
+    padding: 3px 10px 3px 3px;
+    border-radius: 999px;
+    font: 700 14px var(--font-body);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .step:hover {
+    background: hsl(var(--hue) var(--isl-s) var(--isl-l));
+  }
+  .number {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--card);
+    box-shadow:
+      0 0 0 3px var(--sea),
+      0 2px 0 3px hsl(var(--hue) 40% 45% / 0.25);
+    color: hsl(var(--hue) 55% var(--deep-l));
+    font: 700 11.5px var(--font-round);
+  }
+  .step[aria-current="page"] {
+    background: hsl(var(--hue) 55% var(--deep-l));
+    color: var(--card);
+  }
+  .step .here {
+    margin-left: auto;
+  }
+  .steps .planned {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: -24px;
+    color: var(--ink-3);
+    font: 600 13px var(--font-body);
+  }
+  .steps .planned i {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 2px dashed var(--line);
+    border-radius: 50%;
+    background: var(--sea);
+  }
+
+  /* Phones: one row across the top that scrolls sideways, centred on the current Topic, with only the
+     Topics that have pages and no Entry lists. It stays at the top, above the page's sticky chips. */
+  @media (max-width: 860px) {
+    .rail {
+      top: 0;
+      z-index: 3;
+      height: var(--strip);
+      max-height: none;
+      overflow: auto hidden;
+      padding: 8px 16px;
+      background: linear-gradient(var(--sea) 80%, transparent);
+      scrollbar-width: none;
+    }
+    .arrangement {
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      width: max-content;
+    }
+    .mini .area,
+    .planned {
+      display: none !important;
+    }
+    /* Only its dot, which separates one Area's numbering from the next. */
+    .mini-trail {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mini-trail .area {
+      margin: 0;
+      font-size: 0;
+    }
+    .mini {
+      padding: 6px 8px;
+    }
+    .pins {
+      flex-wrap: nowrap;
+    }
+    .pins > li:has(> [aria-current="page"]) {
+      flex-basis: auto;
+    }
+    .steps {
+      display: flex;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    .steps > li {
+      margin: 0;
+    }
+    .step {
+      margin: 0;
+      background: var(--card);
+      white-space: nowrap;
+    }
+    .step .here {
+      margin-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pin,
+    .step {
+      transition: none;
+    }
+  }
+</style>

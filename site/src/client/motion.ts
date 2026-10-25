@@ -4,6 +4,7 @@
 
 const ZOOM_MS = 450;
 const FADE_MS = 250;
+const SLIDE_MS = 400;
 const FLASH_MS = 1400;
 const ZOOM_SCALE = 4;
 const EASING = "cubic-bezier(.2, .8, .2, 1)";
@@ -33,7 +34,7 @@ export function zoomOverview(overview: HTMLElement, tile: HTMLElement, direction
   return play(overview, keyframes, ZOOM_MS);
 }
 
-/** Fades a page in, growing slightly into place, or out. */
+/** Fades a page (or an Overview arrangement) in, growing slightly into place, or out. */
 export function fadePage(page: HTMLElement, direction: "in" | "out"): Promise<void> {
   const keyframes = [
     { transform: "scale(.97)", opacity: 0 },
@@ -41,6 +42,16 @@ export function fadePage(page: HTMLElement, direction: "in" | "out"): Promise<vo
   ];
   if (direction === "out") keyframes.reverse();
   return play(page, keyframes, FADE_MS);
+}
+
+/** Slides the Index rail in from the side, or back out. */
+export function slideRail(rail: HTMLElement, direction: "in" | "out"): Promise<void> {
+  const keyframes = [
+    { transform: "translateX(-40px)", opacity: 0 },
+    { transform: "none", opacity: 1 },
+  ];
+  if (direction === "out") keyframes.reverse();
+  return play(rail, keyframes, SLIDE_MS);
 }
 
 const flashTimers = new WeakMap<Element, number>();

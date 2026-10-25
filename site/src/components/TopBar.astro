@@ -1,16 +1,20 @@
 ---
-// The bar across the top of every view, with the search pill (the pop-up itself is Search.astro).
-// Later tickets add the Map | Trail toggle (07) and the EN | PL switch (08) here.
+// The bar across the top of every view, with the search pill (the pop-up itself is Search.astro) and the
+// Map | Trail toggle (client/arrangement.ts), a radio group. Ticket 08 adds the EN | PL switch here.
 import { label } from "../labels";
 ---
 
 <header class="top-bar">
-  <p class="logo"><span class="badge" aria-hidden="true">py</span> {label("siteTitle")}</p>
+  <p class="logo"><span class="badge" aria-hidden="true">py</span> <span class="site-title">{label("siteTitle")}</span></p>
   <button class="search-pill" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /" data-search-open>
     <span class="icon" aria-hidden="true">⌕</span>
     <span class="prompt">{label("searchPrompt")}</span>
     <kbd aria-hidden="true" data-shortcut>Ctrl K</kbd>
   </button>
+  <div class="toggle" role="radiogroup" aria-label={label("arrangement")}>
+    <label><input type="radio" name="arrangement" value="map" autocomplete="off" checked data-arrangement-choice /><span>{label("map")}</span></label>
+    <label><input type="radio" name="arrangement" value="trail" autocomplete="off" data-arrangement-choice /><span>{label("trail")}</span></label>
+  </div>
 </header>
 
 <style>
@@ -64,12 +68,52 @@ import { label } from "../labels";
   .search-pill kbd {
     margin-left: auto;
   }
-  /* On a phone the pill is just its icon; the prompt stays as its accessible name. */
+
+  /* A segmented switch over real radio buttons, which keep their keyboard behaviour (arrows choose). */
+  .toggle {
+    flex: none;
+    display: flex;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+  .toggle label {
+    position: relative;
+  }
+  .toggle input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .toggle span {
+    display: block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    color: var(--ink-3);
+    font: 700 14px var(--font-round);
+  }
+  .toggle label:hover span {
+    color: var(--ink);
+  }
+  .toggle input:checked + span {
+    background: var(--ink);
+    color: var(--card);
+  }
+  .toggle input:focus-visible + span {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* On a phone the pill is just its icon and the logo just its badge; their text stays as accessible names. */
   @media (max-width: 640px) {
     .search-pill {
       flex: 0 0 auto;
       padding: 10px 14px;
     }
+    .site-title,
     .prompt {
       position: absolute;
       width: 1px;

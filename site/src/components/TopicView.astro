@@ -1,9 +1,10 @@
 ---
-// The view shown instead of the Overview once a Topic is open: one page per non-planned Topic, all but
-// the current one hidden. Ticket 07 adds the Index rail beside the pages here.
-// The pages follow Topic order across Areas, which is also their Previous / Next stop.
+// The view shown instead of the Overview once a Topic is open: the Index rail, then one page per
+// non-planned Topic, all but the current one hidden. The pages follow Topic order across Areas, which is
+// also their Previous / Next stop.
 import type { Area } from "../content";
 import type { SeeAlso } from "./EntryCard.astro";
+import IndexRail from "./IndexRail.astro";
 import TopicPage from "./TopicPage.astro";
 
 interface Props {
@@ -24,9 +25,29 @@ const links = new Map<string, SeeAlso>(
 ---
 
 <div class="topic-view" data-topic-view hidden>
+  <IndexRail areas={areas} />
   {
     stops.map(({ area, topic }, k) => (
       <TopicPage area={area} topic={topic} previous={stops[k - 1] ?? null} next={stops[k + 1] ?? null} links={links} />
     ))
   }
 </div>
+
+<style>
+  /* The rail beside the page; on a phone, a strip across the top that the page's chips stick below. */
+  .topic-view {
+    --strip: 56px;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    padding-left: clamp(8px, 2vw, 24px);
+  }
+  @media (max-width: 860px) {
+    .topic-view {
+      --sticky-top: var(--strip);
+      display: block;
+      padding-left: 0;
+    }
+  }
+</style>

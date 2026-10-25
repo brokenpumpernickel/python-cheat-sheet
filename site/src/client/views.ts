@@ -1,16 +1,26 @@
 // Shows the Overview or one Topic page for the current route, with the semantic zoom between them
-// (ADR 0001): zooming in scales the Overview toward the Topic's tile and fades the page in; zooming out
-// reverses that and returns focus to the tile. Switching Topics crossfades. Nothing animates on first
-// load (a deep link has no tile to come from) or with reduced motion.
+// (ADR 0001): zooming in scales the Overview toward the Topic's tile and fades the page in as the Index
+// rail slides in; zooming out reverses that and returns focus to the tile. Switching Topics crossfades
+// the page, and the rail moves "you are here". Nothing animates on first load (a deep link has no tile
+// to come from) or with reduced motion.
 import { isTyping } from "./keys";
-import { fadePage, flash, motionAllowed, zoomOverview } from "./motion";
+import { fadePage, flash, motionAllowed, slideRail, zoomOverview } from "./motion";
+import { startRail } from "./rail";
 import { goToOverview, onRouteChange, parseRoute } from "./router";
 
 const ENTRY_GAP = 8; // px between the sticky Entry chips and an Entry scrolled to
 
-export function startViews(): void {
+export interface Views {
+  /** Shows the Map | Trail choice just made: the new arrangement from its top, or inside a Topic, the
+   * rail's new arrangement around the current Topic. */
+  arrangementSwitched(): void;
+}
+
+export function startViews(): Views {
   const overview = document.querySelector<HTMLElement>("[data-overview]")!;
   const topicView = document.querySelector<HTMLElement>("[data-topic-view]")!;
+  const railElement = topicView.querySelector<HTMLElement>("[data-rail]")!;
+  const rail = startRail(railElement);
   const pages = new Map(
     [...document.querySelectorAll<HTMLElement>("[data-topic]")].map((page) => [page.dataset.topic!, page]),
   );
@@ -24,16 +34,19 @@ export function startViews(): void {
     return tiles.find((tile) => tile.getClientRects().length > 0) ?? null;
   };
 
-  // Scrolls the Entry in just below the page's sticky Entry chips, flashes it and moves focus to it, so
-  // Tab continues from the Entry jumped to.
+  // Scrolls the Entry in just below the page's sticky Entry chips (which stick below the Index strip on a
+  // phone), flashes it, highlights it in the rail and moves focus to it, so Tab continues from the Entry
+  // jumped to.
   function scrollTo(page: HTMLElement, entry: string | null) {
     const target =
       entry && page.querySelector<HTMLElement>(`[data-entry="${CSS.escape(`${page.dataset.topic}/${entry}`)}"]`);
     if (!target) return window.scrollTo(0, 0);
-    const chips = page.querySelector<HTMLElement>("[data-chips]")?.offsetHeight ?? 0;
-    window.scrollTo(0, target.getBoundingClientRect().top + window.scrollY - chips - ENTRY_GAP);
+    const chips = page.querySelector<HTMLElement>("[data-chips]");
+    const covered = chips ? parseFloat(getComputedStyle(chips).top) + chips.offsetHeight : 0;
+    window.scrollTo(0, target.getBoundingClientRect().top + window.scrollY - covered - ENTRY_GAP);
     target.focus({ preventScroll: true });
     flash(target);
+    rail.jumped(target);
   }
 
   async function zoomIn(page: HTMLElement, animate: boolean) {
@@ -44,7 +57,8 @@ export function startViews(): void {
     page.hidden = false;
     page.focus({ preventScroll: true });
     window.scrollTo(0, 0);
-    if (animate) await fadePage(page, "in");
+    rail.show(page);
+    if (animate) await Promise.all([fadePage(page, "in"), slideRail(railElement, "in")]);
   }
 
   async function crossfade(from: HTMLElement, to: HTMLElement, animate: boolean) {
@@ -53,13 +67,15 @@ export function startViews(): void {
     to.hidden = false;
     to.focus({ preventScroll: true });
     window.scrollTo(0, 0);
+    rail.show(to);
     if (animate) await fadePage(to, "in");
   }
 
   async function zoomOut(page: HTMLElement, animate: boolean) {
-    if (animate) await fadePage(page, "out");
+    if (animate) await Promise.all([fadePage(page, "out"), slideRail(railElement, "out")]);
     page.hidden = true;
     topicView.hidden = true;
+    rail.show(null);
     overview.hidden = false;
     const tile = tileOf(page.dataset.topic!);
     if (!tile) return window.scrollTo(0, 0);
@@ -106,4 +122,15 @@ export function startViews(): void {
     if (event.key !== "Escape" || event.defaultPrevented || isTyping(document.activeElement)) return;
     if (parseRoute(location.hash, pages)) goToOverview();
   });
+
+  return {
+    arrangementSwitched() {
+      if (shown !== null) return rail.centre();
+      window.scrollTo(0, 0);
+      const arrangement = [...overview.querySelectorAll<HTMLElement>("[data-arrangement]")].find(
+        (element) => element.getClientRects().length > 0,
+      );
+      if (arrangement && motionAllowed()) void fadePage(arrangement, "in");
+    },
+  };
 }

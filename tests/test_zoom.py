@@ -8,7 +8,7 @@ RECORD_ANIMATIONS = """
 window.animations = [];
 const animate = Element.prototype.animate;
 Element.prototype.animate = function (keyframes, options) {
-  const what = this.matches("[data-overview]") ? "overview" : this.dataset.topic ?? this.tagName;
+  const what = this.matches("[data-overview]") ? "overview" : this.matches("[data-rail]") ? "rail" : this.dataset.topic ?? this.tagName;
   const rect = this.getBoundingClientRect();
   const [x, y] = this.style.transformOrigin.split(" ").map(parseFloat);
   window.animations.push({
@@ -29,8 +29,8 @@ Element.prototype.animate = function (...args) {
 };
 """
 
-ZOOM_IN = ["overview hides", "numbers shows"]
-ZOOM_OUT = ["numbers hides", "overview shows"]
+ZOOM_IN = ["overview hides", "numbers shows", "rail shows"]
+ZOOM_OUT = ["numbers hides", "rail hides", "overview shows"]
 
 
 @pytest.fixture
@@ -92,6 +92,7 @@ def test_keyboard_tabs_to_a_tile_enter_zooms_in_and_esc_zooms_out(page: Page, si
     page.goto(site_url)
 
     page.keyboard.press("Tab")  # the top bar's search pill
+    page.keyboard.press("Tab")  # the Map | Trail toggle
     page.keyboard.press("Tab")
     expect(tile(page, "Numbers")).to_be_focused()
     page.keyboard.press("Tab")
