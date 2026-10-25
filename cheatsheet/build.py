@@ -1,0 +1,79 @@
+"""The two build stages (ADR 0004): content build in Python, then the Astro site build."""
+
+import json
+import logging
+import os
+import platform
+import shutil
+import subprocess
+from importlib.metadata import version
+from pathlib import Path
+
+from cheatsheet.content import ContentError, parse_content
+from cheatsheet.execute import run_example
+
+REPO = Path(__file__).resolve().parent.parent
+CONTENT_DIR = REPO / "content"
+CONTENT_DATA = REPO / "generated" / "content.json"
+SITE_DIR = REPO / "site"
+SITE_OUT_DIR = SITE_DIR / "dist"
+
+# Libraries the examples use, shown in the footer: display name -> distribution name.
+EXAMPLE_LIBRARIES = {"NumPy": "numpy", "Matplotlib": "matplotlib"}
+
+log = logging.getLogger(__name__)
+
+
+def build_content(content_dir: Path) -> dict:
+    """Parse the content folder and run every example; return the generated content data."""
+    areas = parse_content(content_dir)
+    for area in areas:
+        for topic in area["topics"]:
+            for entry in topic["entries"]:
+                where = f"{area['id']}/{topic['id']}.md ({topic['id']}/{entry['id']})"
+                entry["output"] = _output(entry["code"], entry["raises"], where)
+                pitfall = entry["pitfall"]
+                if pitfall:
+                    pitfall["output"] = (
+                        _output(pitfall["code"], pitfall["raises"], f"{where} Pitfall") if pitfall["code"] else None
+                    )
+                log.info("ran %s/%s", topic["id"], entry["id"])
+    return {"areas": areas, "meta": {"versions": _versions()}}
+
+
+def write_content_data(data: dict, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def build_site(content_data: Path, out_dir: Path, base: str = "/") -> None:
+    """Render the content data into a static site with Astro."""
+    npm = shutil.which("npm")
+    if npm is None:
+        raise RuntimeError("npm not found; install Node.js to build the site")
+    if not (SITE_DIR / "node_modules").is_dir():
+        subprocess.run([npm, "ci"], cwd=SITE_DIR, check=True)
+    env = {
+        **os.environ,
+        "CHEATSHEET_CONTENT_DATA": str(content_data.resolve()),
+        "CHEATSHEET_OUT_DIR": str(out_dir.resolve()),
+        "SITE_BASE": base,
+        "ASTRO_TELEMETRY_DISABLED": "1",
+    }
+    subprocess.run([npm, "run", "build"], cwd=SITE_DIR, env=env, check=True)
+
+
+def _output(code: str, raises: str | None, where: str) -> dict:
+    run = run_example(code)
+    if run.error and run.error_type != raises:
+        expected = f" (marked raises={raises})" if raises else ""
+        raise ContentError(f"{where}: the example failed with {run.error}{expected}")
+    if raises and not run.error:
+        raise ContentError(f"{where}: marked raises={raises}, but the example ran without an error")
+    return {"text": run.stdout, "error": run.error, "figures": []}
+
+
+def _versions() -> list[dict]:
+    return [{"name": "Python", "version": platform.python_version()}] + [
+        {"name": name, "version": version(dist)} for name, dist in EXAMPLE_LIBRARIES.items()
+    ]
