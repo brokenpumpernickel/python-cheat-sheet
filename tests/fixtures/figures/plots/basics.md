@@ -26,6 +26,12 @@ ax.bar(["a", "b"], [3, 5])
 print("two figures")
 ```
 
+### Figure
+
+A line rising ever faster through three points, then two bars, the second taller.
+
+PL: Linia rosnąca coraz szybciej przez trzy punkty, potem dwa słupki, drugi wyższy.
+
 ## Closed figures
 
 PL: Zamknięte wykresy
@@ -55,3 +61,9 @@ import matplotlib.pyplot as plt
 plt.plot([1, 2], [1, 4])
 print(int("two"))
 ```
+
+### Figure
+
+A straight line rising between two points.
+
+PL: Prosta linia rosnąca między dwoma punktami.

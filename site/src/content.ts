@@ -16,12 +16,14 @@ const Entry = z.strictObject({
   explain: z.string().min(1), // inline HTML rendered by the content build
   code: z.string().min(1),
   raises: z.string().nullable(),
+  figure: z.string().min(1).nullable(), // the description of the example's figures, their accessible name
   see: z.array(z.string().regex(/^[a-z0-9-]+\/[a-z0-9-]+$/)),
   pitfall: z
     .strictObject({
       text: z.string().min(1),
       code: z.string().nullable(),
       raises: z.string().nullable(),
+      figure: z.string().min(1).nullable(),
       output: Output.nullable(),
     })
     .nullable(),
@@ -30,6 +32,8 @@ const Entry = z.strictObject({
     title: z.string().min(1),
     explain: z.string().min(1),
     pitfall: z.string().nullable(),
+    figure: z.string().min(1).nullable(),
+    pitfallFigure: z.string().min(1).nullable(),
   }),
 });
 

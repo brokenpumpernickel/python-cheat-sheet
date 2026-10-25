@@ -36,25 +36,27 @@ def build_content(content_dir: Path, timeout: float = TIMEOUT_SECONDS) -> dict:
     running after `timeout` seconds is stopped and counts as failing.
     """
     areas = parse_content(content_dir)
-    examples = []  # (the dict that gets the Output, code, raises, where)
+    examples = []  # (the dict that gets the Output, code, raises, where, where with the Entry's line)
     for area in areas:
         for topic in area["topics"]:
             for entry in topic["entries"]:
                 where = f"{area['id']}/{topic['id']}.md ({topic['id']}/{entry['id']})"
-                examples.append((entry, entry["code"], entry["raises"], where))
+                here = f"{area['id']}/{topic['id']}.md:{entry.pop('line')} ({topic['id']}/{entry['id']})"
+                examples.append((entry, entry["code"], entry["raises"], where, here))
                 pitfall = entry["pitfall"]
                 if pitfall:
                     pitfall["output"] = None
                     if pitfall["code"]:
-                        examples.append((pitfall, pitfall["code"], pitfall["raises"], f"{where} Pitfall"))
+                        examples.append((pitfall, pitfall["code"], pitfall["raises"], f"{where} Pitfall", f"{here} Pitfall"))
 
     failures = []
     with ThreadPoolExecutor(max_workers=PARALLEL_KERNELS) as pool:
-        runs = [pool.submit(_output, code, raises, where, timeout) for _, code, raises, where in examples]
-        for (target, _, _, where), run in zip(examples, runs):
+        runs = [pool.submit(_output, code, raises, where, timeout) for _, code, raises, where, _ in examples]
+        for (target, _, _, where, here), run in zip(examples, runs):
             try:
                 target["output"] = run.result()
                 log.info("ran %s", where)
+                _check_figure_description(target, here)
             except ContentError as error:
                 failures.append(str(error))
     if failures:
@@ -99,6 +101,16 @@ def _output(code: str, raises: str | None, where: str, timeout: float) -> dict:
     if raises and not run.error:
         raise ContentError(f"{where}: marked raises={raises}, but the example ran without an error")
     return {"text": run.stdout, "error": run.error, "figures": list(run.figures)}
+
+
+def _check_figure_description(example: dict, here: str) -> None:
+    """A figure's description is its accessible name, so an example needs one exactly when it draws figures."""
+    count = len(example["output"]["figures"])
+    if count and not example["figure"]:
+        drawn = "a figure" if count == 1 else f"{count} figures"
+        raise ContentError(f"{here}: the example draws {drawn} but has no description; add a '### Figure' section after its code")
+    if not count and example["figure"]:
+        raise ContentError(f"{here} Figure: the example draws no figure; remove the '### Figure' description")
 
 
 def _versions() -> list[dict]:

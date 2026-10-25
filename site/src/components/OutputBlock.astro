@@ -1,22 +1,25 @@
 ---
 // What a code example produced: its printed text, the expected error's final line, and its figures.
 // Figures are Matplotlib's SVGs, inlined, on a white card in both themes (their own background is white).
+// Each is an image named by the example's figure description, in the page's Language.
 import type { Output } from "../content";
-import { labelAttributes } from "../labels";
+import { labelAttributes, type Twin } from "../labels";
 import Text from "./Text.astro";
 
 interface Props {
   output: Output;
+  figure: Twin | null; // the figure description; the content build requires one when there are figures
 }
 
-const { output } = Astro.props;
+const { output, figure } = Astro.props;
+if (output.figures.length > 0 && !figure) throw new Error("OutputBlock: figures without a figure description");
 ---
 
 <div class="output" data-output>
   <p class="output-label"><Text label="output" /></p>
   {output.text && <pre class="text">{output.text}</pre>}
   {output.error && <pre class="error">{output.error}</pre>}
-  {output.figures.map((svg) => <div class="figure" role="img" {...labelAttributes({ "aria-label": "figure" })} set:html={svg} />)}
+  {output.figures.map((svg) => <div class="figure" role="img" {...labelAttributes({ "aria-label": figure! })} set:html={svg} />)}
 </div>
 
 <style>

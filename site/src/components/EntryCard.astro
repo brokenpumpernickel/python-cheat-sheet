@@ -31,7 +31,7 @@ const { pitfall } = entry;
   <h2 id={headingId}><Text en={entry.title} pl={entry.pl.title} /></h2>
   <p class="explain"><Text html en={entry.explain} pl={entry.pl.explain} /></p>
   <CodeBlock code={entry.code} />
-  <OutputBlock output={entry.output} />
+  <OutputBlock output={entry.output} figure={entry.figure ? { en: entry.figure, pl: entry.pl.figure! } : null} />
 
   {
     pitfall && (
@@ -40,7 +40,9 @@ const { pitfall } = entry;
           <strong><Text label="pitfall" />:</strong> <Text html en={pitfall.text} pl={entry.pl.pitfall!} />
         </p>
         {pitfall.code && <CodeBlock code={pitfall.code} />}
-        {pitfall.output && <OutputBlock output={pitfall.output} />}
+        {pitfall.output && (
+          <OutputBlock output={pitfall.output} figure={pitfall.figure ? { en: pitfall.figure, pl: entry.pl.pitfallFigure! } : null} />
+        )}
       </aside>
     )
   }

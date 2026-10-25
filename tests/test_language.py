@@ -26,13 +26,24 @@ VISIBLE_TEXT = """() => {
 }"""
 
 # Each piece of text the page holds in `language`, wherever it differs from its twin (components/Text.astro
-# renders the English, then the Polish).
-PROSE = """(language) => [...document.querySelectorAll(`[data-lang="${language}"]`)]
-    .filter((element) => {
-        const twin = language === "en" ? element.nextElementSibling : element.previousElementSibling;
-        return element.textContent !== twin.textContent;
-    })
-    .map((element) => element.textContent.trim())"""
+# renders the English, then the Polish), and content prose in labelled attributes, such as a figure's
+# description (labels.ts keeps its twins in data-<name>-<language>).
+PROSE = """(language) => {
+    const texts = [...document.querySelectorAll(`[data-lang="${language}"]`)]
+        .filter((element) => {
+            const twin = language === "en" ? element.nextElementSibling : element.previousElementSibling;
+            return element.textContent !== twin.textContent;
+        })
+        .map((element) => element.textContent.trim());
+    const other = language === "en" ? "pl" : "en";
+    for (const element of document.querySelectorAll("[data-label-attributes]")) {
+        for (const name of element.dataset.labelAttributes.split(" ").filter((pair) => !pair.includes("="))) {
+            const text = element.getAttribute(`data-${name}-${language}`);
+            if (text !== element.getAttribute(`data-${name}-${other}`)) texts.push(text);
+        }
+    }
+    return texts;
+}"""
 
 
 def switch(page: Page):
@@ -196,6 +207,25 @@ def test_the_copy_button_follows_the_switch(page: Page, context: BrowserContext,
     expect(card.get_by_role("button")).to_have_text("Copy", use_inner_text=True)
 
 
+def test_a_figure_is_named_by_its_description_in_the_active_language(page: Page, site_url):
+    page.goto(f"{site_url}#charts")
+    figure = entry(page, "charts/line-chart").locator('[role="img"]')  # not the svg inside it
+
+    expect(figure).to_have_accessible_name("A line rising ever faster through three points.")
+    choose(page, "PL")
+    expect(figure).to_have_accessible_name("Linia rosnąca coraz szybciej przez trzy punkty.")
+    choose(page, "EN")
+    expect(figure).to_have_accessible_name("A line rising ever faster through three points.")
+
+
+def test_a_figure_opened_in_polish_has_its_polish_name(page: Page, site_url):
+    page.goto(f"{site_url}?lang=pl#charts")
+
+    expect(entry(page, "charts/line-chart").locator('[role="img"]')).to_have_accessible_name(
+        "Linia rosnąca coraz szybciej przez trzy punkty."
+    )
+
+
 # Remembering the choice, and ?lang=
 
 
@@ -313,7 +343,7 @@ def test_no_text_of_the_other_language_is_left_on_screen(page: Page, site_url, l
     assert on_screen(page, labels, language.lower())  # the check does see the Language shown
 
 
-@pytest.mark.parametrize("view", ["map", "numbers"])
+@pytest.mark.parametrize("view", ["map", "numbers", "charts (trail rail)"])
 def test_no_english_is_left_after_switching_to_polish(page: Page, site_url, labels, view):
     VIEWS[view](page, site_url)
     choose(page, "PL")

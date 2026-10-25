@@ -21,7 +21,6 @@ const en = {
   startHere: "Start here",
   hintSearch: "to search",
   output: "Output",
-  figure: "Figure drawn by the code above",
   pitfall: "Pitfall",
   watchOut: "Watch out!",
   seeAlso: "See also",
@@ -47,6 +46,9 @@ const en = {
 
 export type LabelKey = keyof typeof en;
 
+/** Content prose in both Languages, such as a figure description. */
+export type Twin = Record<Language, string>;
+
 const pl: Record<LabelKey, string> = {
   siteTitle: "Ściągawka z Pythona",
   map: "Mapa",
@@ -63,7 +65,6 @@ const pl: Record<LabelKey, string> = {
   startHere: "Zacznij tutaj",
   hintSearch: "wyszukiwanie",
   output: "Wynik",
-  figure: "Wykres narysowany przez powyższy kod",
   pitfall: "Pułapka",
   watchOut: "Uwaga!",
   seeAlso: "Zobacz też",
@@ -103,13 +104,22 @@ export function label(key: LabelKey, language: Language = defaultLanguage): stri
 }
 
 /** Attributes whose values are labels, such as aria-label, ready to spread onto an element: rendered in
- * the default Language, and marked (data-label-attributes) so client/language.ts can switch them. */
-export function labelAttributes(attributes: Record<string, LabelKey>): Record<string, string> {
-  const rendered: Record<string, string> = {
-    "data-label-attributes": Object.entries(attributes)
-      .map(([name, key]) => `${name}=${key}`)
-      .join(" "),
-  };
-  for (const [name, key] of Object.entries(attributes)) rendered[name] = label(key);
+ * the default Language, and marked (data-label-attributes) so client/language.ts can switch them. A value
+ * is an interface label's key, marked as name=key, or content prose as its twins, marked as the bare name
+ * and kept in data-<name>-<language> attributes. */
+export function labelAttributes(attributes: Record<string, LabelKey | Twin>): Record<string, string> {
+  const marks: string[] = [];
+  const rendered: Record<string, string> = {};
+  for (const [name, value] of Object.entries(attributes)) {
+    if (typeof value === "string") {
+      marks.push(`${name}=${value}`);
+      rendered[name] = label(value);
+    } else {
+      marks.push(name);
+      rendered[name] = value[defaultLanguage];
+      for (const language of languages) rendered[`data-${name}-${language}`] = value[language];
+    }
+  }
+  rendered["data-label-attributes"] = marks.join(" ");
   return rendered;
 }

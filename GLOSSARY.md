@@ -40,6 +40,10 @@ An optional callout on an Entry describing a common mistake Students make with t
 _Avoid_: Gotcha, warning, tip
 _Polish_: Pułapka
 
+**Figure description**:
+A sentence or two in both Languages saying what the figures an example draws show; it is their accessible name for screen readers. Required exactly when the example draws a figure.
+_Avoid_: Alt text, caption
+
 ## Navigation
 
 **Overview**:
