@@ -6,12 +6,23 @@ See the spec (`.scratch/python-cheat-sheet/spec.md`): "Content model", "Executio
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The Markdown syntax for Area descriptions, Topic files and Entries (both Languages, Pitfall with optional code, expected-error marker, See-also, glyph, planned flag) is decided and written down briefly; the full authoring guide comes in ticket 10.
-- [ ] One command (run through uv) builds content and site; a second serves the built site locally.
-- [ ] Each Entry's example runs in its own fresh Jupyter kernel; stdout is captured as its Output, and Entries cannot see each other's variables.
-- [ ] The generated content data matches the shape in the spec and is loaded by Astro through a typed schema.
-- [ ] Footer shows the real Python and library versions from the uv environment.
-- [ ] Test infrastructure for both seams exists and runs with one `uv run pytest`: a content-build test (fixture folder in, data out) and a browser test (Playwright) that opens the built fixture site, follows a Topic link and a deep Entry link, and uses Back.
-- [ ] The real content folder contains one sample Topic (e.g. Lists, taken from the prototype) so the page is demoable.
+- [x] The Markdown syntax for Area descriptions, Topic files and Entries (both Languages, Pitfall with optional code, expected-error marker, See-also, glyph, planned flag) is decided and written down briefly; the full authoring guide comes in ticket 10.
+- [x] One command (run through uv) builds content and site; a second serves the built site locally.
+- [x] Each Entry's example runs in its own fresh Jupyter kernel; stdout is captured as its Output, and Entries cannot see each other's variables.
+- [x] The generated content data matches the shape in the spec and is loaded by Astro through a typed schema.
+- [x] Footer shows the real Python and library versions from the uv environment.
+- [x] Test infrastructure for both seams exists and runs with one `uv run pytest`: a content-build test (fixture folder in, data out) and a browser test (Playwright) that opens the built fixture site, follows a Topic link and a deep Entry link, and uses Back.
+- [x] The real content folder contains one sample Topic (e.g. Lists, taken from the prototype) so the page is demoable.
+
+## Comments
+
+**Resolved by the tracer bullet.** Notes for the tickets that build on it:
+
+- **Syntax** is in `docs/content-format.md` (Area order in `content/areas.yaml`, one folder per Area with `_area.md`, one file per Topic; the `PL:` pair rule; ` ```python raises=X `; `### Pitfall`; `### See also`; `glyph` and `planned` in frontmatter). Ticket 10 grows it into the authoring guide.
+- **Commands:** `uv run cheatsheet build` (content build into `generated/content.json`, then Astro into `site/dist/`; runs `npm ci` first if `site/node_modules` is missing) and `uv run cheatsheet serve`. Tests: `uv run pytest` (needs `uv run playwright install chromium` once).
+- **Prose fields** (`explain`, Pitfall `text` and their Polish counterparts) are stored as inline HTML rendered by the content build, so Astro never parses Markdown. Titles, summaries and blurbs are plain text. Search (06) will need a tag-stripped copy.
+- **For 03:** the parser already rejects many malformed inputs with a file:line location (missing frontmatter fields or Polish, more than one code block, duplicate Entry ids, a Topic order naming a missing file, a Topic file missing from the Topic order, unknown headings or blocks), and the build already checks `raises=` against what the example does. Only the unmarked-error case has a test. Still missing: dangling See-also references, figure capture (`figures` is always `[]`), and one test per rule. Execution is sequential, about 1.2 s per kernel; running examples in parallel would speed up the MVP content.
+- **For 02:** set the Pages base path with `uv run cheatsheet build --base /python-cheat-sheet/`. Node dependencies are locked in `site/package-lock.json`. CI needs `uv run playwright install --with-deps chromium`.
+- **For 12:** the Lists sample leaves out the prototype's See-also links to Topics that don't exist yet. Add them back once those Topics land: Sorting → `functions/lambda`, List comprehensions → `loops/for-over-a-collection`.
