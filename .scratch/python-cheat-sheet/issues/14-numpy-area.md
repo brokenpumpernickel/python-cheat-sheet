@@ -32,7 +32,7 @@ Conventions from tickets 12 and 13 apply: Outputs show values, not English sente
 
 ## Comments
 
-**Resolved** in PR brokenpumpernickel/python-cheat-sheet#PRNUM (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/PRNUM). The NumPy Area is real: five Topics, 26 Entries, 11 Pitfalls (9 with code, 5 of them expected errors). Random moved from third to last in the Topic order, and the Area blurb now names matrices, sample statistics and simulations.
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#16 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/16). The NumPy Area is real: five Topics, 26 Entries, 11 Pitfalls (9 with code, 5 of them expected errors). Random moved from third to last in the Topic order, and the Area blurb now names matrices, sample statistics and simulations.
 
 Every Entry, for the Author to skim (English / Polish):
 
