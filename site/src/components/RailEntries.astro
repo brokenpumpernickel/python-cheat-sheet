@@ -1,0 +1,60 @@
+---
+// A Topic's Entries in the Index rail, shown under its pin while it's the current Topic. The one in view
+// is marked aria-current by the scroll spy (client/rail.ts).
+import type { Topic } from "../content";
+
+interface Props {
+  topic: Topic;
+}
+
+const { topic } = Astro.props;
+---
+
+<ul class="entries">
+  {
+    topic.entries.map((entry) => (
+      <li>
+        <a href={`#${topic.id}/${entry.id}`} data-rail-entry={`${topic.id}/${entry.id}`}>
+          {entry.title}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .entries {
+    display: none;
+    flex-direction: column;
+    gap: 1px;
+    margin: 4px 0 8px 14px;
+    padding: 0 0 0 10px;
+    border-left: 2px solid hsl(var(--hue) 45% 55% / 0.5);
+    list-style: none;
+  }
+  /* Only the current Topic's list shows, and never in the phone strip. */
+  :global(li:has(> [aria-current="page"])) > .entries {
+    display: flex;
+  }
+  @media (max-width: 860px) {
+    :global(li:has(> [aria-current="page"])) > .entries {
+      display: none;
+    }
+  }
+  a {
+    display: block;
+    padding: 3px 8px;
+    border-radius: 8px;
+    color: var(--ink-2);
+    font: 600 13px/1.35 var(--font-body);
+    text-decoration: none;
+  }
+  a:hover,
+  a[aria-current] {
+    background: var(--card);
+    color: var(--ink);
+  }
+  a[aria-current] {
+    box-shadow: inset 3px 0 0 hsl(var(--hue) 55% var(--deep-l));
+  }
+</style>

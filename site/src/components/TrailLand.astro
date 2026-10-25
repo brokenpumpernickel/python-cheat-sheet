@@ -1,0 +1,254 @@
+---
+// One Area on the Trail: a sign with its title and blurb, then its Topics as stepping stones swaying
+// along a dotted path, numbered in Topic order, with each Topic's title and summary beside its stone.
+// Planned Areas and Topics are drawn faded and dashed, without numbers, and aren't links.
+import type { Area } from "../content";
+import { label } from "../labels";
+import { stopNumbers, trailLayout } from "../map/trail";
+
+interface Props {
+  area: Area;
+  index: number; // the Area's place on the Trail
+}
+
+const { area, index } = Astro.props;
+const { stones, height, path } = trailLayout(area.topics.length, index);
+const numbers = stopNumbers(area.topics);
+---
+
+<section
+  class:list={["land", { planned: area.planned }]}
+  data-land-section={area.id}
+  aria-labelledby={`land-${area.id}`}
+  style={{ "--hue": area.hue }}
+>
+  <header class="sign">
+    <h2 id={`land-${area.id}`}>{area.title}</h2>
+    <p>{area.blurb}</p>
+    {area.planned && <p class="soon">{label("comingSoon")}</p>}
+  </header>
+  <div class="path" style={{ height: `${height}px` }}>
+    <svg viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" aria-hidden="true"><path d={path} /></svg>
+    <ol class="stones">
+      {
+        area.topics.map((topic, j) => (
+          <li class:list={{ left: stones[j].x > 50 }} style={{ "--x": `${stones[j].x}%`, "--y": `${stones[j].y}px` }}>
+            {topic.planned ? (
+              <span class="stone planned">
+                <span class="glyph" aria-hidden="true">
+                  {topic.glyph}
+                </span>
+                <span class="label">
+                  <b>{topic.title}</b>
+                  {!area.planned && <span class="sr-only">({label("comingSoon")})</span>}
+                </span>
+              </span>
+            ) : (
+              <a class="stone" href={`#${topic.id}`} data-tile={topic.id}>
+                <span class="number">{numbers[j]}</span>{" "}
+                <span class="glyph" aria-hidden="true">
+                  {topic.glyph}
+                </span>
+                <span class="label">
+                  <b>{topic.title}</b>
+                  {topic.summary && <span class="summary"> {topic.summary}</span>}
+                </span>
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .land {
+    margin-top: 36px;
+    padding: 26px 0 10px;
+    border-radius: 48px;
+    background: linear-gradient(
+      hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.75),
+      hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.35)
+    );
+    scroll-margin-top: 24px;
+  }
+  .land.planned {
+    background: none;
+    border: 2.5px dashed hsl(var(--hue) 25% 60% / 0.6);
+  }
+
+  .sign {
+    padding: 0 16px;
+    text-align: center;
+  }
+  h2 {
+    display: inline-block;
+    margin: 0;
+    padding: 4px 22px 6px;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: 0 4px 0 hsl(var(--hue) 40% 50% / 0.35);
+    font: 700 26px var(--font-round);
+    color: hsl(var(--hue) 55% var(--deep-l));
+  }
+  .sign p {
+    margin: 8px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .sign .soon {
+    margin: 2px 0 0;
+    font: 800 11px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+  .planned h2 {
+    background: transparent;
+    box-shadow: none;
+    color: var(--ink-3);
+  }
+
+  .path {
+    position: relative;
+    margin: 0 4%;
+  }
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  path {
+    fill: none;
+    stroke: hsl(var(--hue) 45% 55% / 0.55);
+    stroke-width: 5;
+    stroke-dasharray: 2 14;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .planned path {
+    stroke: var(--line);
+  }
+
+  .stones {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stones li {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+  }
+
+  .stone {
+    position: absolute;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow:
+      0 7px 0 hsl(var(--hue) 40% 45% / 0.4),
+      0 16px 26px rgb(20 40 70 / 0.14);
+    transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  a.stone:hover,
+  a.stone:focus-visible {
+    transform: translateY(-4px) scale(1.08);
+  }
+  .number {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: hsl(var(--hue) 55% var(--deep-l));
+    color: var(--card);
+    font: 700 13px var(--font-round);
+  }
+  .glyph {
+    font: 700 26px var(--font-mono);
+    letter-spacing: -0.04em;
+    color: hsl(var(--hue) 60% var(--deep-l));
+  }
+
+  /* Beside the stone, on the side away from the path's middle. */
+  .label {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 16px);
+    translate: 0 -50%;
+    width: 210px;
+    font: 600 13px/1.35 var(--font-body);
+    color: var(--ink-2);
+  }
+  .label b {
+    display: block;
+    font: 700 18px var(--font-round);
+    color: var(--ink);
+  }
+  .left .label {
+    left: auto;
+    right: calc(100% + 16px);
+    text-align: right;
+  }
+
+  .stone.planned {
+    width: 74px;
+    height: 74px;
+    background: transparent;
+    border: 2px dashed hsl(var(--hue) 25% 60% / 0.6);
+    box-shadow: none;
+    opacity: 0.8;
+  }
+  .stone.planned .glyph {
+    font-size: 16px;
+    color: var(--ink-3);
+  }
+  .stone.planned .label {
+    width: auto;
+    white-space: nowrap;
+  }
+  .stone.planned .label b {
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  /* Phones: smaller stones, and titles without their summaries. */
+  @media (max-width: 600px) {
+    .stone {
+      width: 84px;
+      height: 84px;
+    }
+    .glyph {
+      font-size: 21px;
+    }
+    .label {
+      width: 110px;
+    }
+    .label b {
+      font-size: 15px;
+    }
+    .summary {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stone {
+      transition: none;
+    }
+  }
+</style>

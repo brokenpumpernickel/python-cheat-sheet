@@ -17,7 +17,7 @@ def test_overview_lists_areas_and_topics(page: Page, site_url):
     expect(page.get_by_role("heading", name="Basics", level=2)).to_be_visible()
     expect(page.get_by_role("link", name="Numbers")).to_be_visible()
     expect(page.get_by_role("link", name="Strings")).to_be_visible()
-    expect(page.get_by_text("Sets")).to_be_visible()
+    expect(page.get_by_text("Sets").filter(visible=True)).to_be_visible()
     expect(page.get_by_role("link", name="Sets")).to_have_count(0)
 
 
@@ -40,7 +40,7 @@ def test_topic_link_opens_the_topic_and_back_returns_to_the_overview(page: Page,
 def test_entry_link_scrolls_to_the_entry_and_back_steps_out(page: Page, site_url):
     page.goto(site_url)
     page.get_by_role("link", name="Numbers").click()
-    page.get_by_role("link", name="Division").click()
+    page.get_by_role("navigation", name="Entries").get_by_role("link", name="Division").click()
 
     expect(page).to_have_url(f"{site_url}#numbers/division")
     expect(page.get_by_role("heading", name="Division")).to_be_in_viewport()

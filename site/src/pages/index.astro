@@ -10,6 +10,7 @@ import Overview from "../components/Overview.astro";
 import Search from "../components/Search.astro";
 import TopBar from "../components/TopBar.astro";
 import TopicView from "../components/TopicView.astro";
+import { ARRANGEMENT_KEY } from "../client/arrangement";
 import { loadContent } from "../content";
 import { defaultLanguage, label } from "../labels";
 
@@ -17,12 +18,18 @@ const { areas, meta } = loadContent();
 ---
 
 <!doctype html>
-<html lang={defaultLanguage}>
+<html lang={defaultLanguage} data-arrangement="map">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>{label("siteTitle")}</title>
+    <script is:inline define:vars={{ key: ARRANGEMENT_KEY }}>
+      // The remembered Map | Trail choice, applied before the first paint (client/arrangement.ts runs the toggle).
+      try {
+        if (localStorage.getItem(key) === "trail") document.documentElement.dataset.arrangement = "trail";
+      } catch {}
+    </script>
   </head>
   <body>
     <TopBar />

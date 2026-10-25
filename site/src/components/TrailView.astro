@@ -1,0 +1,139 @@
+---
+// The Trail arrangement of the Overview: one stretch of path per Area, its Topics as numbered stepping
+// stones in Topic order, plus dots at the left edge that jump to each Area and show which is in view
+// (client/trail.ts). Only one arrangement shows at a time, chosen by the top bar's Map | Trail toggle.
+import type { Area } from "../content";
+import { label } from "../labels";
+import TrailLand from "./TrailLand.astro";
+
+interface Props {
+  areas: Area[];
+}
+
+const { areas } = Astro.props;
+---
+
+<div class="trail" data-arrangement="trail">
+  <nav class="lands" aria-label={label("areas")}>
+    {
+      areas.map((area) => (
+        <button type="button" class:list={["dot", { planned: area.planned }]} data-land={area.id} style={{ "--hue": area.hue }}>
+          <i aria-hidden="true" />
+          <span>{area.title}</span>
+        </button>
+      ))
+    }
+  </nav>
+  <p class="start">
+    {label("startHere")} <span class="arrow" aria-hidden="true">↓</span>
+    <small>
+      {label("hintStone")} · <kbd data-shortcut>Ctrl K</kbd> {label("hintSearch")} · <kbd>Esc</kbd> {label("hintBack")}
+    </small>
+  </p>
+  {areas.map((area, index) => <TrailLand area={area} index={index} />)}
+</div>
+
+<style>
+  .trail {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 24px 16px 140px;
+  }
+
+  .start {
+    margin: 0;
+    text-align: center;
+    font: 700 22px var(--font-round);
+  }
+  .arrow {
+    display: block;
+    font-size: 26px;
+    color: var(--ink-3);
+    animation: bob 1.6s ease-in-out infinite;
+  }
+  .start small {
+    display: block;
+    font: 600 14px var(--font-body);
+    color: var(--ink-2);
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(5px);
+    }
+  }
+
+  /* The Area dots, fixed at the left edge while the Trail scrolls; a dot's name shows on hover, on
+     focus and for the Area in view (aria-current, set by client/trail.ts). */
+  .lands {
+    position: fixed;
+    z-index: 3;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .dot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px;
+    border: 0;
+    background: none;
+    color: var(--ink-3);
+    font: 700 13px var(--font-round);
+    text-align: left;
+    cursor: pointer;
+  }
+  .dot i {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: hsl(var(--hue) 50% 62%);
+    box-shadow: 0 0 0 4px hsl(var(--hue) 50% 62% / 0.2);
+    transition: transform 0.2s;
+  }
+  .dot.planned i {
+    background: transparent;
+    border: 2px dashed hsl(var(--hue) 25% 60%);
+    box-shadow: none;
+  }
+  .dot span {
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s,
+      transform 0.2s;
+  }
+  .lands:hover span,
+  .dot:focus-visible span,
+  .dot[aria-current] span {
+    opacity: 1;
+    transform: none;
+  }
+  .dot[aria-current] {
+    color: var(--ink);
+  }
+  .dot[aria-current] i {
+    transform: scale(1.35);
+  }
+  /* No room beside the Trail on narrow screens. */
+  @media (max-width: 860px) {
+    .lands {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arrow {
+      animation: none;
+    }
+    .dot i,
+    .dot span {
+      transition: none;
+    }
+  }
+</style>

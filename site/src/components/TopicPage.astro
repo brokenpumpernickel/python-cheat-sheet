@@ -24,7 +24,9 @@ const { area, topic, previous, next, links } = Astro.props;
 
 <article class="topic" data-topic={topic.id} aria-labelledby={`topic-${topic.id}`} tabindex="-1" hidden style={{ "--hue": area.hue }}>
   <header class="hero">
-    <a class="home" href="#" data-home><span aria-hidden="true">←</span> {label("map")}</a>
+    <a class="home" href="#" data-home>
+      <span aria-hidden="true">←</span> <span data-arrangement="map">{label("map")}</span><span data-arrangement="trail">{label("trail")}</span>
+    </a>
     <span class="hero-glyph" aria-hidden="true">{topic.glyph}</span>
     <div>
       <p class="area-name">{area.title}</p>
@@ -122,10 +124,11 @@ const { area, topic, previous, next, links } = Astro.props;
     color: var(--ink-2);
   }
 
-  /* Stays at the top while the cards scroll under it; client/views.ts scrolls Entries in below it. */
+  /* Stays at the top (below the Index strip on a phone, --sticky-top) while the cards scroll under it;
+     client/views.ts scrolls Entries in below it. */
   .chips {
     position: sticky;
-    top: 0;
+    top: var(--sticky-top, 0px);
     z-index: 2;
     display: flex;
     flex-wrap: wrap;
