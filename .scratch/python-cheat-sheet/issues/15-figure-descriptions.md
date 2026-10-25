@@ -24,7 +24,7 @@
 
 ## Comments
 
-**Resolved** in PR (link added when opened).
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#17 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/17).
 
 - **Format:** a `### Figure` section right after the code it describes, holding one English paragraph and its `PL:` twin. Before `### Pitfall` it belongs to the Entry's example; after the Pitfall's code, to the Pitfall's. One description covers every figure an example draws. Descriptions are plain text, because they are read out, so Markdown in them fails the build.
 - **Validation:** the parser checks the pair rule, plain text, a second `### Figure` for the same code, and a `### Figure` after a Pitfall that has no code. After the examples run, the build checks that an example has a description exactly when it drew figures. These two messages give the Entry's line (`basics/names.md:10 (names/binding): the example draws a figure but has no description; …`), and they are listed with the other failing examples. The other run failures still name the file and Entry without a line, as before.
