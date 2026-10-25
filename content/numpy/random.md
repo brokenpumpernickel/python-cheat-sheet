@@ -50,6 +50,7 @@ print(rng.integers(1, 7, (2, 5)))
 ### See also
 
 - arrays/two-dimensional-arrays
+- scatter-plots/a-scatter-plot
 
 ## Normal samples
 
@@ -72,6 +73,7 @@ print(f"{heights.std(ddof=1):.2f}")
 ### See also
 
 - aggregates/standard-deviation-and-variance
+- histograms/a-histogram
 
 ## Choosing and shuffling
 
@@ -115,3 +117,4 @@ print(f"{6 / 36:.5f}")
 
 - aggregates/along-an-axis
 - aggregates/counting-and-proportions-with-a-mask
+- bar-charts/a-probability-mass-function

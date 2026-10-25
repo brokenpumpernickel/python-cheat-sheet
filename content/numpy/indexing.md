@@ -66,6 +66,7 @@ print(m[:2, 1:])
 ### See also
 
 - arrays/two-dimensional-arrays
+- heatmaps/values-in-the-cells
 
 ## Boolean masks
 

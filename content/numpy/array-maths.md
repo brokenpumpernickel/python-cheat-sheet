@@ -60,6 +60,10 @@ print(np.exp(np.array([0, 1, 2])).round(2))
 print(np.abs(np.array([-2, 3, -5])))
 ```
 
+### See also
+
+- plotting-basics/a-line-plot
+
 ## Comparisons
 
 PL: Porównania
@@ -217,3 +221,4 @@ print(exp_pdf(x))
 
 - functions/defining-and-calling
 - indexing/changing-values-through-a-mask
+- histograms/density-with-a-pdf-on-top

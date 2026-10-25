@@ -41,6 +41,7 @@ print({"mean": data.mean()})
 
 - lists/summaries
 - strings/f-strings
+- plotting-basics/horizontal-and-vertical-lines
 
 ## Standard deviation and variance
 
@@ -70,6 +71,10 @@ import numpy as np
 heights = np.array([168, 175, 181])
 print(f"{heights.std():.3f}")
 ```
+
+### See also
+
+- bar-charts/means-with-error-bars
 
 ## Along an axis
 
@@ -135,6 +140,10 @@ best = scores.argmax()
 print(best, names[best])
 print(names[scores.argmin()])
 ```
+
+### See also
+
+- plotting-basics/horizontal-and-vertical-lines
 
 ## Counting and proportions with a mask
 
