@@ -73,14 +73,19 @@ def build_site(content_data: Path, out_dir: Path, base: str = "/") -> None:
         raise RuntimeError("npm not found; install Node.js to build the site")
     if not (SITE_DIR / "node_modules").is_dir():
         subprocess.run([npm, "ci"], cwd=SITE_DIR, check=True)
+    # Astro moves built assets into its output folder by renaming them, which fails across drives
+    # (EXDEV on Windows), so it builds inside the site folder and the result is copied to out_dir.
+    staging = SITE_DIR / ".astro" / "out"
     env = {
         **os.environ,
         "CHEATSHEET_CONTENT_DATA": str(content_data.resolve()),
-        "CHEATSHEET_OUT_DIR": str(out_dir.resolve()),
+        "CHEATSHEET_OUT_DIR": str(staging),
         "SITE_BASE": base,
         "ASTRO_TELEMETRY_DISABLED": "1",
     }
     subprocess.run([npm, "run", "build"], cwd=SITE_DIR, env=env, check=True)
+    shutil.rmtree(out_dir, ignore_errors=True)
+    shutil.copytree(staging, out_dir)
 
 
 def _output(code: str, raises: str | None, where: str) -> dict:

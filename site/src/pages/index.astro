@@ -1,129 +1,45 @@
 ---
-// The whole cheat sheet is one page: the Overview plus every Topic page, switched by the hash route.
+// The whole cheat sheet is one page: the Overview plus every Topic page, switched by the hash route
+// (src/client). Components render everything at build time; the client only shows, hides and animates.
+import "@fontsource-variable/fredoka";
+import "@fontsource-variable/nunito";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/theme.css";
+import Footer from "../components/Footer.astro";
+import Overview from "../components/Overview.astro";
+import TopBar from "../components/TopBar.astro";
+import TopicView from "../components/TopicView.astro";
 import { loadContent } from "../content";
+import { defaultLanguage, label } from "../labels";
 
 const { areas, meta } = loadContent();
-const topics = areas.flatMap((area) => area.topics.filter((topic) => !topic.planned).map((topic) => ({ area, topic })));
-const versions = meta.versions.map((v) => `${v.name} ${v.version}`).join(" · ");
-const outputOf = (output: { text: string; error: string | null }) =>
-  [output.text, output.error].filter(Boolean).join("\n");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={defaultLanguage}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Python Cheat Sheet</title>
+    <meta name="color-scheme" content="light dark" />
+    <title>{label("siteTitle")}</title>
   </head>
   <body>
-    <main>
-      <section data-overview aria-labelledby="overview-title">
-        <h1 id="overview-title">Python Cheat Sheet</h1>
-        {
-          areas.map((area) => (
-            <section class:list={["area", { planned: area.planned }]} data-area={area.id}>
-              <h2>
-                {area.title}
-                {area.planned && <small>(planned)</small>}
-              </h2>
-              <p>{area.blurb}</p>
-              <ul>
-                {area.topics.map((topic) =>
-                  topic.planned ? (
-                    <li class="planned">
-                      <span class="glyph">{topic.glyph}</span> {topic.title} <small>(planned)</small>
-                    </li>
-                  ) : (
-                    <li>
-                      <a href={`#${topic.id}`}>
-                        <span class="glyph">{topic.glyph}</span> {topic.title}
-                      </a>{" "}
-                      – {topic.summary}
-                    </li>
-                  ),
-                )}
-              </ul>
-            </section>
-          ))
-        }
-      </section>
-
-      {
-        topics.map(({ area, topic }) => (
-          <article class="topic" data-topic={topic.id} aria-labelledby={`topic-${topic.id}`} hidden>
-            <p>
-              <a href="#">← Overview</a> · {area.title}
-            </p>
-            <h1 id={`topic-${topic.id}`}>
-              <span class="glyph">{topic.glyph}</span> {topic.title}
-            </h1>
-            <p>{topic.summary}</p>
-            {topic.entries.map((entry) => (
-              <section class="entry" data-entry={`${topic.id}/${entry.id}`}>
-                <h2>
-                  <a href={`#${topic.id}/${entry.id}`}>{entry.title}</a>
-                </h2>
-                <p set:html={entry.explain} />
-                <pre><code>{entry.code}</code></pre>
-                <h3>Output</h3>
-                <pre class="output">{outputOf(entry.output)}</pre>
-              </section>
-            ))}
-          </article>
-        ))
-      }
+    <TopBar />
+    <main class="stage">
+      <Overview areas={areas} />
+      <TopicView areas={areas} />
     </main>
-
-    <footer>Examples run with {versions}</footer>
-
-    <style is:global>
-      body {
-        font-family: system-ui, sans-serif;
-        max-width: 50rem;
-        margin: 0 auto;
-        padding: 1rem;
-        line-height: 1.5;
-      }
-      pre {
-        background: #f3f4f6;
-        padding: 0.75rem;
-        overflow-x: auto;
-      }
-      .planned {
-        opacity: 0.55;
-      }
-      .glyph {
-        font-family: ui-monospace, monospace;
-      }
-      footer {
-        margin-top: 3rem;
-        font-size: 0.875rem;
-        color: #555;
-      }
-    </style>
+    <Footer versions={meta.versions} />
 
     <script>
-      // Hash routes: "" → Overview, "#topic" → that Topic, "#topic/entry" → that Topic scrolled to the Entry.
-      // An unknown or planned Topic falls back to the Overview. Back/forward follow the hash.
-      const overview = document.querySelector<HTMLElement>("[data-overview]")!;
-      const topicPages = [...document.querySelectorAll<HTMLElement>("[data-topic]")];
-
-      function route() {
-        const [topicId = "", entryId] = decodeURIComponent(location.hash.slice(1)).split("/");
-        const topic = topicPages.find((page) => page.dataset.topic === topicId);
-        overview.hidden = topic !== undefined;
-        for (const page of topicPages) page.hidden = page !== topic;
-
-        const entry = topic?.querySelector<HTMLElement>(`[data-entry="${CSS.escape(`${topicId}/${entryId}`)}"]`);
-        if (entry) entry.scrollIntoView();
-        else window.scrollTo(0, 0);
-      }
-
-      // The route decides the scroll position; the browser restoring an old one would fight it on Back.
-      history.scrollRestoration = "manual";
-      window.addEventListener("hashchange", route);
-      route();
+      import "../client/main";
     </script>
   </body>
 </html>
+
+<style>
+  /* The zoom scales the Overview up to four times its size; clip that instead of growing the page. */
+  .stage {
+    overflow: clip;
+  }
+</style>

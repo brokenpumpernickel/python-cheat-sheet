@@ -1,0 +1,138 @@
+---
+// One Topic's page: a header in the Area's hue, then its Entries. Minimal for now; ticket 05 builds the full page.
+// Focus moves to the article (tabindex -1) when the page is zoomed into.
+import type { Area, Topic } from "../content";
+import { label } from "../labels";
+
+interface Props {
+  area: Area;
+  topic: Topic;
+}
+
+const { area, topic } = Astro.props;
+const outputOf = (output: { text: string; error: string | null }) =>
+  [output.text, output.error].filter(Boolean).join("\n");
+---
+
+<article class="topic" data-topic={topic.id} aria-labelledby={`topic-${topic.id}`} tabindex="-1" hidden style={{ "--hue": area.hue }}>
+  <header class="hero">
+    <a class="home" href="#" data-home><span aria-hidden="true">←</span> {label("map")}</a>
+    <span class="hero-glyph" aria-hidden="true">{topic.glyph}</span>
+    <div>
+      <p class="area-name">{area.title}</p>
+      <h1 id={`topic-${topic.id}`}>{topic.title}</h1>
+      {topic.summary && <p class="summary">{topic.summary}</p>}
+    </div>
+  </header>
+
+  {
+    topic.entries.map((entry) => (
+      <section class="entry" data-entry={`${topic.id}/${entry.id}`}>
+        <h2>
+          <a href={`#${topic.id}/${entry.id}`}>{entry.title}</a>
+        </h2>
+        <p set:html={entry.explain} />
+        <pre><code>{entry.code}</code></pre>
+        <h3>{label("output")}</h3>
+        <pre class="output">{outputOf(entry.output)}</pre>
+      </section>
+    ))
+  }
+</article>
+
+<style>
+  .topic {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 8px 16px 64px;
+  }
+  .topic:focus {
+    outline: none;
+  }
+
+  .hero {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 22px;
+    margin-bottom: 24px;
+    padding: 26px 30px;
+    border-radius: 32px;
+    background: hsl(var(--hue) var(--isl-s) var(--isl-l));
+  }
+  .home {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: 0 3px 0 hsl(var(--hue) 40% 45% / 0.35);
+    font: 700 14px var(--font-round);
+    text-decoration: none;
+  }
+  .hero-glyph {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--card);
+    box-shadow: 0 6px 0 hsl(var(--hue) 40% 45% / 0.35);
+    font: 700 28px var(--font-mono);
+    color: hsl(var(--hue) 60% var(--deep-l));
+  }
+  .area-name {
+    margin: 0;
+    font: 800 12px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: hsl(var(--hue) 50% var(--deep-l));
+  }
+  h1 {
+    margin: 2px 0 6px;
+    font: 700 clamp(36px, 6vw, 56px)/1 var(--font-round);
+  }
+  .summary {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+
+  .entry {
+    margin: 0 0 20px;
+    padding: 20px 24px;
+    border-radius: 24px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+  .entry h2 {
+    margin: 0 0 6px;
+    font: 700 22px/1.2 var(--font-round);
+    color: hsl(var(--hue) 55% var(--deep-l));
+  }
+  .entry h2 a {
+    text-decoration: none;
+  }
+  .entry h3 {
+    margin: 12px 0 4px;
+    font: 800 11px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-2);
+  }
+  pre {
+    margin: 0;
+    padding: 12px 16px;
+    overflow-x: auto;
+    border-radius: 14px;
+    background: var(--code-bg);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  pre.output {
+    background: hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.55);
+  }
+</style>

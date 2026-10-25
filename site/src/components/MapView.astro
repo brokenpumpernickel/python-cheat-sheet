@@ -1,0 +1,48 @@
+---
+// The Map arrangement of the Overview: one island per Area, flowing and wrapping across the page.
+import type { Area } from "../content";
+import { label } from "../labels";
+import { BUBBLE, PLANNED_BUBBLE, ringLayout } from "../map/rings";
+import Island from "./Island.astro";
+
+interface Props {
+  areas: Area[];
+}
+
+const { areas } = Astro.props;
+// The widest island decides how far the whole Map shrinks to fit a narrow screen.
+const widest = Math.max(
+  ...areas.map((area) => ringLayout(area.topics.length, area.topics.some((t) => !t.planned) ? BUBBLE : PLANNED_BUBBLE).size),
+);
+---
+
+<div class="map" data-arrangement="map" style={{ "--widest": Math.ceil(widest), "--planned-bubble": PLANNED_BUBBLE }}>
+  <div class="sea">
+    {areas.map((area, index) => <Island area={area} index={index} />)}
+  </div>
+  <p class="hint">{label("hintDive")} · <kbd>Esc</kbd> {label("hintBack")}</p>
+</div>
+
+<style>
+  .map {
+    /* One ring-layout px; below 1px when the widest island wouldn't fit the screen. */
+    --u: min(1px, (100vw - 48px) / var(--widest));
+  }
+  .sea {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 72px 64px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 16px 32px;
+  }
+  .hint {
+    margin: 0 0 24px;
+    padding: 0 16px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+</style>

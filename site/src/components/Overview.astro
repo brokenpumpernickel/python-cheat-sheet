@@ -1,0 +1,25 @@
+---
+// The Overview: the zoomed-out view of the whole cheat sheet. The semantic zoom scales this element
+// toward a Topic's tile (any element with data-tile in the visible arrangement).
+import type { Area } from "../content";
+import { label } from "../labels";
+import MapView from "./MapView.astro";
+
+interface Props {
+  areas: Area[];
+}
+
+const { areas } = Astro.props;
+---
+
+<section class="overview" data-overview aria-labelledby="overview-title">
+  <h1 id="overview-title" class="sr-only">{label("siteTitle")}</h1>
+  <MapView areas={areas} />
+</section>
+
+<style>
+  .overview {
+    background-image: radial-gradient(circle at 1px 1px, var(--wave) 1.5px, transparent 0);
+    background-size: 26px 26px;
+  }
+</style>

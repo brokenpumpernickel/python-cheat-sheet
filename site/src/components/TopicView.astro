@@ -1,0 +1,17 @@
+---
+// The view shown instead of the Overview once a Topic is open: one page per non-planned Topic, all but
+// the current one hidden. Ticket 07 adds the Index rail beside the pages here.
+import type { Area } from "../content";
+import TopicPage from "./TopicPage.astro";
+
+interface Props {
+  areas: Area[];
+}
+
+const { areas } = Astro.props;
+const topics = areas.flatMap((area) => area.topics.filter((topic) => !topic.planned).map((topic) => ({ area, topic })));
+---
+
+<div class="topic-view" data-topic-view hidden>
+  {topics.map(({ area, topic }) => <TopicPage area={area} topic={topic} />)}
+</div>
