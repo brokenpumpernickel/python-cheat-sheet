@@ -1,5 +1,8 @@
 """Shared fixtures for the browser tests: sites built with the real Astro build and served locally."""
 
+import json
+import shutil
+import subprocess
 import threading
 from contextlib import contextmanager
 from pathlib import Path
@@ -10,6 +13,7 @@ from cheatsheet.build import build_content, build_site, write_content_data
 from cheatsheet.serve import make_server
 
 FIXTURES = Path(__file__).parent / "fixtures"
+LABELS = Path(__file__).parent.parent / "site" / "src" / "labels.ts"
 
 
 @contextmanager
@@ -30,6 +34,22 @@ def site_url(tmp_path_factory):
     """The site built from the fixture content folder, whose examples really run."""
     with built_site(build_content(FIXTURES / "site"), tmp_path_factory.mktemp("site")) as url:
         yield url
+
+
+@pytest.fixture(scope="session")
+def labels() -> dict:
+    """The interface label table (site/src/labels.ts) by Language, read with Node as the site build reads it."""
+    node = shutil.which("node")
+    assert node, "node not found; install Node.js to build the site"
+    script = f"const m = await import({json.dumps(LABELS.as_uri())}); console.log(JSON.stringify(m.labels));"
+    run = subprocess.run(
+        [node, "--input-type=module", "--no-warnings", "-e", script],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    return json.loads(run.stdout)
 
 
 @pytest.fixture(scope="session")

@@ -3,13 +3,14 @@
 // and a callout, with code and Output of its own when it has them) and See-also chips.
 // Deep links find the card by data-entry="topic/entry", and focus it (tabindex -1).
 import type { Entry } from "../content";
-import { label } from "../labels";
+import { labelAttributes } from "../labels";
 import CodeBlock from "./CodeBlock.astro";
 import OutputBlock from "./OutputBlock.astro";
+import Text from "./Text.astro";
 
 export interface SeeAlso {
   href: string;
-  title: string;
+  title: { en: string; pl: string };
   hue: number; // the linked Entry's Area hue
 }
 
@@ -26,17 +27,17 @@ const { pitfall } = entry;
 ---
 
 <section class="entry" data-entry={id} aria-labelledby={headingId} tabindex="-1">
-  {pitfall && <span class="sticker" aria-hidden="true">{label("watchOut")}</span>}
-  <h2 id={headingId}>{entry.title}</h2>
-  <p class="explain" set:html={entry.explain} />
+  {pitfall && <span class="sticker" aria-hidden="true"><Text label="watchOut" /></span>}
+  <h2 id={headingId}><Text en={entry.title} pl={entry.pl.title} /></h2>
+  <p class="explain"><Text html en={entry.explain} pl={entry.pl.explain} /></p>
   <CodeBlock code={entry.code} />
   <OutputBlock output={entry.output} />
 
   {
     pitfall && (
-      <aside class="pitfall" aria-label={label("pitfall")}>
+      <aside class="pitfall" {...labelAttributes({ "aria-label": "pitfall" })}>
         <p>
-          <strong>{label("pitfall")}:</strong> <Fragment set:html={pitfall.text} />
+          <strong><Text label="pitfall" />:</strong> <Text html en={pitfall.text} pl={entry.pl.pitfall!} />
         </p>
         {pitfall.code && <CodeBlock code={pitfall.code} />}
         {pitfall.output && <OutputBlock output={pitfall.output} />}
@@ -46,13 +47,13 @@ const { pitfall } = entry;
 
   {
     see.length > 0 && (
-      <nav class="see" aria-label={label("seeAlso")}>
+      <nav class="see" {...labelAttributes({ "aria-label": "seeAlso" })}>
         <span class="see-label" aria-hidden="true">
-          {label("seeAlso")}
+          <Text label="seeAlso" />
         </span>
         {see.map((link) => (
           <a href={link.href} style={{ "--hue": link.hue }}>
-            {link.title}
+            <Text {...link.title} />
           </a>
         ))}
       </nav>

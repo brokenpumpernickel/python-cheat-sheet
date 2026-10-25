@@ -14,6 +14,10 @@ export interface Views {
   /** Shows the Map | Trail choice just made: the new arrangement from its top, or inside a Topic, the
    * rail's new arrangement around the current Topic. */
   arrangementSwitched(): void;
+  /** Makes `change` (a Language switch) without losing the Student's place: the Entry being read, or else
+   * the first Entry, island or stretch of the Trail in view, stays where it is on screen, and inside a Topic
+   * the rail keeps highlighting the same Entry. */
+  keepPlace(change: () => void): void;
 }
 
 export function startViews(): Views {
@@ -123,7 +127,23 @@ export function startViews(): Views {
     if (parseRoute(location.hash, pages)) goToOverview();
   });
 
+  // The first Entry, island or stretch of the Trail still on screen in `view`.
+  const firstInView = (view: HTMLElement) =>
+    [...view.querySelectorAll<HTMLElement>("[data-entry], [data-area], [data-land-section]")].find(
+      (element) => element.getClientRects().length > 0 && element.getBoundingClientRect().bottom > 0,
+    ) ?? null;
+
   return {
+    keepPlace(change) {
+      const page = shown === null ? null : pages.get(shown)!;
+      const reading = page && rail.current();
+      const anchor = reading || firstInView(page ?? overview);
+      const before = anchor?.getBoundingClientRect().top ?? 0;
+      const atTop = window.scrollY === 0;
+      change();
+      if (anchor && !atTop) window.scrollBy(0, anchor.getBoundingClientRect().top - before);
+      if (reading) rail.jumped(reading);
+    },
     arrangementSwitched() {
       if (shown !== null) return rail.centre();
       window.scrollTo(0, 0);

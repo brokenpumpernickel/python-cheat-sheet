@@ -18,7 +18,7 @@ const links = new Map<string, SeeAlso>(
   stops.flatMap(({ area, topic }) =>
     topic.entries.map((entry) => {
       const ref = `${topic.id}/${entry.id}`;
-      return [ref, { href: `#${ref}`, title: entry.title, hue: area.hue }];
+      return [ref, { href: `#${ref}`, title: { en: entry.title, pl: entry.pl.title }, hue: area.hue }];
     }),
   ),
 );

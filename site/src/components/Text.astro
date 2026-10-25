@@ -1,0 +1,18 @@
+---
+// A piece of text in both Languages (ADR 0005): an interface label by its key, or content prose given as
+// its English and Polish twins. Both are rendered, and theme.css shows only the one in <html lang>; the
+// other is display: none, so it stays out of the accessibility tree. `html` renders the twins as inline
+// HTML (explanations and Pitfalls). The spans carry no styles of their own, so the text sits in whatever
+// element holds it, and component styles for that element's spans don't reach them.
+import { label as labelText, type LabelKey } from "../labels";
+
+type Props = ({ label: LabelKey; en?: never; pl?: never } | { label?: never; en: string; pl: string }) & {
+  html?: boolean;
+};
+
+const { label, html = false } = Astro.props;
+const en = label ? labelText(label, "en") : Astro.props.en!;
+const pl = label ? labelText(label, "pl") : Astro.props.pl!;
+---
+
+{html ? <><span data-lang="en" set:html={en} /><span data-lang="pl" set:html={pl} /></> : <><span data-lang="en">{en}</span><span data-lang="pl">{pl}</span></>}

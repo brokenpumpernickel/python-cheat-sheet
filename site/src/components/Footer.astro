@@ -1,7 +1,7 @@
 ---
 // The versions every example's Output was produced with.
 import type { Content } from "../content";
-import { label } from "../labels";
+import Text from "./Text.astro";
 
 interface Props {
   versions: Content["meta"]["versions"];
@@ -10,7 +10,7 @@ interface Props {
 const versions = Astro.props.versions.map((v) => `${v.name} ${v.version}`).join(" · ");
 ---
 
-<footer class="footer">{label("examplesRunWith")} {versions}</footer>
+<footer class="footer"><Text label="examplesRunWith" /> {versions}</footer>
 
 <style>
   .footer {

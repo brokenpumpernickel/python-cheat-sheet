@@ -93,6 +93,7 @@ def test_keyboard_tabs_to_a_tile_enter_zooms_in_and_esc_zooms_out(page: Page, si
 
     page.keyboard.press("Tab")  # the top bar's search pill
     page.keyboard.press("Tab")  # the Map | Trail toggle
+    page.keyboard.press("Tab")  # the EN | PL switch
     page.keyboard.press("Tab")
     expect(tile(page, "Numbers")).to_be_focused()
     page.keyboard.press("Tab")

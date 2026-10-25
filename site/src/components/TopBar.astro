@@ -1,34 +1,46 @@
 ---
-// The bar across the top of every view, with the search pill (the pop-up itself is Search.astro) and the
-// Map | Trail toggle (client/arrangement.ts), a radio group. Ticket 08 adds the EN | PL switch here.
-import { label } from "../labels";
+// The bar across the top of every view, with the search pill (the pop-up itself is Search.astro), the
+// Map | Trail toggle (client/arrangement.ts) and the EN | PL switch (client/language.ts), both radio groups.
+// The Language buttons read EN and PL whichever Language is shown, each marked with its own lang.
+import { labelAttributes } from "../labels";
+import Text from "./Text.astro";
 ---
 
 <header class="top-bar">
-  <p class="logo"><span class="badge" aria-hidden="true">py</span> <span class="site-title">{label("siteTitle")}</span></p>
+  <p class="logo"><span class="badge" aria-hidden="true">py</span> <span class="site-title"><Text label="siteTitle" /></span></p>
   <button class="search-pill" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /" data-search-open>
     <span class="icon" aria-hidden="true">⌕</span>
-    <span class="prompt">{label("searchPrompt")}</span>
+    <span class="prompt"><Text label="searchPrompt" /></span>
     <kbd aria-hidden="true" data-shortcut>Ctrl K</kbd>
   </button>
-  <div class="toggle" role="radiogroup" aria-label={label("arrangement")}>
-    <label><input type="radio" name="arrangement" value="map" autocomplete="off" checked data-arrangement-choice /><span>{label("map")}</span></label>
-    <label><input type="radio" name="arrangement" value="trail" autocomplete="off" data-arrangement-choice /><span>{label("trail")}</span></label>
+  <div class="switches">
+    <div class="toggle" role="radiogroup" {...labelAttributes({ "aria-label": "arrangement" })}>
+      <label><input type="radio" name="arrangement" value="map" autocomplete="off" checked data-arrangement-choice /><span><Text label="map" /></span></label>
+      <label><input type="radio" name="arrangement" value="trail" autocomplete="off" data-arrangement-choice /><span><Text label="trail" /></span></label>
+    </div>
+    <div class="toggle" role="radiogroup" {...labelAttributes({ "aria-label": "language" })}>
+      <label lang="en"><input type="radio" name="language" value="en" autocomplete="off" checked data-language-choice /><span>EN</span></label>
+      <label lang="pl"><input type="radio" name="language" value="pl" autocomplete="off" data-language-choice /><span>PL</span></label>
+    </div>
   </div>
 </header>
 
 <style>
+  /* Where the switches don't fit beside the logo and the pill (a narrow phone), they wrap to a second
+     row, at its right. */
   .top-bar {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     align-items: center;
-    gap: 16px;
+    gap: 10px 16px;
     padding: 16px clamp(16px, 3vw, 32px);
   }
   .logo {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0;
+    margin: 0 auto 0 0;
     font: 700 22px var(--font-round);
   }
   .badge {
@@ -41,12 +53,13 @@ import { label } from "../labels";
     transform: rotate(-6deg);
   }
 
+  /* Grows up to its width from nothing, so it never pushes the switches to a row of their own. */
   .search-pill {
-    flex: 0 1 460px;
+    flex: 1 1 0;
+    max-width: 460px;
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-left: auto;
     padding: 12px 14px 12px 18px;
     border: 0;
     border-radius: 999px;
@@ -67,6 +80,12 @@ import { label } from "../labels";
   }
   .search-pill kbd {
     margin-left: auto;
+  }
+
+  .switches {
+    flex: none;
+    display: flex;
+    gap: 8px;
   }
 
   /* A segmented switch over real radio buttons, which keep their keyboard behaviour (arrows choose). */
@@ -124,6 +143,9 @@ import { label } from "../labels";
     }
     .search-pill kbd {
       display: none;
+    }
+    .toggle span {
+      padding: 6px 12px;
     }
   }
 </style>

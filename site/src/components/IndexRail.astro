@@ -4,9 +4,10 @@
 // mini-trail. client/rail.ts marks the current Topic "you are here" (aria-current), which expands its
 // Entries, and highlights the Entry in view. On a phone the rail is a strip that scrolls sideways.
 import type { Area } from "../content";
-import { label } from "../labels";
+import { labelAttributes } from "../labels";
 import { stopNumbers } from "../map/trail";
 import RailEntries from "./RailEntries.astro";
+import Text from "./Text.astro";
 
 interface Props {
   areas: Area[];
@@ -17,27 +18,29 @@ const { areas } = Astro.props;
 const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30px"];
 ---
 
-<nav class="rail" data-rail aria-label={label("index")}>
+<nav class="rail" data-rail {...labelAttributes({ "aria-label": "index" })}>
   <div class="arrangement" data-arrangement="map">
     {
       areas.map((area, i) => (
         <div class:list={["mini", { planned: area.planned }]} style={{ "--hue": area.hue, "--blob": BLOBS[i % BLOBS.length] }}>
           <p class="area" id={`rail-map-${area.id}`}>
-            {area.title}
+            <Text en={area.title} pl={area.pl.title} />
           </p>
           <ul class="pins" aria-labelledby={`rail-map-${area.id}`}>
             {area.topics.map((topic) =>
               topic.planned ? (
-                <li class="planned">{topic.title}</li>
+                <li class="planned">
+                  <Text en={topic.title} pl={topic.pl.title} />
+                </li>
               ) : (
                 <li>
                   <a class="pin" href={`#${topic.id}`} data-pin={topic.id}>
                     <span class="glyph" aria-hidden="true">
                       {topic.glyph}
                     </span>
-                    {topic.title}
+                    <Text en={topic.title} pl={topic.pl.title} />
                     <span class="here" aria-hidden="true">
-                      {label("youAreHere")}
+                      <Text label="youAreHere" />
                     </span>
                   </a>
                   <RailEntries topic={topic} />
@@ -57,21 +60,21 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
         return (
           <div class:list={["mini-trail", { planned: area.planned }]} style={{ "--hue": area.hue }}>
             <p class="area" id={`rail-trail-${area.id}`}>
-              {area.title}
+              <Text en={area.title} pl={area.pl.title} />
             </p>
             <ol class="steps" aria-labelledby={`rail-trail-${area.id}`}>
               {area.topics.map((topic, j) =>
                 topic.planned ? (
                   <li class="planned">
                     <i aria-hidden="true" />
-                    {topic.title}
+                    <Text en={topic.title} pl={topic.pl.title} />
                   </li>
                 ) : (
                   <li>
                     <a class="step" href={`#${topic.id}`} data-pin={topic.id}>
-                      <span class="number">{numbers[j]}</span> {topic.title}
+                      <span class="number">{numbers[j]}</span> <Text en={topic.title} pl={topic.pl.title} />
                       <span class="here" aria-hidden="true">
-                        {label("youAreHere")}
+                        <Text label="youAreHere" />
                       </span>
                     </a>
                     <RailEntries topic={topic} />

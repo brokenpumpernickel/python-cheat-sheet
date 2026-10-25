@@ -3,8 +3,8 @@
 // along a dotted path, numbered in Topic order, with each Topic's title and summary beside its stone.
 // Planned Areas and Topics are drawn faded and dashed, without numbers, and aren't links.
 import type { Area } from "../content";
-import { label } from "../labels";
 import { stopNumbers, trailLayout } from "../map/trail";
+import Text from "./Text.astro";
 
 interface Props {
   area: Area;
@@ -23,9 +23,15 @@ const numbers = stopNumbers(area.topics);
   style={{ "--hue": area.hue }}
 >
   <header class="sign">
-    <h2 id={`land-${area.id}`}>{area.title}</h2>
-    <p>{area.blurb}</p>
-    {area.planned && <p class="soon">{label("comingSoon")}</p>}
+    <h2 id={`land-${area.id}`}><Text en={area.title} pl={area.pl.title} /></h2>
+    <p><Text en={area.blurb} pl={area.pl.blurb} /></p>
+    {
+      area.planned && (
+        <p class="soon">
+          <Text label="comingSoon" />
+        </p>
+      )
+    }
   </header>
   <div class="path" style={{ height: `${height}px` }}>
     <svg viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" aria-hidden="true"><path d={path} /></svg>
@@ -39,8 +45,14 @@ const numbers = stopNumbers(area.topics);
                   {topic.glyph}
                 </span>
                 <span class="label">
-                  <b>{topic.title}</b>
-                  {!area.planned && <span class="sr-only">({label("comingSoon")})</span>}
+                  <b>
+                    <Text en={topic.title} pl={topic.pl.title} />
+                  </b>
+                  {!area.planned && (
+                    <span class="sr-only">
+                      (<Text label="comingSoon" />)
+                    </span>
+                  )}
                 </span>
               </span>
             ) : (
@@ -50,8 +62,15 @@ const numbers = stopNumbers(area.topics);
                   {topic.glyph}
                 </span>
                 <span class="label">
-                  <b>{topic.title}</b>
-                  {topic.summary && <span class="summary"> {topic.summary}</span>}
+                  <b>
+                    <Text en={topic.title} pl={topic.pl.title} />
+                  </b>
+                  {topic.summary && (
+                    <span class="summary">
+                      {" "}
+                      <Text en={topic.summary} pl={topic.pl.summary!} />
+                    </span>
+                  )}
                 </span>
               </a>
             )}

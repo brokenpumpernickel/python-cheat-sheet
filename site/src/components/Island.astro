@@ -2,8 +2,8 @@
 // One Area on the Map: a round island in the Area's hue with its Topics as bubbles on rings.
 // Planned Areas and Topics are drawn faded and dashed, and aren't links.
 import type { Area } from "../content";
-import { label } from "../labels";
 import { BUBBLE, PLANNED_BUBBLE, ringLayout } from "../map/rings";
+import Text from "./Text.astro";
 
 interface Props {
   area: Area;
@@ -38,8 +38,14 @@ const slotStyle = (j: number) => ({
 
 <section class:list={["island", { planned: area.planned }]} data-area={area.id} style={islandStyle}>
   <h2 class="flag">
-    <span>{area.title}</span>
-    {area.planned && <small>{label("comingSoon")}</small>}
+    <span><Text en={area.title} pl={area.pl.title} /></span>
+    {
+      area.planned && (
+        <small>
+          <Text label="comingSoon" />
+        </small>
+      )
+    }
   </h2>
   <ul class="bubbles">
     {
@@ -50,15 +56,23 @@ const slotStyle = (j: number) => ({
               <span class="glyph" aria-hidden="true">
                 {topic.glyph}
               </span>
-              <span class="name">{topic.title}</span>
-              {!area.planned && <span class="sr-only">({label("comingSoon")})</span>}
+              <span class="name">
+                <Text en={topic.title} pl={topic.pl.title} />
+              </span>
+              {!area.planned && (
+                <span class="sr-only">
+                  (<Text label="comingSoon" />)
+                </span>
+              )}
             </span>
           ) : (
             <a class="bubble" href={`#${topic.id}`} data-tile={topic.id}>
               <span class="glyph" aria-hidden="true">
                 {topic.glyph}
               </span>
-              <span class="name">{topic.title}</span>
+              <span class="name">
+                <Text en={topic.title} pl={topic.pl.title} />
+              </span>
             </a>
           )}
         </li>

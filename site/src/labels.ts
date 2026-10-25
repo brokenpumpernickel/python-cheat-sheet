@@ -10,6 +10,7 @@ const en = {
   map: "Map",
   trail: "Trail",
   arrangement: "Overview style",
+  language: "Language",
   index: "Index",
   youAreHere: "you are here",
   areas: "Areas",
@@ -34,6 +35,7 @@ const en = {
   examplesRunWith: "Examples run with",
   search: "Search",
   searchPrompt: "Search Topics, Entries and code",
+  searchPlaceholder: "Search Topics, Entries and code…",
   searchResults: "Results",
   searchLoading: "Loading…",
   searchFailed: "Search didn't load. Close it and try again.",
@@ -50,6 +52,7 @@ const pl: Record<LabelKey, string> = {
   map: "Mapa",
   trail: "Szlak",
   arrangement: "Widok przeglądu",
+  language: "Język",
   index: "Indeks",
   youAreHere: "tu jesteś",
   areas: "Obszary",
@@ -74,6 +77,7 @@ const pl: Record<LabelKey, string> = {
   examplesRunWith: "Wersje użyte w przykładach:",
   search: "Szukaj",
   searchPrompt: "Szukaj tematów, haseł i kodu",
+  searchPlaceholder: "Szukaj tematów, haseł i kodu…",
   searchResults: "Wyniki",
   searchLoading: "Wczytywanie…",
   searchFailed: "Nie udało się wczytać wyszukiwania. Zamknij je i spróbuj ponownie.",
@@ -96,4 +100,16 @@ for (const language of languages) {
 
 export function label(key: LabelKey, language: Language = defaultLanguage): string {
   return labels[language][key];
+}
+
+/** Attributes whose values are labels, such as aria-label, ready to spread onto an element: rendered in
+ * the default Language, and marked (data-label-attributes) so client/language.ts can switch them. */
+export function labelAttributes(attributes: Record<string, LabelKey>): Record<string, string> {
+  const rendered: Record<string, string> = {
+    "data-label-attributes": Object.entries(attributes)
+      .map(([name, key]) => `${name}=${key}`)
+      .join(" "),
+  };
+  for (const [name, key] of Object.entries(attributes)) rendered[name] = label(key);
+  return rendered;
 }
