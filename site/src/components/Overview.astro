@@ -3,8 +3,8 @@
 // Only the one chosen with the top bar's toggle shows (theme.css). The semantic zoom scales this element
 // toward a Topic's tile (any element with data-tile in the visible arrangement).
 import type { Area } from "../content";
-import { label } from "../labels";
 import MapView from "./MapView.astro";
+import Text from "./Text.astro";
 import TrailView from "./TrailView.astro";
 
 interface Props {
@@ -15,7 +15,7 @@ const { areas } = Astro.props;
 ---
 
 <section class="overview" data-overview aria-labelledby="overview-title">
-  <h1 id="overview-title" class="sr-only">{label("siteTitle")}</h1>
+  <h1 id="overview-title" class="sr-only"><Text label="siteTitle" /></h1>
   <MapView areas={areas} />
   <TrailView areas={areas} />
 </section>

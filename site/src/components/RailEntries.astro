@@ -2,6 +2,7 @@
 // A Topic's Entries in the Index rail, shown under its pin while it's the current Topic. The one in view
 // is marked aria-current by the scroll spy (client/rail.ts).
 import type { Topic } from "../content";
+import Text from "./Text.astro";
 
 interface Props {
   topic: Topic;
@@ -15,7 +16,7 @@ const { topic } = Astro.props;
     topic.entries.map((entry) => (
       <li>
         <a href={`#${topic.id}/${entry.id}`} data-rail-entry={`${topic.id}/${entry.id}`}>
-          {entry.title}
+          <Text en={entry.title} pl={entry.pl.title} />
         </a>
       </li>
     ))

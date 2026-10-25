@@ -12,7 +12,12 @@ const INDEX_URL = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}search.json`;
 
 const isApple = /Mac|iPhone|iPad/.test(navigator.platform);
 
-export function startSearch(): void {
+export interface Search {
+  /** Shows the results and status in the Language just switched to. */
+  languageSwitched(): void;
+}
+
+export function startSearch(): Search {
   const dialog = document.querySelector<HTMLDialogElement>("[data-search]")!;
   const input = dialog.querySelector<HTMLInputElement>("[data-search-input]")!;
   const list = dialog.querySelector<HTMLElement>("[data-search-results]")!;
@@ -174,4 +179,10 @@ export function startSearch(): void {
     const item = (event.target as Element).closest<HTMLElement>("[data-index]");
     if (item) choose(results[+item.dataset.index!]);
   });
+
+  return {
+    languageSwitched() {
+      if (dialog.open) render();
+    },
+  };
 }

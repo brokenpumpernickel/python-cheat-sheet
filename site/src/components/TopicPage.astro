@@ -3,8 +3,9 @@
 // (two columns on wide screens), then Previous / Next stop in Topic order.
 // Focus moves to the article (tabindex -1) when the page is zoomed into.
 import type { Area, Topic } from "../content";
-import { label } from "../labels";
+import { labelAttributes } from "../labels";
 import EntryCard, { type SeeAlso } from "./EntryCard.astro";
+import Text from "./Text.astro";
 
 interface Stop {
   area: Area;
@@ -25,18 +26,30 @@ const { area, topic, previous, next, links } = Astro.props;
 <article class="topic" data-topic={topic.id} aria-labelledby={`topic-${topic.id}`} tabindex="-1" hidden style={{ "--hue": area.hue }}>
   <header class="hero">
     <a class="home" href="#" data-home>
-      <span aria-hidden="true">←</span> <span data-arrangement="map">{label("map")}</span><span data-arrangement="trail">{label("trail")}</span>
+      <span aria-hidden="true">←</span> <span data-arrangement="map"><Text label="map" /></span><span data-arrangement="trail"><Text label="trail" /></span>
     </a>
     <span class="hero-glyph" aria-hidden="true">{topic.glyph}</span>
     <div>
-      <p class="area-name">{area.title}</p>
-      <h1 id={`topic-${topic.id}`}>{topic.title}</h1>
-      {topic.summary && <p class="summary">{topic.summary}</p>}
+      <p class="area-name"><Text en={area.title} pl={area.pl.title} /></p>
+      <h1 id={`topic-${topic.id}`}><Text en={topic.title} pl={topic.pl.title} /></h1>
+      {
+        topic.summary && (
+          <p class="summary">
+            <Text en={topic.summary} pl={topic.pl.summary!} />
+          </p>
+        )
+      }
     </div>
   </header>
 
-  <nav class="chips" aria-label={label("entries")} data-chips>
-    {topic.entries.map((entry) => <a href={`#${topic.id}/${entry.id}`}>{entry.title}</a>)}
+  <nav class="chips" {...labelAttributes({ "aria-label": "entries" })} data-chips>
+    {
+      topic.entries.map((entry) => (
+        <a href={`#${topic.id}/${entry.id}`}>
+          <Text en={entry.title} pl={entry.pl.title} />
+        </a>
+      ))
+    }
   </nav>
 
   <div class="cards">
@@ -45,17 +58,21 @@ const { area, topic, previous, next, links } = Astro.props;
 
   {
     (previous || next) && (
-      <nav class="stops" aria-label={label("topicOrder")}>
+      <nav class="stops" {...labelAttributes({ "aria-label": "topicOrder" })}>
         {previous && (
           <a class="stop previous" href={`#${previous.topic.id}`} rel="prev" style={{ "--hue": previous.area.hue }}>
-            <small>{label("previousStop")}</small>
-            <span aria-hidden="true">←</span> {previous.topic.title}
+            <small>
+              <Text label="previousStop" />
+            </small>
+            <span aria-hidden="true">←</span> <Text en={previous.topic.title} pl={previous.topic.pl.title} />
           </a>
         )}
         {next && (
           <a class="stop next" href={`#${next.topic.id}`} rel="next" style={{ "--hue": next.area.hue }}>
-            <small>{label("nextStop")}</small>
-            {next.topic.title} <span aria-hidden="true">→</span>
+            <small>
+              <Text label="nextStop" />
+            </small>
+            <Text en={next.topic.title} pl={next.topic.pl.title} /> <span aria-hidden="true">→</span>
           </a>
         )}
       </nav>

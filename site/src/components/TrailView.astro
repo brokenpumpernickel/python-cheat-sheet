@@ -3,7 +3,8 @@
 // stones in Topic order, plus dots at the left edge that jump to each Area and show which is in view
 // (client/trail.ts). Only one arrangement shows at a time, chosen by the top bar's Map | Trail toggle.
 import type { Area } from "../content";
-import { label } from "../labels";
+import { labelAttributes } from "../labels";
+import Text from "./Text.astro";
 import TrailLand from "./TrailLand.astro";
 
 interface Props {
@@ -14,20 +15,23 @@ const { areas } = Astro.props;
 ---
 
 <div class="trail" data-arrangement="trail">
-  <nav class="lands" aria-label={label("areas")}>
+  <nav class="lands" {...labelAttributes({ "aria-label": "areas" })}>
     {
       areas.map((area) => (
         <button type="button" class:list={["dot", { planned: area.planned }]} data-land={area.id} style={{ "--hue": area.hue }}>
           <i aria-hidden="true" />
-          <span>{area.title}</span>
+          <span>
+            <Text en={area.title} pl={area.pl.title} />
+          </span>
         </button>
       ))
     }
   </nav>
   <p class="start">
-    {label("startHere")} <span class="arrow" aria-hidden="true">↓</span>
+    <Text label="startHere" /> <span class="arrow" aria-hidden="true">↓</span>
     <small>
-      {label("hintStone")} · <kbd data-shortcut>Ctrl K</kbd> {label("hintSearch")} · <kbd>Esc</kbd> {label("hintBack")}
+      <Text label="hintStone" /> · <kbd data-shortcut>Ctrl K</kbd> <Text label="hintSearch" /> · <kbd>Esc</kbd>{" "}
+      <Text label="hintBack" />
     </small>
   </p>
   {areas.map((area, index) => <TrailLand area={area} index={index} />)}

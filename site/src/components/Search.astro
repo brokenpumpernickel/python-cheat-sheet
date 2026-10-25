@@ -1,10 +1,11 @@
 ---
 // The search pop-up (a modal dialog), opened by the top bar's pill, Ctrl/Cmd+K or "/". The input is a
 // combobox over the results list, which client/search.ts fills from the lazily loaded index.
-import { label } from "../labels";
+import { labelAttributes } from "../labels";
+import Text from "./Text.astro";
 ---
 
-<dialog class="search" data-search aria-label={label("search")}>
+<dialog class="search" data-search {...labelAttributes({ "aria-label": "search" })}>
   <input
     class="query"
     type="search"
@@ -12,20 +13,19 @@ import { label } from "../labels";
     aria-autocomplete="list"
     aria-expanded="false"
     aria-controls="search-results"
-    aria-label={label("searchPrompt")}
-    placeholder={`${label("searchPrompt")}…`}
+    {...labelAttributes({ "aria-label": "searchPrompt", placeholder: "searchPlaceholder" })}
     autocomplete="off"
     spellcheck="false"
     autofocus
     data-search-input
   />
-  <ul id="search-results" class="results" role="listbox" aria-label={label("searchResults")} hidden data-search-results>
+  <ul id="search-results" class="results" role="listbox" {...labelAttributes({ "aria-label": "searchResults" })} hidden data-search-results>
   </ul>
   <p class="status" role="status" data-search-status></p>
   <p class="keys" aria-hidden="true">
-    <span><kbd>↑</kbd><kbd>↓</kbd> {label("searchMove")}</span>
-    <span><kbd>Enter</kbd> {label("searchOpen")}</span>
-    <span><kbd>Esc</kbd> {label("searchClose")}</span>
+    <span><kbd>↑</kbd><kbd>↓</kbd> <Text label="searchMove" /></span>
+    <span><kbd>Enter</kbd> <Text label="searchOpen" /></span>
+    <span><kbd>Esc</kbd> <Text label="searchClose" /></span>
   </p>
 </dialog>
 

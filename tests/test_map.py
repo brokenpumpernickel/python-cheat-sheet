@@ -121,7 +121,7 @@ def test_planned_areas_and_topics_are_faded_and_not_links(page: Page, map_url):
     later = page.locator('[data-area="later"]')
 
     expect(later.get_by_role("heading", name="Later")).to_contain_text("coming soon")
-    expect(later.get_by_text("Later 1")).to_be_visible()
+    expect(later.get_by_text("Later 1").filter(visible=True)).to_be_visible()
     expect(later.get_by_role("link")).to_have_count(0)
     assert float(later.locator(".bubble").first.evaluate("(el) => getComputedStyle(el).opacity")) < 1
 

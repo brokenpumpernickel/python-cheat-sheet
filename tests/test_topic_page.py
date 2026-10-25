@@ -84,7 +84,7 @@ def test_copy_puts_the_exact_code_on_the_clipboard_and_confirms(page: Page, cont
     copied = page.evaluate("navigator.clipboard.readText()").replace("\r\n", "\n")  # Windows' clipboard uses CRLF
     assert copied == 'print("total: " + str(3))\nprint("total: " + 3)'
     expect(card.get_by_role("button")).to_have_text("Copied!")
-    expect(card.get_by_role("button")).to_have_text("Copy", timeout=3000)
+    expect(card.get_by_role("button")).to_have_text("Copy", use_inner_text=True, timeout=3000)
 
 
 def test_code_is_syntax_highlighted(page: Page, site_url):
@@ -100,7 +100,7 @@ def test_text_output(page: Page, site_url):
     page.goto(f"{site_url}#numbers")
 
     output = entry(page, "numbers/addition").locator("[data-output]")
-    expect(output).to_have_text("Output3\n7\n11\n15\n19\n23")
+    expect(output).to_have_text("Output\n3\n7\n11\n15\n19\n23", use_inner_text=True, ignore_case=True)  # in capitals
 
 
 def test_expected_error_output_shows_text_then_the_error_line(page: Page, site_url):
@@ -129,7 +129,7 @@ def test_pitfall_with_code_has_a_sticker_and_its_own_code_and_output(page: Page,
 
     expect(card.get_by_text("Watch out!")).to_be_visible()
     pitfall = card.get_by_role("complementary", name="Pitfall")
-    expect(pitfall).to_contain_text("Pitfall: Dividing by zero raises an error.")
+    expect(pitfall).to_contain_text("Pitfall: Dividing by zero raises an error.", use_inner_text=True)
     expect(pitfall.locator("pre code")).to_have_text("print(1 / 0)")
     expect(pitfall.locator("[data-output] pre")).to_have_text("ZeroDivisionError: division by zero")
 
@@ -140,7 +140,7 @@ def test_pitfall_without_code_is_just_the_callout(page: Page, site_url):
 
     expect(card.get_by_text("Watch out!")).to_be_visible()
     pitfall = card.get_by_role("complementary", name="Pitfall")
-    expect(pitfall).to_have_text("Pitfall: + adds no space between the strings.")
+    expect(pitfall).to_have_text("Pitfall: + adds no space between the strings.", use_inner_text=True)
     expect(pitfall.locator("pre")).to_have_count(0)
     expect(entry(page, "numbers/addition").get_by_text("Watch out!")).to_have_count(0)
 

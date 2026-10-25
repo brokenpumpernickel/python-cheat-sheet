@@ -3,7 +3,7 @@
 // (client/copy.ts). The block scrolls sideways on its own instead of widening the page.
 import { Code } from "astro:components";
 import { codeTheme } from "../code/theme";
-import { label } from "../labels";
+import Text from "./Text.astro";
 
 interface Props {
   code: string;
@@ -13,7 +13,7 @@ const { code } = Astro.props;
 ---
 
 <div class="code">
-  <button class="copy" type="button" data-copy={code}><span aria-live="polite">{label("copy")}</span></button>
+  <button class="copy" type="button" data-copy={code}><span aria-live="polite"><Text label="copy" /></span></button>
   <Code code={code} lang="python" theme={codeTheme} />
 </div>
 

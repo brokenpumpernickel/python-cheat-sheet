@@ -78,6 +78,13 @@
   display: none !important;
 }
 
+/* The Language (ADR 0005): every piece of prose is rendered in both (components/Text.astro), and the
+   <html> element's lang, set by the EN | PL switch (client/language.ts), shows only its own. */
+:root:not([lang="pl"]) [data-lang="pl"],
+:root[lang="pl"] [data-lang="en"] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   min-height: 100vh;

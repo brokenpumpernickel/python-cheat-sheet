@@ -11,10 +11,12 @@ import Search from "../components/Search.astro";
 import TopBar from "../components/TopBar.astro";
 import TopicView from "../components/TopicView.astro";
 import { ARRANGEMENT_KEY } from "../client/arrangement";
+import { LANGUAGE_KEY, LANGUAGE_PARAM } from "../client/language";
 import { loadContent } from "../content";
-import { defaultLanguage, label } from "../labels";
+import { defaultLanguage, label, languages } from "../labels";
 
 const { areas, meta } = loadContent();
+const titles = Object.fromEntries(languages.map((language) => [language, label("siteTitle", language)]));
 ---
 
 <!doctype html>
@@ -24,11 +26,19 @@ const { areas, meta } = loadContent();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>{label("siteTitle")}</title>
-    <script is:inline define:vars={{ key: ARRANGEMENT_KEY }}>
-      // The remembered Map | Trail choice, applied before the first paint (client/arrangement.ts runs the toggle).
+    <script is:inline define:vars={{ arrangementKey: ARRANGEMENT_KEY, languageKey: LANGUAGE_KEY, param: LANGUAGE_PARAM, titles }}>
+      // The remembered Map | Trail choice (client/arrangement.ts runs the toggle) and the Language, from
+      // ?lang= or else the remembered one (client/language.ts runs the switch), applied before the first paint.
+      const root = document.documentElement;
+      let language = new URLSearchParams(location.search).get(param);
       try {
-        if (localStorage.getItem(key) === "trail") document.documentElement.dataset.arrangement = "trail";
+        if (localStorage.getItem(arrangementKey) === "trail") root.dataset.arrangement = "trail";
+        if (!Object.hasOwn(titles, language)) language = localStorage.getItem(languageKey);
       } catch {}
+      if (Object.hasOwn(titles, language)) {
+        root.lang = language;
+        document.title = titles[language];
+      }
     </script>
   </head>
   <body>

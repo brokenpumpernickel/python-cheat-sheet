@@ -213,22 +213,22 @@ def test_switching_topics_from_the_rail_crossfades_and_the_rail_stays(page: Page
 def test_rail_entry_links_jump_within_the_page_and_the_scroll_spy_follows(page: Page, site_url):
     page.goto(f"{site_url}#numbers")
     current = rail(page).locator('[data-rail-entry][aria-current="true"]:visible')
-    expect(current).to_have_text("Addition")
+    expect(current).to_have_text("Addition", use_inner_text=True)
 
     rail(page).get_by_role("link", name="Division").click()
     expect(page).to_have_url(f"{site_url}#numbers/division")
     expect(entry(page, "numbers/division")).to_be_in_viewport()
-    expect(current).to_have_text("Division")
+    expect(current).to_have_text("Division", use_inner_text=True)
 
     # Scrolling by hand: the Entry that has reached the sticky chips is the one being read.
     page.evaluate("""() => {
         const card = document.querySelector('[data-entry="numbers/subtraction"]');
         window.scrollTo(0, card.getBoundingClientRect().top + window.scrollY - 80);
     }""")
-    expect(current).to_have_text("Subtraction")
+    expect(current).to_have_text("Subtraction", use_inner_text=True)
 
     page.evaluate("window.scrollTo(0, 0)")
-    expect(current).to_have_text("Addition")
+    expect(current).to_have_text("Addition", use_inner_text=True)
 
 
 @pytest.mark.parametrize("ref", ["numbers/multiplication", "numbers/powers"])

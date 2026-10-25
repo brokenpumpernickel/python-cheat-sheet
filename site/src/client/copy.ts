@@ -1,5 +1,6 @@
 // Copy buttons on code examples: the button carries the exact code (data-copy), puts it on the
-// clipboard and says so briefly, in the page's Language.
+// clipboard and says so briefly, in the page's Language. Then it shows its own label again, which the
+// build rendered in both Languages, so it keeps following the switch.
 import { label, type LabelKey } from "../labels";
 import { pageLanguage } from "./language";
 
@@ -21,9 +22,13 @@ async function writeClipboard(text: string): Promise<void> {
 
 export function startCopy(): void {
   const timers = new WeakMap<HTMLElement, number>();
+  const idle = new WeakMap<HTMLElement, string>(); // each button's own label, as the build rendered it
 
-  const show = (button: HTMLElement, key: LabelKey, state?: string) => {
-    button.querySelector("[aria-live]")!.textContent = label(key, pageLanguage());
+  const show = (button: HTMLElement, key: LabelKey | null, state?: string) => {
+    const text = button.querySelector<HTMLElement>("[aria-live]")!;
+    if (!idle.has(button)) idle.set(button, text.innerHTML);
+    if (key) text.textContent = label(key, pageLanguage());
+    else text.innerHTML = idle.get(button)!;
     if (state) button.dataset.state = state;
     else delete button.dataset.state;
   };
@@ -39,6 +44,6 @@ export function startCopy(): void {
     }
     show(button, ok ? "copied" : "copyFailed", ok ? "copied" : "failed");
     clearTimeout(timers.get(button));
-    timers.set(button, window.setTimeout(() => show(button, "copy"), CONFIRM_MS));
+    timers.set(button, window.setTimeout(() => show(button, null), CONFIRM_MS));
   });
 }

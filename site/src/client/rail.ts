@@ -12,6 +12,8 @@ export interface Rail {
   /** Highlights the Entry just jumped to, until the Student scrolls: the page may end before it can
    * scroll that Entry up to the chips. */
   jumped(entry: HTMLElement): void;
+  /** The Entry highlighted as the one being read, if any. */
+  current(): HTMLElement | null;
 }
 
 export function startRail(rail: HTMLElement): Rail {
@@ -21,11 +23,13 @@ export function startRail(rail: HTMLElement): Rail {
   let page: HTMLElement | null = null;
   let entries: HTMLElement[] = [];
   let held: { entry: string; y: number } | null = null;
+  let highlighted: string | null = null;
 
   const mark = (element: HTMLElement, value: string | null) =>
     value ? element.setAttribute("aria-current", value) : element.removeAttribute("aria-current");
 
   function highlight(entry: string | null) {
+    highlighted = entry;
     for (const link of entryLinks) mark(link, link.dataset.railEntry === entry ? "true" : null);
   }
 
@@ -79,6 +83,9 @@ export function startRail(rail: HTMLElement): Rail {
     jumped(entry) {
       held = { entry: entry.dataset.entry!, y: window.scrollY };
       highlight(held.entry);
+    },
+    current() {
+      return entries.find((entry) => entry.dataset.entry === highlighted) ?? null;
     },
   };
 }
