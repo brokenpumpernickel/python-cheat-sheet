@@ -19,6 +19,15 @@
   --isl-l: 86%;
   --deep-l: 30%;
   --focus: hsl(200 80% 45%);
+  --sticker: #ffd43b;
+  /* Syntax colours, used by the code theme in src/code/theme.ts. */
+  --tk-kw: #c2185b;
+  --tk-str: #2e7d32;
+  --tk-num: #d84315;
+  --tk-com: #6f7f93;
+  --tk-fn: #1565c0;
+  --tk-bi: #6a1b9a;
+  --tk-op: #4f5f73;
 
   --font-round: "Fredoka Variable", "Nunito Variable", system-ui, sans-serif;
   --font-body: "Nunito Variable", system-ui, sans-serif;
@@ -42,6 +51,14 @@
     --isl-l: 26%;
     --deep-l: 80%;
     --focus: hsl(200 90% 65%);
+    --sticker: #f2c94c;
+    --tk-kw: #ff79c6;
+    --tk-str: #8be28b;
+    --tk-num: #ffb86c;
+    --tk-com: #8595ab;
+    --tk-fn: #82aaff;
+    --tk-bi: #c3a6ff;
+    --tk-op: #b4c1d2;
   }
 }
 

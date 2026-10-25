@@ -1,0 +1,59 @@
+---
+// What a code example produced: its printed text, the expected error's final line, and its figures.
+// Figures are Matplotlib's SVGs, inlined, on a white card in both themes (their own background is white).
+import type { Output } from "../content";
+import { label } from "../labels";
+
+interface Props {
+  output: Output;
+}
+
+const { output } = Astro.props;
+---
+
+<div class="output" data-output>
+  <p class="output-label">{label("output")}</p>
+  {output.text && <pre class="text">{output.text}</pre>}
+  {output.error && <pre class="error">{output.error}</pre>}
+  {output.figures.map((svg) => <div class="figure" role="img" aria-label={label("figure")} set:html={svg} />)}
+</div>
+
+<style>
+  .output {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: var(--output-bg, hsl(var(--hue) var(--isl-s) var(--isl-l) / 0.55));
+  }
+  .output-label {
+    margin: 0 0 2px;
+    font: 800 11px var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: hsl(var(--hue) 45% var(--deep-l));
+  }
+  pre {
+    margin: 0;
+    overflow-x: auto;
+    font: 13.5px/1.55 var(--font-mono);
+  }
+  /* Printed text keeps its layout and scrolls; the error is one message, so it wraps. */
+  .error {
+    color: var(--err);
+    font-weight: 600;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .figure {
+    max-width: 560px;
+    margin-top: 6px;
+    padding: 6px;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .figure :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

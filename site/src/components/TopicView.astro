@@ -1,7 +1,9 @@
 ---
 // The view shown instead of the Overview once a Topic is open: one page per non-planned Topic, all but
 // the current one hidden. Ticket 07 adds the Index rail beside the pages here.
+// The pages follow Topic order across Areas, which is also their Previous / Next stop.
 import type { Area } from "../content";
+import type { SeeAlso } from "./EntryCard.astro";
 import TopicPage from "./TopicPage.astro";
 
 interface Props {
@@ -9,9 +11,22 @@ interface Props {
 }
 
 const { areas } = Astro.props;
-const topics = areas.flatMap((area) => area.topics.filter((topic) => !topic.planned).map((topic) => ({ area, topic })));
+const stops = areas.flatMap((area) => area.topics.filter((topic) => !topic.planned).map((topic) => ({ area, topic })));
+
+const links = new Map<string, SeeAlso>(
+  stops.flatMap(({ area, topic }) =>
+    topic.entries.map((entry) => {
+      const ref = `${topic.id}/${entry.id}`;
+      return [ref, { href: `#${ref}`, title: entry.title, hue: area.hue }];
+    }),
+  ),
+);
 ---
 
 <div class="topic-view" data-topic-view hidden>
-  {topics.map(({ area, topic }) => <TopicPage area={area} topic={topic} />)}
+  {
+    stops.map(({ area, topic }, k) => (
+      <TopicPage area={area} topic={topic} previous={stops[k - 1] ?? null} next={stops[k + 1] ?? null} links={links} />
+    ))
+  }
 </div>

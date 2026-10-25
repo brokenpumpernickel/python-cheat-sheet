@@ -4,6 +4,7 @@
 
 const ZOOM_MS = 450;
 const FADE_MS = 250;
+const FLASH_MS = 1400;
 const ZOOM_SCALE = 4;
 const EASING = "cubic-bezier(.2, .8, .2, 1)";
 
@@ -40,4 +41,17 @@ export function fadePage(page: HTMLElement, direction: "in" | "out"): Promise<vo
   ];
   if (direction === "out") keyframes.reverse();
   return play(page, keyframes, FADE_MS);
+}
+
+const flashTimers = new WeakMap<Element, number>();
+
+/** Highlights an Entry briefly after a jump to it, so the eye finds it. The look is the CSS of the
+ * "flash" class: an animation, or a still ring with reduced motion. It ends on a timer, not on
+ * animationend, so it ends in a background tab too. */
+export function flash(entry: HTMLElement): void {
+  entry.classList.remove("flash");
+  void entry.offsetWidth; // restarts the animation if the Entry is already flashing
+  entry.classList.add("flash");
+  clearTimeout(flashTimers.get(entry));
+  flashTimers.set(entry, window.setTimeout(() => entry.classList.remove("flash"), FLASH_MS));
 }
