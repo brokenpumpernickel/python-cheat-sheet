@@ -20,7 +20,7 @@ SITE_DIR = REPO / "site"
 SITE_OUT_DIR = SITE_DIR / "dist"
 
 # Libraries the examples use, shown in the footer: display name -> distribution name.
-EXAMPLE_LIBRARIES = {"NumPy": "numpy", "Matplotlib": "matplotlib"}
+EXAMPLE_LIBRARIES = {"NumPy": "numpy", "Matplotlib": "matplotlib", "SciPy": "scipy"}
 
 # Kernels running at once. Starting a kernel is mostly waiting, so a few per core is fine.
 PARALLEL_KERNELS = min(8, 2 * (os.cpu_count() or 1))
