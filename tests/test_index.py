@@ -6,6 +6,9 @@ import re
 import pytest
 from playwright.sync_api import Page, expect
 
+from cheatsheet.build import build_content
+from conftest import FIXTURES, built_site
+
 PHONE = {"width": 375, "height": 700}
 YOU_ARE_HERE = re.compile("you are here", re.IGNORECASE)  # shown in capitals
 
@@ -162,6 +165,32 @@ def test_the_toggle_inside_a_topic_swaps_only_the_rail(page: Page, site_url):
     page.keyboard.press("Escape")  # the Overview now shows the Trail too
     expect(land(page, "basics")).to_be_visible()
     expect(land(page, "basics").get_by_role("link", name="Numbers")).to_be_focused()
+
+
+@pytest.fixture(scope="module")
+def long_title_url(tmp_path_factory):
+    """The fixture site with Numbers renamed to a Topic title as long as the real ones."""
+    data = build_content(FIXTURES / "site")
+    numbers = data["areas"][0]["topics"][0]
+    numbers["title"] = "Continuous probability distributions"
+    numbers["pl"]["title"] = "Ciągłe rozkłady prawdopodobieństwa"
+    with built_site(data, tmp_path_factory.mktemp("long-title")) as url:
+        yield url
+
+
+@pytest.mark.parametrize("lang", ["en", "pl"])
+@pytest.mark.parametrize("arrangement", ["Map", "Trail"])
+def test_a_long_current_topic_wraps_in_the_rail_instead_of_widening_it(page: Page, long_title_url, arrangement, lang):
+    page.goto(long_title_url)
+    choose(page, arrangement)  # remembered, and the toggle's names are English here
+    page.goto(f"{long_title_url}?lang={lang}#numbers")
+    index = page.locator("[data-rail]")  # named in the page's Language
+    expect(index.locator('[aria-current="page"][data-pin="numbers"]:visible')).to_contain_text(
+        YOU_ARE_HERE if lang == "en" else re.compile("tu jesteś", re.IGNORECASE), use_inner_text=True
+    )
+
+    widths = index.evaluate("(r) => [r.scrollWidth, r.clientWidth]")
+    assert widths[0] <= widths[1], f"the rail scrolls sideways: {widths}"
 
 
 @pytest.mark.parametrize("arrangement", ["Map", "Trail"])

@@ -127,6 +127,7 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
   }
   .here {
     display: none;
+    white-space: nowrap;
     font: 800 9.5px var(--font-body);
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -156,17 +157,20 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
   .pins > li:has(> [aria-current="page"]) {
     flex-basis: 100%;
   }
+  /* A pin too long for the rail, such as the current Topic's with "you are here", wraps onto a second
+     line instead of making the rail scroll sideways. */
   .pin {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 2px 6px;
+    max-width: 100%;
     padding: 4px 11px 4px 5px;
-    border-radius: 999px;
+    border-radius: 16px;
     background: var(--card);
     box-shadow: 0 2px 0 hsl(var(--hue) 40% 45% / 0.3);
     font: 700 13px var(--font-body);
     text-decoration: none;
-    white-space: nowrap;
     transition: transform 0.15s;
   }
   .pin:hover {
@@ -313,8 +317,13 @@ const BLOBS = ["22px 30px 26px 34px", "32px 22px 34px 26px", "26px 34px 22px 30p
     .mini {
       padding: 6px 8px;
     }
-    .pins {
+    .pins,
+    .pin {
       flex-wrap: nowrap;
+    }
+    .pin {
+      max-width: none;
+      white-space: nowrap;
     }
     .pins > li:has(> [aria-current="page"]) {
       flex-basis: auto;
