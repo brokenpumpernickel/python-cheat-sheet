@@ -38,7 +38,7 @@
     - Labelling rows and columns (ticks)
     - Colour maps and fixed limits (`cmap`, `vmin`/`vmax`, e.g. −1 to 1 for a correlation matrix from `np.corrcoef`)
     - Values in the cells
-    - A 2D histogram of points (`plt.hist2d`): added after the PR opened, at the Author's request, with a picture of a point-density heatmap as the model.
+    - A 2D histogram of points (`plt.hist2d`): added at the Author's request after #19 merged, with a picture of a point-density heatmap as the model, in PR brokenpumpernickel/python-cheat-sheet#20 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/20).
   - **Subplots** (in this order):
     - Side-by-side plots with `plt.subplot(121)`: the pyplot style `plt.subplot(121)` / `plt.subplot(122)` (the same as `plt.subplot(1, 2, 1)`), explaining the digits as rows, columns and index.
     - A grid of plots with `plt.subplots`: introduces `fig, axes = plt.subplots(...)`, with the Pitfall mapping `plt.xlabel` to `ax.set_xlabel`, `plt.title` to `ax.set_title` and so on.
