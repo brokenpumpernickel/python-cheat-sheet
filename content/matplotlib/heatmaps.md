@@ -1,10 +1,10 @@
 ---
 title: Heatmaps
 glyph: "cmap"
-summary: "A matrix drawn as coloured cells: imshow with a colour bar, row and column labels, colour maps and limits, values in the cells."
+summary: "A matrix drawn as coloured cells: imshow with a colour bar, row and column labels, colour maps and limits, values in the cells, a 2D histogram of points."
 pl:
   title: Mapy ciepła
-  summary: "Mapy ciepła (heatmaps), czyli macierz jako kolorowe komórki: imshow z paskiem kolorów, etykiety wierszy i kolumn, mapy kolorów i zakresy, wartości w komórkach."
+  summary: "Mapy ciepła (heatmaps), czyli macierz jako kolorowe komórki: imshow z paskiem kolorów, etykiety wierszy i kolumn, mapy kolorów i zakresy, wartości w komórkach, dwuwymiarowy histogram punktów."
 ---
 
 ## A matrix as a heatmap
@@ -135,3 +135,36 @@ PL: Siatka ocen od 2 do 5 dla grup A, B i C w odcieniach niebieskiego, każda ko
 
 - indexing/rows-and-columns
 - loops/range
+
+## A 2D histogram of points
+
+PL: Dwuwymiarowy histogram punktów
+
+`plt.hist2d(x, y, bins=40)` splits the plane into a 40 by 40 grid, counts the points in each square and colours the square by its count, with `plt.colorbar()` giving the counts. It shows where points crowd together when a scatter plot of thousands of them is one solid blot. Unlike `plt.imshow`, the axes show the values of `x` and `y`, with `y` growing upwards. `rasterized=True` stores the grid as one picture in a vector file such as SVG or PDF, so the file stays small and no thin seams show between the squares.
+
+PL: `plt.hist2d(x, y, bins=40)` dzieli płaszczyznę na siatkę 40 na 40, liczy punkty w każdym kwadracie i koloruje go według tej liczby, a `plt.colorbar()` podaje liczebności. Taki histogram dwuwymiarowy (2D histogram) pokazuje, gdzie punkty się skupiają, gdy wykres punktowy tysięcy punktów jest jedną plamą. Inaczej niż w `plt.imshow` osie pokazują wartości `x` i `y`, a `y` rośnie w górę. `rasterized=True` zapisuje siatkę jako jeden obrazek w pliku wektorowym, takim jak SVG czy PDF, więc plik pozostaje mały, a między kwadratami nie widać cienkich szczelin.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(18)
+x = rng.normal(10, 2, 20000)
+y = x + rng.normal(0, 1.5, 20000)
+plt.figure(figsize=(6, 3.5))
+plt.hist2d(x, y, bins=40,
+           rasterized=True)
+plt.colorbar()
+plt.show()
+```
+
+### Figure
+
+A dark purple rectangle with a bright oval blob tilted from lower left to upper right, yellow at its centre near x = 10, y = 10 and fading to purple at its edges, with a colour bar of counts.
+
+PL: Ciemnofioletowy prostokąt z jasną owalną plamą nachyloną od lewego dołu do prawej góry, żółtą w środku przy x = 10, y = 10 i przechodzącą w fiolet na brzegach, z paskiem kolorów pokazującym liczebności.
+
+### See also
+
+- scatter-plots/a-scatter-plot
+- histograms/a-histogram
