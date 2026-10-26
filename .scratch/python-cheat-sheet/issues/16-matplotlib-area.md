@@ -16,6 +16,7 @@
     - Axis labels and a title
     - Several lines and a legend
     - Colours, markers and line styles
+    - Format strings: the third argument of `plt.plot`, e.g. `"C1o"` and `"k--"`. Added at the Author's request in PR brokenpumpernickel/python-cheat-sheet#21 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/21); *Colours, markers and line styles* now uses keywords only.
     - Axis limits and a grid
     - Horizontal and vertical lines: `plt.axhline` / `plt.axvline` spanning the whole plot, e.g. a threshold or the mean. The Author asked for this one specifically.
     - Saving a figure, with a Pitfall: in a script, call `savefig` before `show`, or the file comes out empty.
@@ -41,6 +42,7 @@
     - A 2D histogram of points (`plt.hist2d`): added at the Author's request after #19 merged, with a picture of a point-density heatmap as the model, in PR brokenpumpernickel/python-cheat-sheet#20 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/20).
   - **Subplots** (in this order):
     - Side-by-side plots with `plt.subplot(121)`: the pyplot style `plt.subplot(121)` / `plt.subplot(122)` (the same as `plt.subplot(1, 2, 1)`), explaining the digits as rows, columns and index.
+    - Plots spanning several columns: `plt.subplot(221)`, `plt.subplot(222)`, then `plt.subplot(212)` across the bottom. Added at the Author's request in PR brokenpumpernickel/python-cheat-sheet#21 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/21).
     - A grid of plots with `plt.subplots`: introduces `fig, axes = plt.subplots(...)`, with the Pitfall mapping `plt.xlabel` to `ax.set_xlabel`, `plt.title` to `ax.set_title` and so on.
     - Shared axes
     - Figure size and layout, with a Pitfall: labels overlap until `layout="constrained"`.
@@ -71,7 +73,7 @@ Conventions from tickets 12–14 apply: Outputs show values, not English sentenc
 
 ## Comments
 
-**Resolved** in PR brokenpumpernickel/python-cheat-sheet#19 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/19). The Matplotlib Area is real: six Topics, 26 Entries, 28 figures (26 Entries and 2 Pitfalls), each with a figure description in English and Polish. The Area blurb now names the six kinds of plot.
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#19 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/19). The Matplotlib Area is real: six Topics, 28 Entries, 30 figures (28 Entries and 2 Pitfalls; A 2D histogram of points came in PR brokenpumpernickel/python-cheat-sheet#20, Format strings and Plots spanning several columns in brokenpumpernickel/python-cheat-sheet#21), each with a figure description in English and Polish. The Area blurb now names the six kinds of plot.
 
 Every Entry with its Polish title and English figure description, for the Author to skim (the Polish descriptions say the same):
 
@@ -80,6 +82,7 @@ Every Entry with its Polish title and English figure description, for the Author
   - *Axis labels and a title* / *Opisy osi i tytuł*: A bell curve titled N(0, 1), peaking at about 0.4 at x = 0, with the x-axis labelled x and the y-axis f(x).
   - *Several lines and a legend* / *Kilka linii i legenda*: Three bell curves centred on 0, with a legend for σ = 0.5, σ = 1 and σ = 2; the smaller σ, the taller and narrower the curve.
   - *Colours, markers and line styles* / *Kolory, znaczniki i style linii*: Three lines over x = 1 to 10: red dots on a curve rising ever faster, a black dashed straight line, and green squares on a dotted, less steep straight line.
+  - *Format strings* / *Napisy formatu*: Ten orange dots, not joined by a line, scattered around a black dashed straight line rising from 2 at x = 1 to 20 at x = 10.
   - *Axis limits and a grid* / *Zakresy osi i siatka*: A jagged line over n = 1 to 500 on a grid, jumping around at first and then settling close to 0.5, on a y-axis from 0 to 1.
   - *Horizontal and vertical lines* / *Linie poziome i pionowe*: Thirty points joined by a zigzag line between about 55 and 85, a red horizontal line across the plot at their mean, and a grey dashed vertical line through the highest point.
   - *Saving a figure* / *Zapisywanie wykresu*: A curve rising steeply from 0 and then flattening, reaching about 3.2 at x = 10.
@@ -104,6 +107,7 @@ Every Entry with its Polish title and English figure description, for the Author
   - *A 2D histogram of points* / *Dwuwymiarowy histogram punktów*: A dark purple rectangle with a bright oval blob tilted from lower left to upper right, yellow at its centre near x = 10, y = 10 and fading to purple at its edges, with a colour bar of counts.
 - **Subplots** / *Podwykresy* (glyph `ax[ ]`)
   - *Side-by-side plots with plt.subplot(121)* / *Wykresy obok siebie z plt.subplot(121)*: Two histograms side by side: on the left, U(0, 1), ten bars of similar height, between about 40 and 60; on the right, N(0, 1), a bell shape around 0.
+  - *Plots spanning several columns* / *Wykresy na kilka kolumn*: Two histograms side by side on top, a and b, both bell-shaped around 0, with b about three times as wide; below them one wide plot across both columns shows the 200 values of each sample in order, b swinging much further from 0 than a.
   - *A grid of plots with plt.subplots* / *Siatka wykresów z plt.subplots*: Four histograms of normal samples in a 2 by 2 grid, titled n = 10, n = 100, n = 1000 and n = 10000; the larger n, the smoother the bell shape. Pitfall: Two plots side by side, a line rising on the left and a line falling on the right; only the right plot has a title, b, and the left one has none.
   - *Shared axes* / *Wspólne osie*: Two histograms stacked on one shared x-axis: the top one narrow and centred on 0, the bottom one about twice as wide and centred on 2.
   - *Figure size and layout* / *Rozmiar i układ rysunku*: A 2 by 2 grid of curves titled k = 0 to k = 3, each with its x-axis labelled x, all neatly spaced: a flat line, a straight line, and two curves rising ever faster. Pitfall: The same 2 by 2 grid squeezed together: the x labels and tick numbers of the top row overlap the titles k = 2 and k = 3 of the bottom row.

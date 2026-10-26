@@ -37,6 +37,7 @@ PL: Pięćdziesiąt kropek rozrzuconych luźnym pasem od lewego dołu do prawej 
 
 - random/uniform-numbers-and-integers
 - heatmaps/a-2d-histogram-of-points
+- plotting-basics/format-strings
 
 ## Colour and size by value
 

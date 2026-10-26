@@ -1,10 +1,10 @@
 ---
 title: Plotting basics
 glyph: "plt"
-summary: "Line plots with plt: labels and a title, legends, colours and styles, limits, reference lines, saving."
+summary: "Line plots with plt: labels and a title, legends, colours and styles, format strings, limits, reference lines, saving."
 pl:
   title: Podstawy wykresów
-  summary: "Wykresy liniowe (line plots) z plt: opisy osi i tytuł, legenda, kolory i style, zakresy, linie odniesienia, zapis do pliku."
+  summary: "Wykresy liniowe (line plots) z plt: opisy osi i tytuł, legenda, kolory i style, napisy formatu, zakresy, linie odniesienia, zapis do pliku."
 ---
 
 ## A line plot
@@ -102,9 +102,9 @@ PL: Trzy krzywe dzwonowe o środku w 0 i legenda dla σ = 0,5, σ = 1 i σ = 2; 
 
 PL: Kolory, znaczniki i style linii
 
-`color=` sets a line's colour, `marker=` puts a symbol on every point (`"o"` dots, `"s"` squares) and `linestyle=` draws it dashed (`"--"`) or dotted (`":"`). A short format string sets all three at once: `"gs:"` is green squares on a dotted line.
+`color=` sets a line's colour, `marker=` puts a symbol on every point (`"o"` dots, `"s"` squares) and `linestyle=` draws it dashed (`"--"`) or dotted (`":"`). Combine them freely in one `plt.plot` call.
 
-PL: `color=` ustawia kolor linii, `marker=` stawia znacznik (marker) w każdym punkcie (`"o"` kropki, `"s"` kwadraty), a `linestyle=` rysuje ją kreskowaną (`"--"`) lub kropkowaną (`":"`). Krótki napis formatu (format string) ustawia wszystkie trzy naraz: `"gs:"` to zielone kwadraty na kropkowanej linii.
+PL: `color=` ustawia kolor linii, `marker=` stawia znacznik (marker) w każdym punkcie (`"o"` kropki, `"s"` kwadraty), a `linestyle=` rysuje ją kreskowaną (`"--"`) lub kropkowaną (`":"`). Możesz je dowolnie łączyć w jednym wywołaniu `plt.plot`.
 
 ```python
 import numpy as np
@@ -116,7 +116,8 @@ plt.plot(x, x ** 2, color="red",
          marker="o")
 plt.plot(x, 10 * x, color="black",
          linestyle="--")
-plt.plot(x, 5 * x, "gs:")
+plt.plot(x, 5 * x, color="green",
+         marker="s", linestyle=":")
 plt.show()
 ```
 
@@ -125,6 +126,38 @@ plt.show()
 Three lines over x = 1 to 10: red dots on a curve rising ever faster, a black dashed straight line, and green squares on a dotted, less steep straight line.
 
 PL: Trzy linie dla x od 1 do 10: czerwone kropki na krzywej rosnącej coraz szybciej, czarna kreskowana prosta i zielone kwadraty na kropkowanej, łagodniejszej prostej.
+
+## Format strings
+
+PL: Napisy formatu
+
+`plt.plot(x, y, "C1o")` takes a format string as its third argument: a colour, a marker and a line style in one. The colour is a letter (`"k"` black, `"r"` red) or `"C0"` to `"C9"`, the default colours in order; a marker with no line style draws points only, so `"C1o"` is orange dots and `"k--"` a black dashed line.
+
+PL: `plt.plot(x, y, "C1o")` przyjmuje jako trzeci argument napis formatu (format string): kolor, znacznik (marker) i styl linii w jednym. Kolor to litera (`"k"` czarny, `"r"` czerwony) albo `"C0"` do `"C9"`, kolejne kolory domyślne; znacznik bez stylu linii rysuje same punkty, więc `"C1o"` to pomarańczowe kropki, a `"k--"` czarna linia kreskowana.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(6)
+x = np.arange(1, 11)
+y = 2 * x + rng.normal(0, 2, 10)
+plt.figure(figsize=(6, 3.5))
+plt.plot(x, y, "C1o")
+plt.plot(x, 2 * x, "k--")
+plt.show()
+```
+
+### Figure
+
+Ten orange dots, not joined by a line, scattered around a black dashed straight line rising from 2 at x = 1 to 20 at x = 10.
+
+PL: Dziesięć pomarańczowych kropek, niepołączonych linią, rozrzuconych wokół czarnej kreskowanej prostej, która rośnie od 2 w x = 1 do 20 w x = 10.
+
+### See also
+
+- scatter-plots/a-scatter-plot
+- scatter-plots/adding-a-fitted-line
 
 ## Axis limits and a grid
 
