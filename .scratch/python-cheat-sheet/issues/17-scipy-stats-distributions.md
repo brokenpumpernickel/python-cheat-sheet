@@ -68,7 +68,7 @@ Conventions from tickets 12–16 apply: Outputs show values, not English sentenc
 
 ## Comments
 
-**Resolved** in the PR that adds this ticket file. The SciPy stats Area is no longer planned: four Topics, 22 Entries and 7 figures (6 Entries and 1 Pitfall), each figure with a description in English and Polish, followed by the planned *t-tests* and *Correlation*. SciPy 1.18.1 is pinned in `uv.lock` and shows in the footer next to NumPy and Matplotlib. The Area blurb now names what it covers.
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#24 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/24). The SciPy stats Area is no longer planned: four Topics, 22 Entries and 7 figures (6 Entries and 1 Pitfall), each figure with a description in English and Polish, followed by the planned *t-tests* and *Correlation*. SciPy 1.18.1 is pinned in `uv.lock` and shows in the footer next to NumPy and Matplotlib. The Area blurb now names what it covers.
 
 Every Entry with its Polish title, and the English figure description where there is a figure (the Polish descriptions say the same):
 
