@@ -81,6 +81,10 @@ print(a.dtype)
 print(np.array([1, 2, 3]).dtype)
 ```
 
+### See also
+
+- tuples/one-element-tuples
+
 ## Two-dimensional arrays
 
 PL: Tablice dwuwymiarowe
