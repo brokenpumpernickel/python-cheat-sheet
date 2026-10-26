@@ -28,6 +28,7 @@ print(counts[6], counts[2])
 
 - dictionaries/counting-occurrences
 - dictionaries/grouping-with-defaultdict
+- bar-charts/bar-chart-of-counts
 
 ## Most common values
 

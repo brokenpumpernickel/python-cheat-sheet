@@ -46,6 +46,7 @@ print(np.linspace(0, 1, 5))
 ### See also
 
 - loops/range
+- plotting-basics/a-line-plot
 
 ## Zeros, ones and full
 
@@ -113,6 +114,7 @@ print(np.zeros(2, 3))
 ### See also
 
 - random/uniform-numbers-and-integers
+- heatmaps/a-matrix-as-a-heatmap
 
 ## Reshaping
 

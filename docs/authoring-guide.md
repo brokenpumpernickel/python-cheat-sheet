@@ -175,7 +175,12 @@ Add `raises=<ExceptionType>` to the code block's info string: ` ```python raises
 
 ### Figures
 
-Matplotlib draws with a non-interactive backend. Every figure open at `plt.show()` or at the end of the example becomes an SVG in the Output; a figure closed with `plt.close()` does not. Figures are shared by both Languages, so keep text inside them (titles, axis labels, legends) to code names and numbers, or leave it out. Use one figure per Entry, at Matplotlib's default size. Every example that draws a figure needs a [figure description](#figure-description).
+Matplotlib draws with a non-interactive backend. Every figure open at `plt.show()` or at the end of the example becomes an SVG in the Output; a figure closed with `plt.close()` does not. Every example that draws a figure needs a [figure description](#figure-description).
+
+- **One figure per Entry, one size.** Start it with `plt.figure(figsize=(6, 3.5))`, or pass `figsize=(6, 3.5)` to `plt.subplots`, keep Matplotlib's default style, and end the example with `plt.show()`, as Students do in Jupyter. Draw with the `plt` functions (`plt.plot`, `plt.xlabel`); use `ax.` methods only on the plots `plt.subplots` returns.
+- **Text in figures is language-neutral,** because both Languages share the Output: symbols and maths (`x`, `f(x)`, `N(0, 1)`, `n = 30`, `σ = 2`), variable names (`a`, `r`), group letters (`A`, `B`) and numbers, or no text at all. No English words and no sentence-like titles: `plt.xlabel("height")` or `plt.title("Exam scores")` would stay English on the Polish page. Say in the explanation, in both Languages, what the axes show.
+- **Random data** comes from a seeded `default_rng`, as in any other example.
+- **Checking warnings:** a plain `uv run python example.py` opens a window at `plt.show()`. Run it with `MPLBACKEND=Agg` instead; then `plt.show()` warns that `FigureCanvasAgg is non-interactive`, which is expected, and any other warning needs a fix.
 
 ### Figure description
 
@@ -185,23 +190,24 @@ A Student using a screen reader can't see a figure, so every figure has a short 
 ```python
 import matplotlib.pyplot as plt
 
-counts = {"heads": 7, "tails": 3}
+counts = {"A": 7, "B": 3}
+plt.figure(figsize=(6, 3.5))
 plt.bar(list(counts.keys()), list(counts.values()))
 plt.show()
 ```
 
 ### Figure
 
-Two bars, heads and tails; the heads bar is more than twice as tall.
+Two bars, A and B; the A bar is more than twice as tall.
 
-PL: Dwa słupki, heads i tails; słupek heads jest ponad dwa razy wyższy.
+PL: Dwa słupki, A i B; słupek A jest ponad dwa razy wyższy.
 ````
 
 - **When:** exactly when the code draws a figure. The build runs the example and fails if it drew a figure without a description, or if a description sits on an example that drew none.
 - **A Pitfall's figure** gets its own `### Figure` after the Pitfall's code, below `### Pitfall`. A `### Figure` describes the code above it: before `### Pitfall` the Entry's, after it the Pitfall's.
 - **One per example:** if the code draws several figures, one description covers them all, in the order they appear.
 - **What to write:** one or two sentences saying what the plot shows and its notable shape, as a sighted Student would take it in at a glance: the kind of plot, what is on it, and the pattern that matters (a bell-shaped peak around 0, a line rising ever faster, the second bar tallest). Give a number only when the plot makes it stand out. Don't repeat the explanation, don't describe colours unless they carry meaning, and don't start with "Image of", "Figure showing" or "Wykres przedstawiający": the screen reader already says it's an image.
-- **Plain text:** no Markdown, not even backticks, since it is read out, not shown. Write a name plainly (x, heads) and describe the plot, not the code: "two bars", not "the Output of `plt.bar`".
+- **Plain text:** no Markdown, not even backticks, since it is read out, not shown. Write a name plainly (x, A) and describe the plot, not the code: "two bars", not "the Output of `plt.bar`".
 - **Polish:** the same facts in natural Polish, under the usual [Polish](#polish) rules.
 
 ### Pitfall
@@ -528,16 +534,17 @@ PL: `plt.bar(keys, values)` rysuje jeden słupek na klucz. Wykres otwarty w chwi
 ```python
 import matplotlib.pyplot as plt
 
-counts = {"heads": 7, "tails": 3}
+counts = {"A": 7, "B": 3}
+plt.figure(figsize=(6, 3.5))
 plt.bar(list(counts.keys()), list(counts.values()))
 plt.show()
 ```
 
 ### Figure
 
-Two bars, heads and tails; the heads bar is more than twice as tall.
+Two bars, A and B; the A bar is more than twice as tall.
 
-PL: Dwa słupki, heads i tails; słupek heads jest ponad dwa razy wyższy.
+PL: Dwa słupki, A i B; słupek A jest ponad dwa razy wyższy.
 ````
 
 What it shows:
@@ -547,7 +554,7 @@ What it shows:
 3. **Creating and accessing** is a plain Entry with a **See-also link**. Its id is `creating-and-accessing`. The explanation is two sentences with the syntax in backticks; the Polish one gives "słownik (dictionary)", "klucz (key)" and "wartość (value)" at their first mention. The example prints both a single value and the whole dictionary, so the Output shows both things the explanation mentions.
 4. **Missing keys** has an **expected error** and a **Pitfall without code**. The working alternative (`.get`) is printed first, and the line that raises comes last, so the Output is `0.0` and then `KeyError: 'sd'`. The Pitfall's point fits in one sentence, so it has no code.
 5. **Counting occurrences** has a **Pitfall with code that raises**: it shows the mistake, not the fix, and is marked `raises=KeyError`, so its Output is `KeyError: 'heads'`. The Entry uses a `for` loop although Loops comes later. That is fine under the [Topic order](#topic-order) rule, and once Loops has Entries this Entry gets `- loops/for-over-a-collection` under `### See also`. Adding that link now would fail the build, because Loops is planned.
-6. **Plotting counts** has a **figure**: no `print`, the bar chart is the Output, and it has no title or labels to translate. Its **figure description** says what a Student would see at a glance, two bars with heads clearly taller, in plain text and in both Languages. (In the real content figures belong in the Matplotlib Area; this one is here so the example covers every feature.)
+6. **Plotting counts** has a **figure**: no `print`, the bar chart is the Output, and it has no title or labels to translate. Its **figure description** says what a Student would see at a glance, two bars with A clearly taller, in plain text and in both Languages. (In the real content figures belong in the Matplotlib Area; this one is here so the example covers every feature.)
 
 ## Before you finish
 
