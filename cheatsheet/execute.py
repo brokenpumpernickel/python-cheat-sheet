@@ -9,11 +9,14 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
-from jupyter_client import AsyncKernelManager
+from jupyter_client import AsyncKernelClient, AsyncKernelManager
 from jupyter_client.kernelspec import KernelSpecManager
 
 TIMEOUT_SECONDS = 60  # per example, and for the kernel to start
 _KERNEL_NAME = "cheatsheet-python"
+# A kernel is given free ports before it starts, and when several start at once another process can
+# take one first; the kernel then dies with "Address already in use". A new kernel gets new ports.
+_START_ATTEMPTS = 3
 
 # Matplotlib draws with the non-interactive inline backend, which sends every figure open at
 # plt.show() or at the end of the example as SVG. The fixed hash salt and missing date keep the
@@ -54,12 +57,8 @@ async def _run(code: str, timeout: float) -> Run:
         (root / "cwd").mkdir()
         (root / "ipython" / "profile_default").mkdir(parents=True)
         (root / "ipython" / "profile_default" / "ipython_kernel_config.py").write_text(_KERNEL_CONFIG, encoding="utf-8")
-        manager = AsyncKernelManager(kernel_name=_KERNEL_NAME, kernel_spec_manager=_kernel_specs(root))
-        await manager.start_kernel(cwd=str(root / "cwd"), env=_kernel_env(root))
-        client = manager.client()
+        manager, client = await _start_kernel(root)
         try:
-            client.start_channels()
-            await client.wait_for_ready(timeout=TIMEOUT_SECONDS)
             stdout: list[str] = []
             errors: list[dict] = []
             figures: list[str] = []
@@ -95,22 +94,50 @@ async def _run(code: str, timeout: float) -> Run:
     return Run(stdout=text, error_type=name, error=f"{name}: {value}" if value else name, figures=tuple(figures))
 
 
+async def _start_kernel(root: Path) -> tuple[AsyncKernelManager, AsyncKernelClient]:
+    """Start a kernel and wait until it answers, starting a new one if it dies first (see _START_ATTEMPTS)."""
+    for _ in range(_START_ATTEMPTS - 1):
+        try:
+            return await _start_kernel_once(root)
+        except RuntimeError:  # "Kernel died before replying to kernel_info"
+            pass
+    return await _start_kernel_once(root)
+
+
+async def _start_kernel_once(root: Path) -> tuple[AsyncKernelManager, AsyncKernelClient]:
+    manager = AsyncKernelManager(kernel_name=_KERNEL_NAME, kernel_spec_manager=_kernel_specs(root))
+    await manager.start_kernel(cwd=str(root / "cwd"), env=_kernel_env(root))
+    client = manager.client()
+    client.start_channels()
+    try:
+        await client.wait_for_ready(timeout=TIMEOUT_SECONDS)
+    except BaseException:
+        client.stop_channels()
+        await manager.shutdown_kernel(now=True)
+        raise
+    return manager, client
+
+
 def _kernel_specs(root: Path) -> KernelSpecManager:
     """A kernel spec pointing at this interpreter, so no globally installed kernel can be picked up."""
     spec_dir = root / "kernels" / _KERNEL_NAME
-    spec_dir.mkdir(parents=True)
+    spec_dir.mkdir(parents=True, exist_ok=True)
     spec = {
-        # Errors only: the kernel listens on 127.0.0.1 with signed messages, so its notice about
-        # unencrypted TCP would just repeat for every example.
-        "argv": [
-            sys.executable, "-X", "utf8", "-m", "ipykernel_launcher",
-            "-f", "{connection_file}", "--IPKernelApp.log_level=ERROR",
-        ],
+        "argv": _kernel_argv(),
         "display_name": "Cheat sheet examples",
         "language": "python",
     }
     (spec_dir / "kernel.json").write_text(json.dumps(spec), encoding="utf-8")
     return KernelSpecManager(kernel_dirs=[str(root / "kernels")], ensure_native_kernel=False)
+
+
+def _kernel_argv() -> list[str]:
+    # Errors only: the kernel listens on 127.0.0.1 with signed messages, so its notice about
+    # unencrypted TCP would just repeat for every example.
+    return [
+        sys.executable, "-X", "utf8", "-m", "ipykernel_launcher",
+        "-f", "{connection_file}", "--IPKernelApp.log_level=ERROR",
+    ]
 
 
 def _kernel_env(root: Path) -> dict[str, str]:
