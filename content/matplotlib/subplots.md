@@ -1,10 +1,10 @@
 ---
 title: Subplots
 glyph: "ax[ ]"
-summary: "Several plots in one figure: plt.subplot(121), grids with plt.subplots, shared axes, size and layout."
+summary: "Several plots in one figure: plt.subplot(121), plots spanning columns, grids with plt.subplots, shared axes, size and layout."
 pl:
   title: Podwykresy
-  summary: "Podwykresy (subplots), czyli kilka wykresów na jednym rysunku: plt.subplot(121), siatki z plt.subplots, wspólne osie, rozmiar i układ."
+  summary: "Podwykresy (subplots), czyli kilka wykresów na jednym rysunku: plt.subplot(121), wykresy na kilka kolumn, siatki z plt.subplots, wspólne osie, rozmiar i układ."
 ---
 
 ## Side-by-side plots with plt.subplot(121)
@@ -35,6 +35,40 @@ plt.show()
 Two histograms side by side: on the left, U(0, 1), ten bars of similar height, between about 40 and 60; on the right, N(0, 1), a bell shape around 0.
 
 PL: Dwa histogramy obok siebie: po lewej U(0, 1), dziesięć słupków podobnej wysokości, od około 40 do 60; po prawej N(0, 1), kształt dzwonu wokół 0.
+
+## Plots spanning several columns
+
+PL: Wykresy na kilka kolumn
+
+Each `plt.subplot` call can split the figure its own way, so plots of different sizes share one figure. `plt.subplot(221)` and `plt.subplot(222)` are the top half of a 2 by 2 grid, and `plt.subplot(212)`, plot 2 of a 2 by 1 grid, is the bottom half across both columns.
+
+PL: Każde wywołanie `plt.subplot` może dzielić rysunek po swojemu, więc podwykresy (subplots) różnej wielkości mieszczą się na jednym rysunku. `plt.subplot(221)` i `plt.subplot(222)` to górna połowa siatki 2 na 2, a `plt.subplot(212)`, czyli wykres 2 siatki 2 na 1, to dolna połowa przez obie kolumny.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(19)
+a = rng.normal(0, 1, 200)
+b = rng.normal(0, 3, 200)
+plt.figure(figsize=(6, 3.5))
+plt.subplot(221)
+plt.hist(a)
+plt.title("a")
+plt.subplot(222)
+plt.hist(b)
+plt.title("b")
+plt.subplot(212)
+plt.plot(b)
+plt.plot(a)
+plt.show()
+```
+
+### Figure
+
+Two histograms side by side on top, a and b, both bell-shaped around 0, with b about three times as wide; below them one wide plot across both columns shows the 200 values of each sample in order, b swinging much further from 0 than a.
+
+PL: U góry dwa histogramy obok siebie, a i b, oba w kształcie dzwonu wokół 0, przy czym b jest mniej więcej trzy razy szerszy; pod nimi jeden szeroki wykres przez obie kolumny pokazuje po kolei 200 wartości każdej próbki, a b oddala się od 0 znacznie bardziej niż a.
 
 ## A grid of plots with plt.subplots
 
