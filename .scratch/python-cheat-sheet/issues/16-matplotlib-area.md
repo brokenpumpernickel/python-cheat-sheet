@@ -16,7 +16,7 @@
     - Axis labels and a title
     - Several lines and a legend
     - Colours, markers and line styles
-    - Format strings: the third argument of `plt.plot`, e.g. `"C1o"` and `"k--"`. Added at the Author's request in PR brokenpumpernickel/python-cheat-sheet#20; *Colours, markers and line styles* now uses keywords only.
+    - Format strings: the third argument of `plt.plot`, e.g. `"C1o"` and `"k--"`. Added at the Author's request in PR brokenpumpernickel/python-cheat-sheet#21 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/21); *Colours, markers and line styles* now uses keywords only.
     - Axis limits and a grid
     - Horizontal and vertical lines: `plt.axhline` / `plt.axvline` spanning the whole plot, e.g. a threshold or the mean. The Author asked for this one specifically.
     - Saving a figure, with a Pitfall: in a script, call `savefig` before `show`, or the file comes out empty.
@@ -42,7 +42,7 @@
     - A 2D histogram of points (`plt.hist2d`): added at the Author's request after #19 merged, with a picture of a point-density heatmap as the model, in PR brokenpumpernickel/python-cheat-sheet#20 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/20).
   - **Subplots** (in this order):
     - Side-by-side plots with `plt.subplot(121)`: the pyplot style `plt.subplot(121)` / `plt.subplot(122)` (the same as `plt.subplot(1, 2, 1)`), explaining the digits as rows, columns and index.
-    - Plots spanning several columns: `plt.subplot(221)`, `plt.subplot(222)`, then `plt.subplot(212)` across the bottom. Added at the Author's request in PR brokenpumpernickel/python-cheat-sheet#20.
+    - Plots spanning several columns: `plt.subplot(221)`, `plt.subplot(222)`, then `plt.subplot(212)` across the bottom. Added at the Author's request in PR brokenpumpernickel/python-cheat-sheet#21 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/21).
     - A grid of plots with `plt.subplots`: introduces `fig, axes = plt.subplots(...)`, with the Pitfall mapping `plt.xlabel` to `ax.set_xlabel`, `plt.title` to `ax.set_title` and so on.
     - Shared axes
     - Figure size and layout, with a Pitfall: labels overlap until `layout="constrained"`.
@@ -73,7 +73,7 @@ Conventions from tickets 12–14 apply: Outputs show values, not English sentenc
 
 ## Comments
 
-**Resolved** in PR brokenpumpernickel/python-cheat-sheet#19 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/19). The Matplotlib Area is real: six Topics, 28 Entries, 30 figures (28 Entries and 2 Pitfalls; the last three Entries came in PR brokenpumpernickel/python-cheat-sheet#20), each with a figure description in English and Polish. The Area blurb now names the six kinds of plot.
+**Resolved** in PR brokenpumpernickel/python-cheat-sheet#19 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/19). The Matplotlib Area is real: six Topics, 28 Entries, 30 figures (28 Entries and 2 Pitfalls; A 2D histogram of points came in PR brokenpumpernickel/python-cheat-sheet#20, Format strings and Plots spanning several columns in brokenpumpernickel/python-cheat-sheet#21), each with a figure description in English and Polish. The Area blurb now names the six kinds of plot.
 
 Every Entry with its Polish title and English figure description, for the Author to skim (the Polish descriptions say the same):
 
