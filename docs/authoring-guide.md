@@ -156,7 +156,7 @@ Exactly one ` ```python ` block per Entry, always with `python` as the language 
 - **NumPy numbers are printed on their own.** Print a single NumPy number (`data.mean()`, `a[0]`) by itself, beside other values in one `print(x, y)`, or in an f-string, rounding long decimals where needed (`f"{x:.3f}"`). Never print it inside a list, tuple or dict: NumPy 2 then shows its type, `[np.float64(18.0)]`. Arrays print fine as they are.
 - **Same Output on every build.** Seed any randomness (`rng = np.random.default_rng(42)`, `random.seed(1)`; in NumPy always a generator from `default_rng`, never the legacy `np.random.seed`) and avoid the current date and time, memory addresses and anything else that changes between runs.
 - **No outside world.** The kernel starts in an empty temporary folder with no input: an example that reads a file must write it first, and `input()` fails. Don't use the network. Each example has 60 seconds.
-- **Libraries:** only what `pyproject.toml` installs (now NumPy and Matplotlib). To add one, run `uv add pandas` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
+- **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib and SciPy). To add one, run `uv add pandas` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
 
 ### Output
 

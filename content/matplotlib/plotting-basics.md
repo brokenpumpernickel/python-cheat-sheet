@@ -97,6 +97,7 @@ PL: Trzy krzywe dzwonowe o środku w 0 i legenda dla σ = 0,5, σ = 1 i σ = 2; 
 
 - loops/for-over-a-collection
 - strings/f-strings
+- plotting-distributions/comparing-parameters
 
 ## Colours, markers and line styles
 

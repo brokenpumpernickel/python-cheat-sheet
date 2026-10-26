@@ -107,6 +107,7 @@ PL: Trzydzieści słupków w kształcie dzwonu wokół 0 i nałożona na nie gł
 
 - plotting-basics/horizontal-and-vertical-lines
 - array-maths/functions-that-work-on-whole-arrays
+- plotting-distributions/a-histogram-with-the-pdf
 
 ## Comparing two samples
 

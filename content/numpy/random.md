@@ -51,6 +51,7 @@ print(rng.integers(1, 7, (2, 5)))
 
 - arrays/two-dimensional-arrays
 - scatter-plots/a-scatter-plot
+- discrete-distributions/discrete-uniform-distribution
 
 ## Normal samples
 
@@ -74,6 +75,7 @@ print(f"{heights.std(ddof=1):.2f}")
 
 - aggregates/standard-deviation-and-variance
 - histograms/a-histogram
+- distributions/random-samples-with-rvs
 
 ## Choosing and shuffling
 

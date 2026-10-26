@@ -1,13 +1,15 @@
 ---
 title: SciPy stats
-blurb: "Distributions and statistical tests."
+blurb: "Probability distributions with scipy.stats: parameters, probabilities, quantiles, samples and plots, then statistical tests."
 hue: 320
-planned: true
 topics:
   - distributions
+  - continuous-distributions
+  - discrete-distributions
+  - plotting-distributions
   - t-tests
   - correlation
 pl:
   title: SciPy stats
-  blurb: "Rozkłady i testy statystyczne."
+  blurb: "Rozkłady prawdopodobieństwa w scipy.stats: parametry, prawdopodobieństwa, kwantyle, próbki i wykresy, a potem testy statystyczne."
 ---

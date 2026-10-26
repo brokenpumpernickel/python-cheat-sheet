@@ -70,6 +70,7 @@ PL: Jedenaście słupków dla sum od 2 do 12 układa się w trójkąt: równo ro
 ### See also
 
 - random/simulating-an-experiment
+- plotting-distributions/a-pmf-as-bars
 
 ## Means with error bars
 
