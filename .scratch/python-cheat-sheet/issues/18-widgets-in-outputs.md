@@ -62,7 +62,7 @@ Decided (the Author accepted every recommendation and asked for the static contr
 
 ## Comments
 
-- Resolved by the ticket-18 PR (link in the next comment). Decisions made while building it:
+- Resolved by PR #28: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/28. Decisions made while building it:
   - **Data:** a slider also carries `minReadout` and `maxReadout`, its `min` and `max` formatted like `readout`, so the screen-reader text says "from -3.00 to 3.00" as Jupyter would show them. A format Python's `format()` doesn't know (d3-only, like `".2s"`) falls back to the plain number. A dropdown with nothing selected has `value: null`.
   - **Message:** exactly as decided, with the model name: `the example displays a ButtonModel widget, which the site can't draw yet`. It is checked after the error checks, so an example that also fails reports its error.
   - **Layout:** the controls are flattened as decided, so the children of an `HBox` are drawn one per row, not side by side. `interact` uses a `VBox`, so its layout is exact. Descriptions share one right-aligned column (as wide as the longest, up to 12 characters), and all readouts one width, so every track ends at the same place.
