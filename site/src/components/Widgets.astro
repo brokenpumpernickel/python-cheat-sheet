@@ -1,0 +1,214 @@
+---
+// The ipywidgets controls an example displays (sliders, dropdowns, checkboxes, text boxes), drawn as a static
+// picture of how Jupyter shows them at their starting values, laid out like Jupyter's: descriptions in a
+// right-aligned column, then the control. It is a picture, not a form: nothing in it can be focused or used,
+// and it is hidden from screen readers, which hear a list saying what each control is and where it starts.
+import type { Widget } from "../content";
+import { label, labelAttributes, languages, type LabelKey, type Language } from "../labels";
+import Text from "./Text.astro";
+
+interface Props {
+  widgets: Widget[];
+}
+
+const { widgets } = Astro.props;
+
+function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, name: string) => values[name]);
+}
+
+function spoken(widget: Widget, language: Language): string {
+  const say = (key: LabelKey, values: Record<string, string> = {}) => fill(label(key, language), values);
+  let text: string;
+  if (widget.kind === "slider") {
+    text = say("widgetSlider", { min: widget.minReadout, max: widget.maxReadout, value: widget.readout });
+  } else if (widget.kind === "dropdown") {
+    const options = widget.options.join(", ");
+    text = widget.value === null ? say("widgetDropdownEmpty", { options }) : say("widgetDropdown", { options, value: widget.value });
+  } else if (widget.kind === "checkbox") {
+    text = say(widget.value ? "widgetChecked" : "widgetUnchecked");
+  } else {
+    text = widget.value ? say("widgetText", { value: widget.value }) : say("widgetTextEmpty");
+  }
+  return widget.description ? `${widget.description}: ${text}` : text;
+}
+
+const said = widgets.map((widget) => Object.fromEntries(languages.map((language) => [language, spoken(widget, language)])));
+// Jupyter gives every description the same width; here it is the longest one's, up to a limit.
+const descriptionWidth = Math.min(12, Math.max(1, ...widgets.map((w) => (w.kind === "checkbox" ? 0 : w.description.length))));
+// The readouts share one width too, so every track ends at the same place.
+const readoutWidth = Math.max(0, ...widgets.map((w) => (w.kind === "slider" ? Math.max(w.minReadout.length, w.maxReadout.length) : 0)));
+const position = (w: Extract<Widget, { kind: "slider" }>) => (w.max > w.min ? ((w.value - w.min) / (w.max - w.min)) * 100 : 0);
+---
+
+<div class="widgets" data-widgets style={`--description: ${descriptionWidth}ch; --readout: ${readoutWidth}ch`}>
+  <p class="widgets-label" aria-hidden="true"><Text label="widgets" /></p>
+  <ul class="sr-only" {...labelAttributes({ "aria-label": "widgets" })}>
+    {said.map((twins) => <li><Text en={twins.en} pl={twins.pl} /></li>)}
+  </ul>
+  <div class="drawing" aria-hidden="true" data-drawing>
+    {
+      widgets.map((w) => (
+        <div class={`control ${w.kind}`} data-control={w.kind}>
+          {w.kind === "checkbox" ? (
+            <>
+              <span class="description" />
+              <span class="check" data-check={w.value ? "on" : "off"}>{w.value ? "✓" : ""}</span>
+              <span class="check-description" data-description>{w.description}</span>
+            </>
+          ) : (
+            <span class="description" data-description>{w.description}</span>
+          )}
+          {w.kind === "slider" && (
+            <>
+              <span class="track" data-track style={`--at: ${position(w)}%`}>
+                <span class="fill" />
+                <span class="knob" data-knob />
+              </span>
+              <span class="readout" data-value>{w.readout}</span>
+            </>
+          )}
+          {w.kind === "dropdown" && (
+            <span class="box dropdown-box" style={`width: ${Math.max(...w.options.map((o) => o.length), 1) + 4}ch`}>
+              <span class="box-text" data-value>{w.value ?? ""}</span>
+              <span class="arrow">▾</span>
+            </span>
+          )}
+          {w.kind === "text" && (
+            <span class="box text-box">
+              <span class="box-text" data-value>{w.value}</span>
+            </span>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .widgets {
+    margin-top: 6px;
+    pointer-events: none;
+    /* The Area's hue for what is "on" (the filled track, the knob, a ticked box), neutral for the rest. */
+    --on: hsl(var(--hue) 45% var(--deep-l));
+    --edge: hsl(var(--hue) 12% 55%); /* 3:1 on the card in both themes, like a form control's edge */
+  }
+  /* Like the Output's label, in sentence case so it reads as a caption under it. */
+  .widgets-label {
+    margin: 0 0 4px;
+    font: 700 12px var(--font-body);
+    letter-spacing: 0.02em;
+    color: hsl(var(--hue) 45% var(--deep-l));
+  }
+  .drawing {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 560px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--ink);
+    font: 13px/1.4 var(--font-mono);
+    user-select: none;
+  }
+  .control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 26px;
+  }
+  .description {
+    flex: none;
+    width: var(--description);
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .check-description,
+  .box-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* A slider: the track filled up to the value, with a round knob there, then the readout. */
+  .track {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 260px;
+    height: 4px;
+    margin-inline: 7px; /* half the knob, so it stays inside at either end */
+    border-radius: 2px;
+    background: var(--edge);
+  }
+  .fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--at);
+    border-radius: inherit;
+    background: var(--on);
+  }
+  .knob {
+    position: absolute;
+    top: 50%;
+    left: var(--at);
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--card);
+    border-radius: 50%;
+    background: var(--on);
+    box-shadow: 0 0 0 1px var(--on);
+    transform: translate(-50%, -50%);
+  }
+  .readout {
+    flex: none;
+    min-width: var(--readout);
+    text-align: right;
+  }
+
+  /* A dropdown and a text box: a box with the chosen option (and ▾) or the text. */
+  .box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+    height: 26px;
+    padding: 0 8px;
+    border: 1px solid var(--edge);
+    border-radius: 6px;
+  }
+  .dropdown-box {
+    min-width: 8ch;
+    justify-content: space-between;
+  }
+  .text-box {
+    flex: 0 1 18ch;
+  }
+  .arrow {
+    flex: none;
+    font-family: var(--font-body);
+  }
+
+  /* A checkbox: in the control's column, with its description after it, as Jupyter indents it. */
+  .check {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    font: 800 12px/1 var(--font-body);
+    color: var(--card);
+  }
+  .check[data-check="on"] {
+    border-color: var(--on);
+    background: var(--on);
+  }
+</style>

@@ -10,7 +10,7 @@ The content build (`cheatsheet/content.py`, then `cheatsheet/build.py`) is the o
 - [Folder layout](#folder-layout)
 - [Area description](#area-description-_areamd)
 - [Topic file](#topic-file-topic-idmd)
-- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [Output](#output), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [Pitfall](#pitfall), [See also](#see-also)
+- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [Output](#output), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [widgets](#widgets), [Pitfall](#pitfall), [See also](#see-also)
 - [Topic order](#topic-order)
 - [Polish](#polish)
 - [New Areas: hue and glyphs](#new-areas-hue-and-glyphs)
@@ -156,7 +156,7 @@ Exactly one ` ```python ` block per Entry, always with `python` as the language 
 - **NumPy numbers are printed on their own.** Print a single NumPy number (`data.mean()`, `a[0]`) by itself, beside other values in one `print(x, y)`, or in an f-string, rounding long decimals where needed (`f"{x:.3f}"`). Never print it inside a list, tuple or dict: NumPy 2 then shows its type, `[np.float64(18.0)]`. Arrays print fine as they are.
 - **Same Output on every build.** Seed any randomness (`rng = np.random.default_rng(42)`, `random.seed(1)`; in NumPy always a generator from `default_rng`, never the legacy `np.random.seed`) and avoid the current date and time, memory addresses and anything else that changes between runs.
 - **No outside world.** The kernel starts in an empty temporary folder with no input: an example that reads a file must write it first, and `input()` fails. Don't use the network. Each example has 60 seconds.
-- **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib and SciPy). To add one, run `uv add pandas` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
+- **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib, SciPy and ipywidgets). To add one, run `uv add pandas` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
 
 ### Output
 
@@ -209,6 +209,15 @@ PL: Dwa słupki, A i B; słupek A jest ponad dwa razy wyższy.
 - **What to write:** one or two sentences saying what the plot shows and its notable shape, as a sighted Student would take it in at a glance: the kind of plot, what is on it, and the pattern that matters (a bell-shaped peak around 0, a line rising ever faster, the second bar tallest). Give a number only when the plot makes it stand out. Don't repeat the explanation, don't describe colours unless they carry meaning, and don't start with "Image of", "Figure showing" or "Wykres przedstawiający": the screen reader already says it's an image.
 - **Plain text:** no Markdown, not even backticks, since it is read out, not shown. Write a name plainly (x, A) and describe the plot, not the code: "two bars", not "the Output of `plt.bar`".
 - **Polish:** the same facts in natural Polish, under the usual [Polish](#polish) rules.
+
+### Widgets
+
+An example that calls `interact` (ipywidgets) shows controls above its plot in Jupyter. The build can't move them, so the Output is the figure at the starting values, with the controls drawn above it as a picture, captioned "Controls in Jupyter" so nobody tries to drag them.
+
+- **Starting values** come from the function's defaults: `def plot(mu=0.0):` starts the `mu` slider at 0. Without a default, a slider starts in the middle of its range, a dropdown at its first option.
+- **Supported controls:** sliders (`IntSlider`, `FloatSlider`, from `(min, max)` or `(min, max, step)`), dropdowns (`Dropdown`, from a list), checkboxes (`Checkbox`, from `True` / `False`) and text boxes (`Text`, from a string), made by `interact` or explicitly, also inside `VBox` / `HBox`. `fixed(...)` makes no control. Anything else, such as the button `interact_manual` adds, a `FloatLogSlider` or `RadioButtons`, fails the build (see [Running the examples](#running-the-examples)).
+- **Descriptions and values are code** and are shown as they are in both Languages, so use code names or symbols (`mu`, `σ`, `n`), as for [text in figures](#figures).
+- **The figure description** describes the plot at the starting values. The controls get their own screen-reader text in both Languages ("mu: slider from -3.00 to 3.00, at 0.00"), so don't list them in it.
 
 ### Pitfall
 
@@ -299,7 +308,7 @@ To add an Area:
    uv run python -X utf8 -c "import json; d=json.load(open('generated/content.json',encoding='utf-8')); [print(f\"{t['id']}/{e['id']}\", repr(o['text']), o['error'] or '', f\"{len(o['figures'])} figure(s)\" if o['figures'] else '') for a in d['areas'] for t in a['topics'] for e in t['entries'] for o in [e['output']] + ([e['pitfall']['output']] if e['pitfall'] and e['pitfall']['output'] else [])]"
    ```
 
-   In that file an Entry's Output is `output` (`text`, `error`, `figures`), and its Pitfall's is `pitfall.output` (`null` when the Pitfall has no code).
+   In that file an Entry's Output is `output` (`text`, `error`, `figures`, `widgets`), and its Pitfall's is `pitfall.output` (`null` when the Pitfall has no code).
 6. **Preview:**
 
    ```bash
@@ -408,6 +417,7 @@ These are checked only after everything parses, and all failures are listed at o
 | `the example timed out after 60 s` | It was still running after 60 seconds: an endless loop, a long `sleep`, or too much data | Make it smaller; an example should finish in about a second. |
 | `the example draws a figure but has no description; add a '### Figure' section after its code` (or `draws <n> figures`) | The code drew a figure, and no `### Figure` follows it | Add a [figure description](#figure-description) right after the code block (after the Pitfall's code when the place ends in ` Pitfall`). |
 | `Figure: the example draws no figure; remove the '### Figure' description` | A description on code that drew nothing: no plotting, or every figure closed with `plt.close()` | Remove the section, or fix the code if it should draw. |
+| `the example displays a <Model> widget, which the site can't draw yet` (e.g. `ButtonModel`) | The example shows a widget the site can't draw: `interact_manual`'s button, `FloatLogSlider`, `RadioButtons`… | Use a [supported control](#widgets) (`interact` instead of `interact_manual`, a `FloatSlider`, a dropdown). |
 
 **Not caught by the build** (check them yourself): an empty Output from a missing `print`, warnings (stderr is ignored), Output that changes between builds, length, tone, Topic order and the quality of the Polish.
 

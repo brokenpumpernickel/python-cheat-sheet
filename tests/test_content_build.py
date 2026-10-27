@@ -49,7 +49,7 @@ def test_valid_topic_produces_data_with_captured_output(full_syntax):
         "figure": None,
         "see": [],
         "pitfall": None,
-        "output": {"text": "[20, 30]\n[10, 30]", "error": None, "figures": []},
+        "output": {"text": "[20, 30]\n[10, 30]", "error": None, "figures": [], "widgets": []},
         "pl": {
             "title": "Wycinanie (slicing)",
             "explain": "<code>data[start:stop]</code> wybiera <em>fragment</em> listy.",
@@ -68,7 +68,7 @@ def test_pitfall_and_see_also_are_parsed(full_syntax):
         "code": "data = [3, 1, 2]\ndata = data.sort()\nprint(data)",
         "raises": None,
         "figure": None,
-        "output": {"text": "None", "error": None, "figures": []},
+        "output": {"text": "None", "error": None, "figures": [], "widgets": []},
     }
     assert sorting["pl"]["pitfall"] == (
         "<code>data = data.sort()</code> zastępuje listę wartością <code>None</code>."
@@ -84,6 +84,7 @@ def test_expected_error_ends_output_with_its_final_line(full_syntax):
         "text": "1",
         "error": "IndexError: list index out of range",
         "figures": [],
+        "widgets": [],
     }
 
 
@@ -91,7 +92,7 @@ def test_pitfall_code_runs_like_entry_code(full_syntax):
     missing = full_syntax["areas"][0]["topics"][0]["entries"][2]
 
     assert missing["pitfall"]["raises"] == "KeyError"
-    assert missing["pitfall"]["output"] == {"text": "2.5", "error": "KeyError: 'sd'", "figures": []}
+    assert missing["pitfall"]["output"] == {"text": "2.5", "error": "KeyError: 'sd'", "figures": [], "widgets": []}
 
 
 def test_planned_areas_and_topics_have_no_entries(full_syntax):
@@ -116,6 +117,7 @@ def test_meta_lists_the_versions_examples_ran_with(full_syntax):
         {"name": "NumPy", "version": version("numpy")},
         {"name": "Matplotlib", "version": version("matplotlib")},
         {"name": "SciPy", "version": version("scipy")},
+        {"name": "ipywidgets", "version": version("ipywidgets")},
     ]
 
 
@@ -155,6 +157,34 @@ def test_figure_descriptions_reach_the_data():
     assert "line" not in shown  # the Entry's line is for messages only
 
 
+def test_widget_controls_are_captured_in_display_order():
+    controls = build_content(FIXTURES / "widgets")["areas"][0]["topics"][0]
+    every, nested = controls["entries"]
+
+    # The function's defaults set the starting values: n starts at 10, not mid-range, and kind at "b".
+    assert every["output"]["widgets"] == [
+        {"kind": "slider", "description": "mu", "min": -3.0, "max": 3.0, "step": 0.1, "value": 1.0,
+         "readout": "1.00", "minReadout": "-3.00", "maxReadout": "3.00"},
+        {"kind": "slider", "description": "n", "min": 0, "max": 100, "step": 5, "value": 10,
+         "readout": "10", "minReadout": "0", "maxReadout": "100"},
+        {"kind": "dropdown", "description": "kind", "options": ["a", "b"], "value": "b"},
+        {"kind": "checkbox", "description": "show", "value": True},
+        {"kind": "text", "description": "name", "value": "x"},
+    ]
+    assert len(every["output"]["figures"]) == 1  # the plot at the starting values
+    # Boxes are walked depth first, in order, and the Output widget is left out.
+    assert nested["output"]["widgets"] == [
+        {"kind": "checkbox", "description": "a", "value": False},
+        {"kind": "slider", "description": "k", "min": 1, "max": 9, "step": 1, "value": 3,
+         "readout": "3", "minReadout": "1", "maxReadout": "9"},
+    ]
+    assert nested["pitfall"]["output"]["widgets"] == [
+        {"kind": "slider", "description": "σ", "min": 0.0, "max": 2.0, "step": 0.1, "value": 0.5,
+         "readout": "0.50", "minReadout": "0.00", "maxReadout": "2.00"},
+    ]
+    assert nested["pitfall"]["output"]["text"] == "0.5"
+
+
 # One small content folder per rule in tests/fixtures/invalid/, and the exact message it must give.
 INVALID = {
     # Required fields
@@ -183,6 +213,7 @@ INVALID = {
     "wrong-error-type": "basics/names.md (names/binding): the example failed with IndexError: list index out of range (marked raises=KeyError)",
     "marked-without-error": "basics/names.md (names/binding): marked raises=KeyError, but the example ran without an error",
     "pitfall-unmarked-error": "basics/names.md (names/binding) Pitfall: the example failed with NameError: name 'y' is not defined",
+    "unsupported-widget": "basics/names.md (names/binding): the example displays a ButtonModel widget, which the site can't draw yet",
     # Figure descriptions, the figures' accessible names
     "figure-without-description": "basics/names.md:10 (names/binding): the example draws a figure but has no description; add a '### Figure' section after its code",
     "figure-description-without-figure": "basics/names.md:10 (names/binding) Figure: the example draws no figure; remove the '### Figure' description",

@@ -27,7 +27,7 @@ One concept within a Topic (e.g. _list comprehension_): a title, a short explana
 _Avoid_: Snippet, item, card, example
 
 **Output**:
-What an Entry's code example actually produces when run (text or a figure). Never written by hand.
+What an Entry's code example actually produces when run (text or a figure, and any widget controls it displays, drawn as a picture). Never written by hand.
 _Avoid_: Result, expected output
 _Polish_: Wynik
 

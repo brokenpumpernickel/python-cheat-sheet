@@ -4,10 +4,34 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "astro/zod";
 
+// An ipywidgets control the example displayed, with its starting state (cheatsheet/execute.py).
+const Widget = z.discriminatedUnion("kind", [
+  z.strictObject({
+    kind: z.literal("slider"),
+    description: z.string(),
+    min: z.number(),
+    max: z.number(),
+    step: z.number(),
+    value: z.number(),
+    readout: z.string(), // the value as Jupyter shows it, with the slider's readout_format
+    minReadout: z.string(),
+    maxReadout: z.string(),
+  }),
+  z.strictObject({
+    kind: z.literal("dropdown"),
+    description: z.string(),
+    options: z.array(z.string()),
+    value: z.string().nullable(), // the selected option's label
+  }),
+  z.strictObject({ kind: z.literal("checkbox"), description: z.string(), value: z.boolean() }),
+  z.strictObject({ kind: z.literal("text"), description: z.string(), value: z.string() }),
+]);
+
 const Output = z.strictObject({
   text: z.string(),
   error: z.string().nullable(),
   figures: z.array(z.string()),
+  widgets: z.array(Widget),
 });
 
 const Entry = z.strictObject({
@@ -69,6 +93,7 @@ export type Area = z.infer<typeof Area>;
 export type Topic = z.infer<typeof Topic>;
 export type Entry = z.infer<typeof Entry>;
 export type Output = z.infer<typeof Output>;
+export type Widget = z.infer<typeof Widget>;
 
 const path = process.env.CHEATSHEET_CONTENT_DATA ?? resolve("../generated/content.json");
 

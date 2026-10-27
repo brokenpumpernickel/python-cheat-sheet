@@ -20,7 +20,7 @@ SITE_DIR = REPO / "site"
 SITE_OUT_DIR = SITE_DIR / "dist"
 
 # Libraries the examples use, shown in the footer: display name -> distribution name.
-EXAMPLE_LIBRARIES = {"NumPy": "numpy", "Matplotlib": "matplotlib", "SciPy": "scipy"}
+EXAMPLE_LIBRARIES = {"NumPy": "numpy", "Matplotlib": "matplotlib", "SciPy": "scipy", "ipywidgets": "ipywidgets"}
 
 # Kernels running at once. Starting a kernel is mostly waiting, so a few per core is fine.
 PARALLEL_KERNELS = min(8, 2 * (os.cpu_count() or 1))
@@ -100,7 +100,9 @@ def _output(code: str, raises: str | None, where: str, timeout: float) -> dict:
         raise ContentError(f"{where}: the example failed with {run.error}{expected}")
     if raises and not run.error:
         raise ContentError(f"{where}: marked raises={raises}, but the example ran without an error")
-    return {"text": run.stdout, "error": run.error, "figures": list(run.figures)}
+    if run.unsupported_widget:
+        raise ContentError(f"{where}: the example displays a {run.unsupported_widget} widget, which the site can't draw yet")
+    return {"text": run.stdout, "error": run.error, "figures": list(run.figures), "widgets": list(run.widgets)}
 
 
 def _check_figure_description(example: dict, here: str) -> None:

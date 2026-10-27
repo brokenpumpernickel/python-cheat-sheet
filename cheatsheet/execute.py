@@ -27,12 +27,27 @@ c.InlineBackend.print_figure_kwargs = {"bbox_inches": "tight", "metadata": {"Dat
 """
 
 
+# ipywidgets: the part of a display_data message that names a displayed widget, the containers whose
+# children are drawn in their place, and the controls the site can draw, by model name.
+_WIDGET_VIEW = "application/vnd.jupyter.widget-view+json"
+_CONTAINERS = {"VBoxModel", "HBoxModel", "BoxModel"}
+_CONTROLS = {
+    "IntSliderModel": "slider",
+    "FloatSliderModel": "slider",
+    "DropdownModel": "dropdown",
+    "CheckboxModel": "checkbox",
+    "TextModel": "text",
+}
+
+
 @dataclass(frozen=True)
 class Run:
     stdout: str
     error_type: str | None = None
     error: str | None = None  # the final traceback line, e.g. "KeyError: 'sd'"
     figures: tuple[str, ...] = ()  # SVG documents, in the order they were shown
+    widgets: tuple[dict, ...] = ()  # the controls displayed, in display order (see _controls)
+    unsupported_widget: str | None = None  # the model name of the first displayed control not in _CONTROLS
     timed_out: bool = False  # still running after the timeout, so it was stopped
 
 
@@ -62,6 +77,10 @@ async def _run(code: str, timeout: float) -> Run:
             stdout: list[str] = []
             errors: list[dict] = []
             figures: list[str] = []
+            # A widget's model is sent when it is made, then changed by updates (interact sets each
+            # control's description and starting value afterwards), so the state is read at the end.
+            models: dict[str, dict] = {}  # each widget model's state, by its comm id
+            shown: list[str] = []  # the model ids of the widgets displayed, in order
 
             def collect(message: dict) -> None:
                 content = message["content"]
@@ -72,6 +91,12 @@ async def _run(code: str, timeout: float) -> Run:
                 elif message["msg_type"] == "display_data" and "image/svg+xml" in content["data"]:
                     svg = content["data"]["image/svg+xml"]
                     figures.append(svg[svg.index("<svg") :])  # without the XML prolog, so it can sit inline in HTML
+                elif message["msg_type"] == "display_data" and _WIDGET_VIEW in content["data"]:
+                    shown.append(content["data"][_WIDGET_VIEW]["model_id"])
+                elif message["msg_type"] == "comm_open" and content["target_name"] == "jupyter.widget":
+                    models[content["comm_id"]] = dict(content["data"]["state"])
+                elif message["msg_type"] == "comm_msg" and content["data"].get("method") == "update":
+                    models.setdefault(content["comm_id"], {}).update(content["data"]["state"])
 
             try:
                 await client.execute_interactive(
@@ -88,10 +113,52 @@ async def _run(code: str, timeout: float) -> Run:
     text = "".join(stdout).rstrip("\n")
     if timed_out:
         return Run(stdout=text, timed_out=True)
+    controls = [control for model_id in shown for control in _controls(models, model_id)]
+    captured = {
+        "figures": tuple(figures),
+        "widgets": tuple(control for control in controls if "kind" in control),
+        "unsupported_widget": next((control["model"] for control in controls if "kind" not in control), None),
+    }
     if not errors:
-        return Run(stdout=text, figures=tuple(figures))
+        return Run(stdout=text, **captured)
     name, value = errors[0]["ename"], errors[0]["evalue"]
-    return Run(stdout=text, error_type=name, error=f"{name}: {value}" if value else name, figures=tuple(figures))
+    return Run(stdout=text, error_type=name, error=f"{name}: {value}" if value else name, **captured)
+
+
+def _controls(models: dict[str, dict], model_id: str) -> list[dict]:
+    """The controls in a displayed widget, depth first and in order: containers are walked and Output widgets
+    left out. Each is a supported control's data for the site, or {"model": <name>} for one it can't draw."""
+    state = models.get(model_id, {})
+    name = state.get("_model_name", "")
+    if name in _CONTAINERS:
+        return [c for child in state["children"] for c in _controls(models, child.removeprefix("IPY_MODEL_"))]
+    if name == "OutputModel":
+        return []
+    if name not in _CONTROLS:
+        return [{"model": name}]
+    control = {"kind": _CONTROLS[name], "description": state["description"]}
+    if control["kind"] == "slider":
+        control |= {key: state[key] for key in ("min", "max", "step", "value")}
+        control |= {
+            "readout": _readout(state["value"], state["readout_format"]),
+            "minReadout": _readout(state["min"], state["readout_format"]),
+            "maxReadout": _readout(state["max"], state["readout_format"]),
+        }
+    elif control["kind"] == "dropdown":
+        options, index = state["_options_labels"], state["index"]
+        control |= {"options": list(options), "value": None if index is None else options[index]}
+    else:
+        control["value"] = state["value"]
+    return [control]
+
+
+def _readout(number: float, readout_format: str) -> str:
+    """The number as a slider's readout shows it. Jupyter formats it with d3-format, whose usual formats
+    (".2f" for floats, "d" for ints) mean the same to Python's format(); any other gives the plain number."""
+    try:
+        return format(number, readout_format)
+    except ValueError:
+        return str(number)
 
 
 async def _start_kernel(root: Path) -> tuple[AsyncKernelManager, AsyncKernelClient]:
