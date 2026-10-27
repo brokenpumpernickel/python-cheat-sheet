@@ -76,3 +76,20 @@ def test_footer_shows_the_versions_examples_ran_with(page: Page, site_url):
     expect(footer).to_contain_text(f"Python {platform.python_version()}")
     expect(footer).to_contain_text(f"NumPy {version('numpy')}")
     expect(footer).to_contain_text(f"Matplotlib {version('matplotlib')}")
+
+
+@pytest.mark.parametrize(
+    ("selector", "content_type"),
+    [
+        ('link[rel="icon"][type="image/svg+xml"]', "image/svg+xml"),
+        ('link[rel="icon"][sizes="32x32"]', "image/"),  # .ico, for browsers without SVG icons
+        ('link[rel="apple-touch-icon"]', "image/png"),
+    ],
+)
+def test_the_page_has_the_py_badge_as_its_icon(page: Page, site_url, selector, content_type):
+    page.goto(site_url)
+
+    href = page.locator(selector).evaluate("(link) => link.href")
+    response = page.request.get(href)
+    assert response.ok, href
+    assert response.headers["content-type"].startswith(content_type), response.headers["content-type"]
