@@ -215,3 +215,4 @@ PL: Trzy krzywe dla x od 0 do 20 z legendą df = 2, df = 4 i df = 8: krzywa df =
 
 - plotting-basics/several-lines-and-a-legend
 - continuous-distributions/chi-squared-distribution
+- interactive-plots/several-sliders
