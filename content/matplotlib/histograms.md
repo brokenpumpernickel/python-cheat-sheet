@@ -1,10 +1,10 @@
 ---
 title: Histograms
 glyph: "hist"
-summary: "How a sample is spread: counting into bins, choosing bins, density with a PDF, comparing two samples."
+summary: "How a sample is spread: counting into bins, choosing bins, logarithmic bins, density with a PDF, comparing two samples."
 pl:
   title: Histogramy
-  summary: "Histogramy (histograms), czyli rozkład próby: zliczanie w przedziałach, wybór przedziałów, gęstość z krzywą PDF, porównanie dwóch próbek."
+  summary: "Histogramy (histograms), czyli rozkład próby: zliczanie w przedziałach, wybór przedziałów, przedziały logarytmiczne, gęstość z krzywą PDF, porównanie dwóch próbek."
 ---
 
 ## A histogram
@@ -69,6 +69,63 @@ PL: Obrysowane słupki, każdy o szerokości 10 punktów, na osi od 0 do 100: na
 Values outside the edges are left out without any warning: with `bins=np.arange(0, 101, 10)`, a score of 105 is in no bar.
 
 PL: Wartości spoza granic przedziałów są pomijane bez ostrzeżenia: przy `bins=np.arange(0, 101, 10)` wynik 105 nie trafia do żadnego słupka.
+
+### See also
+
+- arrays/ranges
+
+## Logarithmic bins
+
+PL: Przedziały logarytmiczne
+
+Data spread over several powers of 10, such as reaction times or incomes, need bins that widen as the values grow. `np.logspace(-1, 3, 41)` gives 41 edges from 0.1 to 1000 (start and stop are the powers of 10, -1 and 3), and `plt.xscale("log")` spaces the x-axis by powers of 10, so the bars come out equally wide.
+
+PL: Dane rozciągnięte na kilka rzędów wielkości, np. czasy reakcji czy dochody, potrzebują przedziałów (bins), które rosną razem z wartościami. `np.logspace(-1, 3, 41)` daje 41 granic od 0,1 do 1000 (początek i koniec to wykładniki potęg 10, czyli -1 i 3), a `plt.xscale("log")` rysuje oś x w skali logarytmicznej (log scale), więc słupki mają równą szerokość.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(8)
+times = rng.lognormal(3, 1, 1000)
+edges = np.logspace(-1, 3, 41)
+plt.figure(figsize=(6, 3.5))
+plt.hist(times, bins=edges,
+         edgecolor="black")
+plt.xscale("log")
+plt.show()
+```
+
+### Figure
+
+Outlined bars of equal width on a logarithmic x-axis from 0.1 to 1000, forming a bell shape that peaks around 20; there are no bars below 1.
+
+PL: Obrysowane słupki równej szerokości na logarytmicznej osi x od 0,1 do 1000, układające się w kształt dzwonu ze szczytem około 20; poniżej 1 nie ma słupków.
+
+### Pitfall
+
+With `plt.xscale("log")` but equal-width bins, such as `bins=40`, the first bin swallows most of the data and the rest shrink to slivers on the right. Give the bins with `np.logspace`.
+
+PL: Przy `plt.xscale("log")`, ale przedziałach równej szerokości, np. `bins=40`, pierwszy przedział połyka większość danych, a reszta kurczy się do wąskich pasków po prawej. Podaj przedziały przez `np.logspace`.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(8)
+times = rng.lognormal(3, 1, 1000)
+plt.figure(figsize=(6, 3.5))
+plt.hist(times, bins=40,
+         edgecolor="black")
+plt.xscale("log")
+plt.show()
+```
+
+### Figure
+
+On a logarithmic x-axis, one very wide bar from about 1 to 14 holding over 350 values, then ever narrower and shorter bars to the right, down to thin slivers past 100.
+
+PL: Na logarytmicznej osi x jeden bardzo szeroki słupek od około 1 do 14 z ponad 350 wartościami, a dalej w prawo coraz węższe i niższe słupki, aż do cienkich pasków za 100.
 
 ### See also
 
