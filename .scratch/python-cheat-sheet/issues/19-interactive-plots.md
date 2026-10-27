@@ -41,6 +41,7 @@ Conventions from tickets 12–17 apply: one figure per example at `figsize=(6, 3
 
 ## Comments
 
+- Resolved by PR #29: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/29.
 - Entries, with their Polish titles and figure descriptions (the descriptions describe the plot at the starting values; the controls have their own screen-reader text):
   - **A slider with interact** — *Suwak (slider) z interact*. Control: `mu` slider from -3.00 to 3.00, at 0.00.
     - Figure: "A bell curve centred on x = 0, peaking at about 0.4, on an x-axis from −6 to 6." / "Krzywa dzwonowa o środku w x = 0, ze szczytem około 0,4, na osi x od −6 do 6."
