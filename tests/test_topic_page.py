@@ -123,6 +123,78 @@ def test_figure_output_sits_on_a_white_card(page: Page, site_url, scheme):
     assert figure.locator("svg").bounding_box()["width"] <= figure.bounding_box()["width"]
 
 
+def widgets(page: Page, ref: str):
+    return entry(page, ref).locator("[data-widgets]")
+
+
+def test_widget_controls_are_drawn_above_the_figure_in_display_order(page: Page, site_url):
+    page.goto(f"{site_url}#charts/interactive-chart")
+    output = entry(page, "charts/interactive-chart").locator("[data-output]")
+    drawing = widgets(page, "charts/interactive-chart").locator("[data-drawing]")
+
+    expect(widgets(page, "charts/interactive-chart")).to_contain_text("Controls in Jupyter", use_inner_text=True)
+    expect(drawing).to_have_attribute("aria-hidden", "true")
+    expect(drawing.locator("[data-description]")).to_have_text(["mu", "n", "kind", "show", "grid", "name"])
+    expect(drawing.locator("[data-value]")).to_have_text(["1.00", "10", "b", "x"])  # readouts, the choice, the text
+    kinds = drawing.locator("[data-control]").evaluate_all("(rows) => rows.map((row) => row.dataset.control)")
+    assert kinds == ["slider", "slider", "dropdown", "checkbox", "checkbox", "text"]
+    checks = drawing.locator("[data-check]")
+    assert checks.evaluate_all("(boxes) => boxes.map((box) => box.dataset.check)") == ["on", "off"]
+    figure = output.locator('[role="img"]')  # not the svg inside it
+    assert drawing.bounding_box()["y"] + drawing.bounding_box()["height"] <= figure.bounding_box()["y"]
+    expect(entry(page, "charts/line-chart").locator("[data-widgets]")).to_have_count(0)  # only where there are any
+
+
+def test_a_slider_knob_sits_at_the_value_along_its_track(page: Page, site_url):
+    page.goto(f"{site_url}#charts/interactive-chart")
+    sliders = widgets(page, "charts/interactive-chart").locator('[data-control="slider"]')
+
+    for index, proportion in [(0, 4 / 6), (1, 10 / 100)]:  # mu = 1.0 in -3..3, n = 10 in 0..100
+        track = sliders.nth(index).locator("[data-track]").bounding_box()
+        knob = sliders.nth(index).locator("[data-knob]").bounding_box()
+        assert knob["width"] > 0
+        assert abs(knob["x"] + knob["width"] / 2 - (track["x"] + proportion * track["width"])) < 1.5
+
+
+def test_the_controls_are_a_picture_nothing_can_be_focused_or_used(page: Page, site_url):
+    page.goto(f"{site_url}#charts/interactive-chart")
+    controls = widgets(page, "charts/interactive-chart")
+
+    expect(controls.locator("input, select, textarea, button, a, [tabindex], [contenteditable]")).to_have_count(0)
+    expect(controls).to_have_css("pointer-events", "none")
+    expect(controls.locator("[data-drawing]")).to_have_css("user-select", "none")
+
+
+SPOKEN = {
+    "en": [
+        "mu: slider from -3.00 to 3.00, at 1.00",
+        "n: slider from 0 to 100, at 10",
+        "kind: dropdown with a, b; b selected",
+        "show: checkbox, checked",
+        "grid: checkbox, not checked",
+        "name: text box, x",
+    ],
+    "pl": [
+        "mu: suwak od -3.00 do 3.00, ustawiony na 1.00",
+        "n: suwak od 0 do 100, ustawiony na 10",
+        "kind: lista rozwijana z a, b; wybrane b",
+        "show: pole wyboru, zaznaczone",
+        "grid: pole wyboru, niezaznaczone",
+        "name: pole tekstowe, x",
+    ],
+}
+
+
+@pytest.mark.parametrize("language", ["en", "pl"])
+def test_screen_readers_hear_each_control_in_the_page_language(page: Page, site_url, language):
+    page.goto(f"{site_url}?lang={language}#charts/interactive-chart")
+    controls = widgets(page, "charts/interactive-chart")
+
+    expect(controls.get_by_role("listitem")).to_have_text(SPOKEN[language], use_inner_text=True)
+    caption = {"en": "Controls in Jupyter", "pl": "Kontrolki w Jupyterze"}[language]
+    expect(controls.get_by_role("list")).to_have_accessible_name(caption)
+
+
 def test_pitfall_with_code_has_a_sticker_and_its_own_code_and_output(page: Page, site_url):
     page.goto(f"{site_url}#numbers")
     card = entry(page, "numbers/division")

@@ -48,16 +48,25 @@ Decided (the Author accepted every recommendation and asked for the static contr
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] ipywidgets is installed with uv and pinned, it is in `EXAMPLE_LIBRARIES` and in the footer, and the tests and guide match.
-- [ ] The build captures the controls an example displays, in order and with their final state, as `output.widgets` (Entry and Pitfall), for the four supported kinds; containers are walked and Output widgets skipped.
-- [ ] An unsupported widget fails the build with the decided message, listed with the other example failures, and the guide's validation table has the row.
-- [ ] The site draws the controls above the figure as a static picture, with the caption, in both themes and at phone width, and nothing in it can be focused or used.
-- [ ] Screen readers hear each control in the page's Language, and axe passes.
-- [ ] Content-build and browser tests cover the above, with a new fixture.
-- [ ] The authoring guide has the Widgets section.
-- [ ] `uv run cheatsheet build` and `uv run pytest` pass; the fixture page was looked at in both Languages and both themes.
-- [ ] One session and one PR, which also adds this ticket and ticket 19.
+- [x] ipywidgets is installed with uv and pinned, it is in `EXAMPLE_LIBRARIES` and in the footer, and the tests and guide match.
+- [x] The build captures the controls an example displays, in order and with their final state, as `output.widgets` (Entry and Pitfall), for the four supported kinds; containers are walked and Output widgets skipped.
+- [x] An unsupported widget fails the build with the decided message, listed with the other example failures, and the guide's validation table has the row.
+- [x] The site draws the controls above the figure as a static picture, with the caption, in both themes and at phone width, and nothing in it can be focused or used.
+- [x] Screen readers hear each control in the page's Language, and axe passes.
+- [x] Content-build and browser tests cover the above, with a new fixture.
+- [x] The authoring guide has the Widgets section.
+- [x] `uv run cheatsheet build` and `uv run pytest` pass; the fixture page was looked at in both Languages and both themes.
+- [x] One session and one PR, which also adds this ticket and ticket 19.
 
 ## Comments
+
+- Resolved by the ticket-18 PR (link in the next comment). Decisions made while building it:
+  - **Data:** a slider also carries `minReadout` and `maxReadout`, its `min` and `max` formatted like `readout`, so the screen-reader text says "from -3.00 to 3.00" as Jupyter would show them. A format Python's `format()` doesn't know (d3-only, like `".2s"`) falls back to the plain number. A dropdown with nothing selected has `value: null`.
+  - **Message:** exactly as decided, with the model name: `the example displays a ButtonModel widget, which the site can't draw yet`. It is checked after the error checks, so an example that also fails reports its error.
+  - **Layout:** the controls are flattened as decided, so the children of an `HBox` are drawn one per row, not side by side. `interact` uses a `VBox`, so its layout is exact. Descriptions share one right-aligned column (as wide as the longest, up to 12 characters), and all readouts one width, so every track ends at the same place.
+  - **Caption:** "Controls in Jupyter" / "Kontrolki w Jupyterze" sits under the Output label in the same font and colour, but in sentence case, so it reads as a caption and not as a second heading.
+  - **Screen readers:** the visible caption is `aria-hidden`; the hidden list is named by it instead, so it is read once. Wording added beyond the ticket: "checkbox, not checked" / "pole wyboru, niezaznaczone", "text box, empty" / "pole tekstowe, puste" and "dropdown with a, b; nothing selected" / "lista rozwijana z a, b; nic nie wybrano".
+  - **Accessibility tests:** the figure Topic's axe audit now runs in both themes, and the every-hue contrast audit draws one control of each kind.
+  - **For ticket 19:** in Jupyter, `interact(plot, ...)` as a cell's last line also shows the returned function, `<function plot(...)>`, under the controls. The build ignores it, so the site doesn't show it. `@interact` avoids it, and so does `_ = interact(...)`, if the Topic wants to mention it. `fixed(...)` makes no control, and `continuous_update=False` doesn't change the drawing.

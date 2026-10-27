@@ -139,7 +139,10 @@ def test_the_audit_catches_faint_text_on_the_sea(page: Page, site_url):
 
 
 @pytest.mark.parametrize("language", LANGUAGES)
-def test_the_figure_topic_passes_too(page: Page, site_url, language):
+@pytest.mark.parametrize("theme", THEMES)
+def test_the_figure_topic_passes_too(page: Page, site_url, theme, language):
+    """Figures, and the drawing of an example's widget controls with its screen-reader text."""
+    page.emulate_media(color_scheme=theme)
     page.goto(f"{site_url}?lang={language}#charts")
     expect(topic_page(page, "charts")).to_be_visible()
 
@@ -149,9 +152,16 @@ def test_the_figure_topic_passes_too(page: Page, site_url, language):
 
 # Contrast for any Area hue: the Author picks hues freely (0-360), so text in and on an Area's colour must
 # meet AA whatever it is. Content data with an Area every 30 degrees, each with an Entry that has every kind
-# of text (no examples are run).
+# of text, drawn widget controls included (no examples are run).
 
 HUES = range(0, 360, 30)
+HUE_WIDGETS = [
+    {"kind": "slider", "description": "mu", "min": 0, "max": 10, "step": 1, "value": 3,
+     "readout": "3", "minReadout": "0", "maxReadout": "10"},
+    {"kind": "dropdown", "description": "kind", "options": ["a", "b"], "value": "a"},
+    {"kind": "checkbox", "description": "show", "value": True},
+    {"kind": "text", "description": "name", "value": "x"},
+]
 
 
 def hue_entry(topic_id: str, see: str) -> dict:
@@ -162,14 +172,14 @@ def hue_entry(topic_id: str, see: str) -> dict:
         "code": "# a comment\nx = [1, 'a', len('b')]\nprint(x)",
         "raises": None,
         "figure": None,
-        "output": {"text": "[1, 'a', 1]\n", "error": None, "figures": []},
+        "output": {"text": "[1, 'a', 1]\n", "error": None, "figures": [], "widgets": HUE_WIDGETS},
         "see": [see],
         "pitfall": {
             "text": "Indexes start at <code>0</code>.",
             "code": "x = []\nx[0]",
             "raises": "IndexError",
             "figure": None,
-            "output": {"text": "", "error": "IndexError: list index out of range", "figures": []},
+            "output": {"text": "", "error": "IndexError: list index out of range", "figures": [], "widgets": []},
         },
         "pl": {
             "title": "Wartości",

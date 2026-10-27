@@ -76,6 +76,7 @@ def test_footer_shows_the_versions_examples_ran_with(page: Page, site_url):
     expect(footer).to_contain_text(f"Python {platform.python_version()}")
     expect(footer).to_contain_text(f"NumPy {version('numpy')}")
     expect(footer).to_contain_text(f"Matplotlib {version('matplotlib')}")
+    expect(footer).to_contain_text(f"ipywidgets {version('ipywidgets')}")
 
 
 @pytest.mark.parametrize(
