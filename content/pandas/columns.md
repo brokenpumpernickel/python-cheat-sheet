@@ -56,6 +56,7 @@ print(df["city"].str.len())
 ### See also
 
 - strings/cleaning-and-splitting
+- filtering/text-that-contains
 
 ## Text to numbers
 
@@ -212,3 +213,5 @@ print(df)
 ### See also
 
 - dataframes/column-types
+- selecting/rows-and-columns-by-label-with-loc
+- filtering/a-column-of-the-matching-rows

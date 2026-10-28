@@ -30,6 +30,7 @@ print(df)
 ### See also
 
 - lists/sorting
+- pandas-plots/bar-charts-of-counts
 
 ## Descending, and by several columns
 
@@ -55,6 +56,10 @@ print(df.sort_values(
     ascending=[True, False]))
 ```
 
+### See also
+
+- grouping/the-latest-row-per-group
+
 ## nlargest and nsmallest
 
 PL: nlargest i nsmallest
@@ -78,6 +83,7 @@ print(df.nsmallest(2, "score"))
 ### See also
 
 - exploring/head-and-tail
+- grouping/keeping-the-largest-groups
 
 ## The row with the largest value
 
@@ -129,3 +135,4 @@ print(by_name.sort_index())
 ### See also
 
 - selecting/a-single-value
+- grouping/the-group-as-an-index-or-as-a-column

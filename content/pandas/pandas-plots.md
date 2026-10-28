@@ -44,6 +44,7 @@ PL: Linia dla lat od 2014 do 2024 na tle kreskowanej siatki, oś x opisana jako 
 
 - plotting-basics/a-line-plot
 - plotting-basics/axis-limits-and-a-grid
+- grouping/group-sizes
 
 ## Bar charts of counts
 
