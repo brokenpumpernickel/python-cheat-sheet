@@ -80,6 +80,10 @@ print(df.dropna())
 print(df.dropna(subset=["score"]))
 ```
 
+### See also
+
+- merging/keeping-unmatched-rows
+
 ## Filling missing values
 
 PL: Uzupełnianie brakujących wartości

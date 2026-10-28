@@ -28,6 +28,8 @@ print(df["group"].value_counts())
 ### See also
 
 - exploring/value-counts
+- filtering/counting-and-proportions-with-a-mask
+- pandas-plots/a-line-plot-of-a-series
 
 ## A column's mean per group
 
@@ -52,6 +54,7 @@ print(df.groupby("group")["score"].max())
 
 - exploring/column-statistics
 - aggregates/along-an-axis
+- pandas-plots/bar-charts-of-counts
 
 ## Several statistics with agg
 
@@ -173,6 +176,10 @@ newest = df.sort_values("year",
 print(newest.groupby("state").first())
 ```
 
+### See also
+
+- sorting/descending-and-by-several-columns
+
 ## Keeping the largest groups
 
 PL: Tylko największe grupy
@@ -196,3 +203,8 @@ print(sizes.nlargest(2))
 top = sizes.nlargest(2).index
 print(df[df["shape"].isin(top)])
 ```
+
+### See also
+
+- filtering/isin
+- sorting/nlargest-and-nsmallest

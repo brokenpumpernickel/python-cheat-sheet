@@ -102,6 +102,7 @@ print(df[~chosen])
 ### See also
 
 - sets/set-operations
+- grouping/keeping-the-largest-groups
 
 ## Text that contains
 
@@ -132,6 +133,8 @@ print(df[mask])
 ### See also
 
 - strings/cleaning-and-splitting
+- columns/text-methods
+- missing-values/finding-missing-values
 
 ## A column of the matching rows
 

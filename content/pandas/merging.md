@@ -61,6 +61,11 @@ print(joined)
 print(joined.drop(columns="State"))
 ```
 
+### See also
+
+- columns/renaming-columns
+- columns/dropping-columns
+
 ## Keeping unmatched rows
 
 PL: Zachowanie wierszy bez dopasowania
@@ -104,6 +109,11 @@ joined = a.merge(b, on="state")
 print(len(a), len(joined))
 print(joined)
 ```
+
+### See also
+
+- missing-values/finding-missing-values
+- missing-values/dropping-rows-with-missing-values
 
 ## Stacking rows with concat
 
