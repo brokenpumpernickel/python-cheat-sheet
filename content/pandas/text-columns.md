@@ -46,7 +46,7 @@ print(df["city"].lower())
 
 - strings/cleaning-and-splitting
 - dataframes/a-column-is-a-series
-- missing-values/finding-missing-values
+- dates/parts-of-a-date
 
 ## Cleaning text
 
