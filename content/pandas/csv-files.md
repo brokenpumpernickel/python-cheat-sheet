@@ -28,6 +28,7 @@ print(df.dtypes)
 
 - files/csv-files-with-the-csv-module
 - array-files/csv-files
+- dates/dates-from-a-csv-file
 
 ## Semicolons and decimal commas
 
@@ -61,6 +62,10 @@ df = pd.read_csv("heights.csv")
 print(df.shape)
 print(df.columns)
 ```
+
+### See also
+
+- dates/text-to-dates
 
 ## Reading from a URL
 
