@@ -133,7 +133,7 @@ print(df[mask])
 ### See also
 
 - strings/cleaning-and-splitting
-- columns/text-methods
+- text-columns/searching-text
 - missing-values/finding-missing-values
 
 ## A column of the matching rows

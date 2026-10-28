@@ -1,10 +1,10 @@
 ---
 title: Changing columns
 glyph: "df[]="
-summary: "Adding and cleaning columns: computing from other columns, text methods, text to numbers, apply, map, renaming and dropping."
+summary: "Adding and cleaning columns: computing from other columns, text to numbers, apply, map, renaming and dropping."
 pl:
   title: Zmiana kolumn
-  summary: "Dodawanie i czyszczenie kolumn ramki danych (DataFrame): obliczanie z innych kolumn, metody tekstowe, tekst na liczby, apply, map, zmiana nazw i usuwanie."
+  summary: "Dodawanie i czyszczenie kolumn ramki danych (DataFrame): obliczanie z innych kolumn, tekst na liczby, apply, map, zmiana nazw i usuwanie."
 ---
 
 ## A column from other columns
@@ -33,31 +33,6 @@ print(df)
 - dataframes/a-column-is-a-series
 - array-maths/element-wise-arithmetic
 
-## Text methods
-
-PL: Metody tekstowe
-
-`.str` gives every value of a text column the string methods: `.str.strip()` trims spaces, `.str.lower()` makes letters lowercase, `.str.replace("_", " ")` swaps text, and `.str.len()` gives each length. Each returns a new column, so chain them and assign the result back.
-
-PL: `.str` daje każdej wartości kolumny tekstowej metody napisów (string methods): `.str.strip()` obcina spacje, `.str.lower()` zamienia litery na małe, `.str.replace("_", " ")` podmienia tekst, a `.str.len()` podaje długość każdej wartości. Każda zwraca nową kolumnę, więc łącz je w łańcuch i przypisz wynik z powrotem.
-
-```python
-import pandas as pd
-
-df = pd.DataFrame({
-    "city": [" Kraków", "NOWY_SĄCZ "],
-})
-city = df["city"].str.strip().str.lower()
-df["city"] = city.str.replace("_", " ")
-print(df)
-print(df["city"].str.len())
-```
-
-### See also
-
-- strings/cleaning-and-splitting
-- filtering/text-that-contains
-
 ## Text to numbers
 
 PL: Tekst na liczby
@@ -85,6 +60,7 @@ print(df.dtypes)
 
 - dataframes/column-types
 - missing-values/finding-missing-values
+- text-columns/the-str-accessor
 
 ## A function on each value
 
@@ -169,6 +145,7 @@ print(df)
 ### See also
 
 - dataframes/shape-columns-and-index
+- text-columns/the-str-accessor
 
 ## Dropping columns
 
