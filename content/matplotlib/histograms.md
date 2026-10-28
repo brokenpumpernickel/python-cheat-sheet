@@ -36,6 +36,7 @@ PL: Dziesięć słupków w kształcie dzwonu ze szczytem około 170, z liczebno�
 
 - random/normal-samples
 - heatmaps/a-2d-histogram-of-points
+- pandas-plots/a-histogram-of-a-column
 
 ## Choosing bins
 
