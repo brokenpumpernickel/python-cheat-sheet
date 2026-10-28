@@ -54,6 +54,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #44: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/44.
 - **The Topic:** `planned: true` removed; glyph `.dt` kept. Summary: "Date columns: text to dates, dates from a CSV file, parts of a date with .dt, time between dates, filtering by date, and grouping by month or year." / "Kolumny z datami (dates): tekst na daty, daty z pliku CSV, części daty przez akcesor .dt (.dt accessor), czas między datami, filtrowanie po dacie oraz grupowanie po miesiącu lub roku."
 - **Entries** (English / Polish):
   - *Text to dates* / *Tekst na daty*: one table with an ISO column (`pd.to_datetime`), a Polish `dd.mm.yyyy` column (`format="%d.%m.%Y"`, with `dayfirst=True` in the explanation) and a column with `"unknown"` (`errors="coerce"` → `NaT`), then `df.dtypes`.
