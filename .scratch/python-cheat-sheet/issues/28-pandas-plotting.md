@@ -56,6 +56,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #39: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/39.
 - **The Topic:** `planned: true` removed; glyph `.plot` kept. Summary: "Plots straight from a Series or DataFrame with .plot(): line plots, bar charts of counts, scatter plots, histograms, and how they fit with plt." / "Wykresy prosto z serii (Series) i ramki danych (DataFrame) przez .plot(): liniowe, słupkowe z liczebnościami, punktowe, histogramy i współpraca z plt."
 - **Entries** (English / Polish):
   - *A line plot of a Series* / *Wykres liniowy serii*: `df.groupby("year").size().plot()`, then `plt.xlabel("t")`, `plt.ylabel("n")` and `plt.grid(ls="--")`.
