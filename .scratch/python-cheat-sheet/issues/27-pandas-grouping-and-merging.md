@@ -54,6 +54,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #38: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/38.
 - **Topics** (English / Polish, glyph kept):
   - `grouping`: *Grouping* / *Grupowanie*, `group`. Summary: "Statistics per group with groupby: group sizes, means, several statistics, named aggregations, two keys, the latest row per group and the largest groups." / "Grupowanie (grouping) przez groupby i statystyki w grupach: liczebności grup, średnie, kilka statystyk naraz, nazwane agregacje, dwa klucze, najnowszy wiersz w grupie i największe grupy."
   - `merging`: *Joining tables* / *Łączenie tabel*, `merge`. Summary: "Two tables into one: merge on a shared column or on columns with different names, keeping unmatched rows, and stacking rows with concat." / "Dwie tabele w jedną: złączenie (join) przez merge po wspólnej kolumnie lub po kolumnach o różnych nazwach, zachowanie wierszy bez dopasowania i sklejanie wierszy przez concat."
