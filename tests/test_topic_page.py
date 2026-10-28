@@ -271,3 +271,48 @@ def test_a_pitfall_sticker_is_drawn_once_on_its_own_card_in_two_columns(page: Pa
         assert len(sticker["pieces"]) == 1, sticker
         (left, right), (card_left, card_right) = sticker["pieces"][0], sticker["card"]
         assert card_left <= left and right <= card_right + 20, sticker  # it may overhang the corner a little
+
+
+@pytest.mark.parametrize("lang", ["en", "pl"])
+def test_a_long_summary_stays_beside_the_glyph_on_wide_screens(page: Page, long_text_url, lang):
+    page.set_viewport_size({"width": 1280, "height": 800})
+    page.goto(f"{long_text_url}?lang={lang}#numbers")
+    hero = topic_page(page, "numbers").locator(".hero")
+    expect(hero).to_be_visible()
+
+    glyph = hero.locator(".hero-glyph").bounding_box()
+    title = hero.get_by_role("heading", level=1).bounding_box()
+    assert title["x"] > glyph["x"] + glyph["width"], "the title moved below the glyph"
+    assert title["y"] < glyph["y"] + glyph["height"], "the title moved below the glyph"
+
+
+def test_on_a_phone_the_header_text_may_go_below_the_glyph_without_widening_the_page(page: Page, long_text_url):
+    page.set_viewport_size({"width": 375, "height": 800})
+    page.goto(f"{long_text_url}?lang=pl#numbers")
+    expect(topic_page(page, "numbers").locator(".hero")).to_be_visible()
+
+    assert page.evaluate("document.documentElement.scrollWidth") <= 375
+
+
+TEXT_UNDER_HOME = """(hero) => {
+  const home = hero.querySelector('.home').getBoundingClientRect();
+  const overlaps = (r) => r.left < home.right && home.left < r.right && r.top < home.bottom && home.top < r.bottom;
+  return [...hero.querySelectorAll('.area-name, h1, .summary')]
+    .filter((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return [...range.getClientRects()].some((r) => r.width > 0 && overlaps(r));
+    })
+    .map((el) => el.className.split(" ")[0] || el.tagName.toLowerCase());
+}"""
+
+
+@pytest.mark.parametrize("width", [1100, 900, 700, 375])
+@pytest.mark.parametrize("lang", ["en", "pl"])
+def test_a_long_title_never_runs_under_the_map_button(page: Page, long_text_url, lang, width):
+    page.set_viewport_size({"width": width, "height": 800})
+    page.goto(f"{long_text_url}?lang={lang}#numbers")
+    hero = topic_page(page, "numbers").locator(".hero")
+    expect(hero).to_be_visible()
+
+    assert hero.evaluate(TEXT_UNDER_HOME) == []
