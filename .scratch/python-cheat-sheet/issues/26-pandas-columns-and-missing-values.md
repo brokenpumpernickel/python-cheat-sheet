@@ -55,6 +55,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #36: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/36.
 - **Topics** (English / Polish, glyph unchanged):
   - `columns`: *Changing columns* / *Zmiana kolumn*, `df[]=`. Summary: "Adding and cleaning columns: computing from other columns, text methods, text to numbers, apply, map, renaming and dropping." / "Dodawanie i czyszczenie kolumn ramki danych (DataFrame): obliczanie z innych kolumn, metody tekstowe, tekst na liczby, apply, map, zmiana nazw i usuwanie."
   - `missing-values`: *Missing values* / *Brakujące wartości*, `NaN`. Summary: "Gaps in a table: finding and counting NaN, statistics that skip it, dropping rows and filling gaps." / "Brakujące wartości (missing values) w ramce danych: znajdowanie i zliczanie NaN, statystyki, które je pomijają, usuwanie wierszy i uzupełnianie braków."
