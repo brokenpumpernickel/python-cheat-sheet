@@ -6,6 +6,7 @@ topics:
   - distributions
   - continuous-distributions
   - discrete-distributions
+  - sampling
   - plotting-distributions
   - t-tests
   - correlation

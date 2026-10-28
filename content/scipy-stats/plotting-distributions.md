@@ -99,7 +99,7 @@ PL: Ten sam histogram przykryty plątaniną prostych linii, które zygzakiem ska
 ### See also
 
 - histograms/density-with-a-pdf-on-top
-- distributions/random-samples-with-rvs
+- sampling/random-samples-with-rvs
 
 ## A pmf as bars
 
