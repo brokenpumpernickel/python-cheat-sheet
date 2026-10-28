@@ -58,6 +58,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #37: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/37.
 - **Topics** (English / Polish, glyph kept from ticket 24):
   - `selecting`: *Selecting* / *Wybieranie*, `df[ ]`. Summary: "Picking parts of a table: columns with [], rows by position with iloc, rows and columns by label with loc, single values and row slices." / "Wybieranie części ramki danych (DataFrame): kolumny przez [], wiersze według pozycji z iloc, wiersze i kolumny według etykiet z loc, pojedyncze wartości i wycinki wierszy."
   - `filtering`: *Filtering* / *Filtrowanie*, `mask`. Summary: "Keeping the rows that meet a condition: boolean masks, combining conditions, isin, text that contains a word, a column of the matching rows, and counting with a mask." / "Zostawianie wierszy, które spełniają warunek: maski logiczne (boolean masks), łączenie warunków, isin, tekst zawierający słowo, kolumna pasujących wierszy i zliczanie maską."
