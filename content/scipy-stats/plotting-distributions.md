@@ -100,6 +100,7 @@ PL: Ten sam histogram przykryty plątaniną prostych linii, które zygzakiem ska
 
 - histograms/density-with-a-pdf-on-top
 - sampling/random-samples-with-rvs
+- pandas-plots/a-column-against-a-distribution
 
 ## A pmf as bars
 

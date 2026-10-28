@@ -26,6 +26,7 @@ print(type(scores))
 ### See also
 
 - lists/creating-and-indexing
+- dataframes/columns-as-numpy-arrays
 
 ## Ranges
 
