@@ -42,6 +42,7 @@ Conventions from tickets 12–21 apply: Outputs show values, not English sentenc
 
 ## Comments
 
+- Resolved by PR #32: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/32.
 - **Topic:** `content/scipy-stats/sampling.md`, *Sampling* / *Losowanie próby*, glyph `rvs`, between *Discrete distributions* and *Plotting distributions* in the SciPy stats Topic order. Summary: "Random samples with rvs: any distribution, a matrix of samples, statistics of many samples, probabilities by simulation, reproducible samples." / "Losowanie próby (sampling) z rvs: dowolny rozkład, macierz prób, statystyki wielu prób, prawdopodobieństwa z symulacji, powtarzalne próby."
 - **Entries** (English / Polish):
   - *Random samples with rvs* / *Próba losowa z rvs* (moved, `sampling/random-samples-with-rvs`)
