@@ -88,19 +88,19 @@ print(f"{six.cdf(6):.4f}")
 
 PL: Dyskretny rozkład jednostajny
 
-`stats.randint(low, high)` gives every whole number from `low` to `high - 1` the same probability. `high` is not included, as in `rng.integers`, so a die is `stats.randint(1, 7)`.
+`stats.randint(low, high)` gives every whole number from `low` to `high - 1` the same probability. `high` is not included, as in `np.random.randint`, so a die is `stats.randint(1, 7)`.
 
-PL: `stats.randint(low, high)` to dyskretny rozkład jednostajny (discrete uniform distribution): każda liczba całkowita od `low` do `high - 1` ma to samo prawdopodobieństwo. `high` nie jest wliczane, tak jak w `rng.integers`, więc kostka to `stats.randint(1, 7)`.
+PL: `stats.randint(low, high)` to dyskretny rozkład jednostajny (discrete uniform distribution): każda liczba całkowita od `low` do `high - 1` ma to samo prawdopodobieństwo. `high` nie jest wliczane, tak jak w `np.random.randint`, więc kostka to `stats.randint(1, 7)`.
 
 ```python
 import numpy as np
 from scipy import stats
 
-rng = np.random.default_rng(8)  #| hide
+np.random.seed(1)  #| hide
 die = stats.randint(1, 7)
 print(die.pmf(np.arange(0, 8)).round(3))
 print(die.mean())
-print(die.rvs(size=10, random_state=rng))  #| show: print(die.rvs(size=10))
+print(die.rvs(size=10))
 ```
 
 ### See also

@@ -124,8 +124,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interact
 
-rng = np.random.default_rng(11)  #| show: rng = np.random.default_rng()
-data = rng.normal(0, 1, 300)
+np.random.seed(4)  #| hide
+data = np.random.normal(0, 1, 300)
 
 def plot(bins=10, density=False):
     plt.figure(figsize=(6, 3.5))
@@ -139,9 +139,9 @@ interact(plot, bins=[10, 20, 50],
 
 ### Figure
 
-Ten bars in a rough bell shape from about −2.3 to 2.6; the tallest, just right of 0, holds about 70 values.
+Ten bars in a rough bell shape from about −2.4 to 2.8; the tallest, around 0, holds about 70 values.
 
-PL: Dziesięć słupków w przybliżeniu w kształcie dzwonu, od około −2,3 do 2,6; najwyższy, tuż na prawo od 0, mieści około 70 wartości.
+PL: Dziesięć słupków w przybliżeniu w kształcie dzwonu, od około −2,4 do 2,8; najwyższy, wokół 0, mieści około 70 wartości.
 
 ### See also
 
@@ -161,8 +161,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interact
 
-rng = np.random.default_rng(5)  #| show: rng = np.random.default_rng()
-data = rng.normal(0, 1, 1000)
+np.random.seed(222)  #| hide
+data = np.random.normal(0, 1, 1000)
 x = np.linspace(-4, 4, 200)
 c = np.sqrt(2 * np.pi)
 
@@ -246,17 +246,17 @@ def plot(data, bins=20):
     plt.hist(data, bins=bins)
     plt.show()
 
-rng = np.random.default_rng(3)  #| show: rng = np.random.default_rng()
-scores = rng.normal(65, 12, 200)
+np.random.seed(7)  #| hide
+scores = np.random.normal(65, 12, 200)
 interact(plot, data=fixed(scores),
          bins=(5, 50));
 ```
 
 ### Figure
 
-Twenty bars from about 30 to 105 in a rough bell shape around 65, with ragged tops.
+Twenty bars from about 37 to 92 in a rough bell shape around 65, with ragged tops.
 
-PL: Dwadzieścia słupków od około 30 do 105, w przybliżeniu w kształcie dzwonu wokół 65, o nierównych wierzchołkach.
+PL: Dwadzieścia słupków od około 37 do 92, w przybliżeniu w kształcie dzwonu wokół 65, o nierównych wierzchołkach.
 
 ### See also
 

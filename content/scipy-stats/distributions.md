@@ -35,10 +35,9 @@ PL: Każda metoda przyjmuje też parametry rozkładu: `stats.uniform.rvs(loc=2, 
 import numpy as np  #| hide
 from scipy import stats
 
-rng = np.random.default_rng(7)  #| hide
+np.random.seed(7)  #| hide
 sample = stats.uniform.rvs(
-    loc=2, scale=3, size=5,  #| show: loc=2, scale=3, size=5)
-    random_state=rng)  #| hide
+    loc=2, scale=3, size=5)
 print(sample.round(2))
 x = 3.5
 print(stats.uniform.pdf(x, loc=2, scale=3))
@@ -58,9 +57,9 @@ PL: Wywołanie obiektu rozkładu z parametrami, `U = stats.uniform(loc=2, scale=
 import numpy as np  #| hide
 from scipy import stats
 
-rng = np.random.default_rng(7)  #| hide
+np.random.seed(7)  #| hide
 U = stats.uniform(loc=2, scale=3)
-sample = U.rvs(size=5, random_state=rng)  #| show: sample = U.rvs(size=5)
+sample = U.rvs(size=5)
 print(sample.round(2))
 x = 3.5
 print(U.pdf(x))
@@ -143,9 +142,9 @@ PL: `d.rvs(size=n)` losuje `n` wartości z rozkładu i zwraca je jako tablicę (
 import numpy as np  #| hide
 from scipy import stats
 
-rng = np.random.default_rng(7)  #| hide
+np.random.seed(11)  #| hide
 d = stats.norm(loc=170, scale=10)
-sample = d.rvs(size=1000, random_state=rng)  #| show: sample = d.rvs(size=1000)
+sample = d.rvs(size=1000)
 print(sample[:4].round(1))
 print(f"{sample.mean():.2f}")
 print(f"{sample.std(ddof=1):.2f}")
@@ -154,32 +153,33 @@ print(f"{sample.std(ddof=1):.2f}")
 ### See also
 
 - random/normal-samples
-- random/a-generator-with-a-seed
+- random/setting-a-seed
 - plotting-distributions/a-histogram-with-the-pdf
 
 ## Reproducible samples
 
 PL: Powtarzalne próbki
 
-`d.rvs(size=n, random_state=42)` gives the same numbers on every run, so others can check your results. For several reproducible samples in a row, pass one seeded generator, `rng = np.random.default_rng(42)`, to every call: each call draws new numbers, but the whole stream repeats on the next run.
+`np.random.seed(42)` before `d.rvs(size=n)` gives the same samples on every run, so others can check your results: each call draws new numbers, but after the same seed the whole sequence repeats. To fix a single call instead, pass `random_state=42`.
 
-PL: `d.rvs(size=n, random_state=42)` daje te same liczby przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki. Żeby wylosować kilka powtarzalnych próbek po kolei, podaj każdemu wywołaniu jeden generator z ziarnem (seed), `rng = np.random.default_rng(42)`: każde wywołanie losuje nowe liczby, ale cały ich ciąg powtarza się przy następnym uruchomieniu.
+PL: `np.random.seed(42)` przed `d.rvs(size=n)` daje te same próbki przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki: każde wywołanie losuje nowe liczby, ale po tym samym ziarnie (seed) cały ich ciąg się powtarza. Żeby ustalić tylko jedno wywołanie, podaj `random_state=42`.
 
 ```python
 import numpy as np
 from scipy import stats
 
 die = stats.randint(1, 7)
-print(die.rvs(size=5, random_state=42))
-print(die.rvs(size=5, random_state=42))
-rng = np.random.default_rng(42)
-print(die.rvs(size=5, random_state=rng))
-print(die.rvs(size=5, random_state=rng))
+np.random.seed(42)
+print(die.rvs(size=5))
+print(die.rvs(size=5))
+np.random.seed(42)
+print(die.rvs(size=5))
+print(die.rvs(size=5))
 ```
 
 ### See also
 
-- random/a-generator-with-a-seed
+- random/setting-a-seed
 
 ## Mean, spread and intervals
 

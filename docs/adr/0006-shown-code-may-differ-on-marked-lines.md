@@ -6,4 +6,8 @@ This refines ADR 0002 and ADR 0003. Students in the lab call `default_rng()` and
 
 - **A hidden second code block that runs instead of the shown one**: rejected. The Output could quietly drift from the code beside it, and every change would have to be made twice.
 - **Patching NumPy and SciPy in the kernel** so that unseeded calls are seeded: rejected. It is invisible in the content, couples the build to library internals that change between versions, and doesn't help with data sources.
-- **Keeping the seeds visible**: rejected; it is not how the lab works, and the seed stays visible where it is the point (NumPy's *A generator with a seed*, SciPy's *Reproducible samples*).
+- **Keeping the seeds visible**: rejected; it is not how the lab works, and the seed stays visible where it is the point (NumPy's *Setting a seed*, SciPy's *Reproducible samples*).
+
+## Note: the np.random functions (ticket 21)
+
+Generator objects confused Students as much as visible seeds did, and the lab calls the `np.random.*` functions directly (`np.random.normal(...)`, `np.random.randint(...)`). So the examples do too, seeded by a hidden `np.random.seed(<n>)  #| hide` line. SciPy's `rvs` without `random_state` draws from the same global generator, so that line seeds it as well and the `random_state=rng` markers are gone. A generator from `np.random.default_rng` is mentioned only in NumPy's *Setting a seed*, as the style newer code uses.
