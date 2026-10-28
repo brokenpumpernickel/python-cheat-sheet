@@ -54,7 +54,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
-Resolved on branch `claude/ticket-29-pandas-text-columns-07f818`, started from the stubs branch `content/pandas-text-and-dates-stubs` (PR #41).
+Resolved in PR brokenpumpernickel/python-cheat-sheet#42 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/42), on branch `claude/ticket-29-pandas-text-columns-07f818`, started from the stubs branch `content/pandas-text-and-dates-stubs` (PR #41).
 
 **Entries** in `content/pandas/text-columns.md` (glyph `.str`, *Kolumny tekstowe*):
 
