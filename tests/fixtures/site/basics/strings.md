@@ -41,3 +41,18 @@ PL: Napis i liczba nie łączą się przez `+`; najpierw zamień liczbę przez `
 print("total: " + str(3))
 print("total: " + 3)
 ```
+
+## Repeating
+
+PL: Powtarzanie
+
+`"ha" * n` repeats a string `n` times.
+
+PL: `"ha" * n` powtarza napis `n` razy.
+
+```python
+import random
+
+rng = random.Random(4)  #| show: rng = random.Random()
+print("ha" * rng.randint(2, 4))
+```

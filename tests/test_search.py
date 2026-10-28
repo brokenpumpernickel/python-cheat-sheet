@@ -156,6 +156,15 @@ def test_finds_an_entry_by_a_code_fragment_and_opens_it_with_a_click(page: Page,
     expect(entry(page, "strings/joining")).to_have_class(FLASHING)
 
 
+def test_searches_the_shown_code_not_the_run_code(page: Page, site_url):
+    page.goto(site_url)
+    search_for(page, "random.Random()")
+    expect(results(page)).to_have_text([re.compile(r"^Repeating")])
+
+    query(page).fill("random.Random(4)")
+    expect(results(page)).to_have_count(0)
+
+
 def test_a_topic_result_opens_the_topic(page: Page, site_url):
     page.goto(site_url)
     search_for(page, "napisy")

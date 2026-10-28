@@ -19,7 +19,7 @@ PL: `plt.imshow(m)` rysuje tablicę dwuwymiarową jako mapę ciepła (heatmap): 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(13)
+rng = np.random.default_rng(13)  #| show: rng = np.random.default_rng()
 scores = rng.integers(40, 101, (5, 8))
 plt.figure(figsize=(6, 3.5))
 plt.imshow(scores)
@@ -78,7 +78,7 @@ PL: `cmap="coolwarm"` wybiera mapę kolorów (colormap), a `vmin=` i `vmax=` ust
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(14)
+rng = np.random.default_rng(14)  #| show: rng = np.random.default_rng()
 x = rng.normal(0, 1, 200)
 y = x + rng.normal(0, 1, 200)
 z = -x + rng.normal(0, 0.5, 200)
@@ -148,7 +148,7 @@ PL: `plt.hist2d(x, y, bins=40)` dzieli płaszczyznę na siatkę 40 na 40, liczy 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(18)
+rng = np.random.default_rng(18)  #| show: rng = np.random.default_rng()
 x = rng.normal(10, 2, 20000)
 y = x + rng.normal(0, 1.5, 20000)
 plt.figure(figsize=(6, 3.5))

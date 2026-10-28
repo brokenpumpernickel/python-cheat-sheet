@@ -124,7 +124,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interact
 
-rng = np.random.default_rng(11)
+rng = np.random.default_rng(11)  #| show: rng = np.random.default_rng()
 data = rng.normal(0, 1, 300)
 
 def plot(bins=10, density=False):
@@ -161,7 +161,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interact
 
-rng = np.random.default_rng(5)
+rng = np.random.default_rng(5)  #| show: rng = np.random.default_rng()
 data = rng.normal(0, 1, 1000)
 x = np.linspace(-4, 4, 200)
 c = np.sqrt(2 * np.pi)
@@ -246,7 +246,7 @@ def plot(data, bins=20):
     plt.hist(data, bins=bins)
     plt.show()
 
-rng = np.random.default_rng(3)
+rng = np.random.default_rng(3)  #| show: rng = np.random.default_rng()
 scores = rng.normal(65, 12, 200)
 interact(plot, data=fixed(scores),
          bins=(5, 50));

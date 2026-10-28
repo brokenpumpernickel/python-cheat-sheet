@@ -19,7 +19,7 @@ PL: `plt.bar(x, heights)` rysuje wykres słupkowy (bar chart): jeden słupek na 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(8)
+rng = np.random.default_rng(8)  #| show: rng = np.random.default_rng()
 rolls = rng.integers(1, 7, 60)
 faces, counts = np.unique(
     rolls, return_counts=True)
@@ -50,7 +50,7 @@ PL: Funkcja prawdopodobieństwa (probability mass function) przypisuje każdej w
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(9)
+rng = np.random.default_rng(9)  #| show: rng = np.random.default_rng()
 rolls = rng.integers(1, 7, (10_000, 2))
 sums = rolls.sum(axis=1)
 values, counts = np.unique(
@@ -84,7 +84,7 @@ PL: `yerr=` dodaje do każdego słupka słupek błędu (error bar), a `capsize=4
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(10)
+rng = np.random.default_rng(10)  #| show: rng = np.random.default_rng()
 data = rng.normal([5, 6, 4], 1.5, (20, 3))
 means = data.mean(axis=0)
 sd = data.std(axis=0, ddof=1)

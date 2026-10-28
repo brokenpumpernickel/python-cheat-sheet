@@ -27,18 +27,18 @@ print(f"{stats.norm.cdf(1.96):.4f}")
 
 PL: Parametry w każdym wywołaniu
 
-Each method also takes the distribution's parameters: `stats.uniform.rvs(loc=2, scale=3, size=5, random_state=rng)` draws five values from U(2, 5). Every call to `pdf`, `cdf` or `rvs` needs the same `loc` and `scale` again; leave them out and it quietly uses `loc=0` and `scale=1`.
+Each method also takes the distribution's parameters: `stats.uniform.rvs(loc=2, scale=3, size=5)` draws five values from U(2, 5). Every call to `pdf`, `cdf` or `rvs` needs the same `loc` and `scale` again; leave them out and it quietly uses `loc=0` and `scale=1`.
 
-PL: Każda metoda przyjmuje też parametry rozkładu: `stats.uniform.rvs(loc=2, scale=3, size=5, random_state=rng)` losuje pięć wartości z U(2, 5). Każde wywołanie `pdf`, `cdf` czy `rvs` potrzebuje znowu tych samych `loc` i `scale`; pomiń je, a metoda po cichu użyje `loc=0` i `scale=1`.
+PL: Każda metoda przyjmuje też parametry rozkładu: `stats.uniform.rvs(loc=2, scale=3, size=5)` losuje pięć wartości z U(2, 5). Każde wywołanie `pdf`, `cdf` czy `rvs` potrzebuje znowu tych samych `loc` i `scale`; pomiń je, a metoda po cichu użyje `loc=0` i `scale=1`.
 
 ```python
-import numpy as np
+import numpy as np  #| hide
 from scipy import stats
 
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(7)  #| hide
 sample = stats.uniform.rvs(
-    loc=2, scale=3, size=5,
-    random_state=rng)
+    loc=2, scale=3, size=5,  #| show: loc=2, scale=3, size=5)
+    random_state=rng)  #| hide
 print(sample.round(2))
 x = 3.5
 print(stats.uniform.pdf(x, loc=2, scale=3))
@@ -50,17 +50,17 @@ print(stats.uniform.cdf(x))
 
 PL: Rozkład zamrożony
 
-Calling the distribution object with parameters, `U = stats.uniform(loc=2, scale=3)`, gives a new, *frozen* distribution that keeps them, so `U.rvs(size=5, random_state=rng)`, `U.pdf(x)` and `U.cdf(x)` take no `loc` or `scale`. The rest of this cheat sheet uses this style: you give the parameters once, so they can't drift apart between `pdf`, `cdf` and `rvs`.
+Calling the distribution object with parameters, `U = stats.uniform(loc=2, scale=3)`, gives a new, *frozen* distribution that keeps them, so `U.rvs(size=5)`, `U.pdf(x)` and `U.cdf(x)` take no `loc` or `scale`. The rest of this cheat sheet uses this style: you give the parameters once, so they can't drift apart between `pdf`, `cdf` and `rvs`.
 
-PL: Wywołanie obiektu rozkładu z parametrami, `U = stats.uniform(loc=2, scale=3)`, daje nowy rozkład zamrożony (frozen distribution), który je zapamiętuje, więc `U.rvs(size=5, random_state=rng)`, `U.pdf(x)` i `U.cdf(x)` nie potrzebują `loc` ani `scale`. Dalej w tej ściągawce używamy tego stylu: parametry podajesz raz, więc nie mogą się rozjechać między `pdf`, `cdf` i `rvs`.
+PL: Wywołanie obiektu rozkładu z parametrami, `U = stats.uniform(loc=2, scale=3)`, daje nowy rozkład zamrożony (frozen distribution), który je zapamiętuje, więc `U.rvs(size=5)`, `U.pdf(x)` i `U.cdf(x)` nie potrzebują `loc` ani `scale`. Dalej w tej ściągawce używamy tego stylu: parametry podajesz raz, więc nie mogą się rozjechać między `pdf`, `cdf` i `rvs`.
 
 ```python
-import numpy as np
+import numpy as np  #| hide
 from scipy import stats
 
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(7)  #| hide
 U = stats.uniform(loc=2, scale=3)
-sample = U.rvs(size=5, random_state=rng)
+sample = U.rvs(size=5, random_state=rng)  #| show: sample = U.rvs(size=5)
 print(sample.round(2))
 x = 3.5
 print(U.pdf(x))
@@ -135,17 +135,17 @@ print(f"{heights.ppf(0.9):.1f}")
 
 PL: Próbki losowe z rvs
 
-`d.rvs(size=n, random_state=rng)` draws `n` random values from the distribution as an array. Pass a generator from `rng = np.random.default_rng(seed)` as `random_state`, so the sample is the same on every run.
+`d.rvs(size=n)` draws `n` random values from the distribution as an array. Every run draws a new sample, so your numbers will differ from the Output shown here, which comes from one run.
 
-PL: `d.rvs(size=n, random_state=rng)` losuje `n` wartości z rozkładu i zwraca je jako tablicę (array). Jako `random_state` podaj generator z `rng = np.random.default_rng(seed)`, żeby próbka (sample) była taka sama przy każdym uruchomieniu.
+PL: `d.rvs(size=n)` losuje `n` wartości z rozkładu i zwraca je jako tablicę (array). Każde uruchomienie losuje nową próbkę (sample), więc twoje liczby będą inne niż w pokazanym tu Wyniku, który pochodzi z jednego uruchomienia.
 
 ```python
-import numpy as np
+import numpy as np  #| hide
 from scipy import stats
 
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(7)  #| hide
 d = stats.norm(loc=170, scale=10)
-sample = d.rvs(size=1000, random_state=rng)
+sample = d.rvs(size=1000, random_state=rng)  #| show: sample = d.rvs(size=1000)
 print(sample[:4].round(1))
 print(f"{sample.mean():.2f}")
 print(f"{sample.std(ddof=1):.2f}")
@@ -156,6 +156,30 @@ print(f"{sample.std(ddof=1):.2f}")
 - random/normal-samples
 - random/a-generator-with-a-seed
 - plotting-distributions/a-histogram-with-the-pdf
+
+## Reproducible samples
+
+PL: Powtarzalne próbki
+
+`d.rvs(size=n, random_state=42)` gives the same numbers on every run, so others can check your results. For several reproducible samples in a row, pass one seeded generator, `rng = np.random.default_rng(42)`, to every call: each call draws new numbers, but the whole stream repeats on the next run.
+
+PL: `d.rvs(size=n, random_state=42)` daje te same liczby przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki. Żeby wylosować kilka powtarzalnych próbek po kolei, podaj każdemu wywołaniu jeden generator z ziarnem (seed), `rng = np.random.default_rng(42)`: każde wywołanie losuje nowe liczby, ale cały ich ciąg powtarza się przy następnym uruchomieniu.
+
+```python
+import numpy as np
+from scipy import stats
+
+die = stats.randint(1, 7)
+print(die.rvs(size=5, random_state=42))
+print(die.rvs(size=5, random_state=42))
+rng = np.random.default_rng(42)
+print(die.rvs(size=5, random_state=rng))
+print(die.rvs(size=5, random_state=rng))
+```
+
+### See also
+
+- random/a-generator-with-a-seed
 
 ## Mean, spread and intervals
 

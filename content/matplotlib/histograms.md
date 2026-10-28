@@ -19,7 +19,7 @@ PL: `plt.hist(data)` dzieli zakres `data` na równe przedziały (bins) i rysuje 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()
 heights = rng.normal(170, 10, 500)
 plt.figure(figsize=(6, 3.5))
 plt.hist(heights)
@@ -49,7 +49,7 @@ PL: `bins=30` ustala liczbę przedziałów (bins): za mało ukrywa kształt, za 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(2)
+rng = np.random.default_rng(2)  #| show: rng = np.random.default_rng()
 scores = rng.normal(65, 12, 200)
 edges = np.arange(0, 101, 10)
 plt.figure(figsize=(6, 3.5))
@@ -86,7 +86,7 @@ PL: Dane rozciągnięte na kilka rzędów wielkości, np. czasy reakcji czy doch
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(8)
+rng = np.random.default_rng(8)  #| show: rng = np.random.default_rng()
 times = rng.lognormal(3, 1, 1000)
 edges = np.logspace(-1, 3, 41)
 plt.figure(figsize=(6, 3.5))
@@ -112,7 +112,7 @@ PL: Przy `plt.xscale("log")`, ale przedziałach równej szerokości, np. `bins=4
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(8)
+rng = np.random.default_rng(8)  #| show: rng = np.random.default_rng()
 times = rng.lognormal(3, 1, 1000)
 plt.figure(figsize=(6, 3.5))
 plt.hist(times, bins=40,
@@ -143,7 +143,7 @@ PL: `density=True` skaluje słupki tak, by ich łączne pole wynosiło 1, więc 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(4)
+rng = np.random.default_rng(4)  #| show: rng = np.random.default_rng()
 data = rng.normal(0, 1, 1000)
 x = np.linspace(-4, 4, 200)
 c = np.sqrt(2 * np.pi)
@@ -178,7 +178,7 @@ PL: `alpha=0.5` ustawia słupkom przezroczystość (transparency) 50%, więc dwa
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(6)
+rng = np.random.default_rng(6)  #| show: rng = np.random.default_rng()
 a = rng.normal(0, 1, 500)
 b = rng.normal(1, 1, 500)
 edges = np.linspace(-4, 5, 37)

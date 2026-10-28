@@ -36,18 +36,19 @@ def build_content(content_dir: Path, timeout: float = TIMEOUT_SECONDS) -> dict:
     running after `timeout` seconds is stopped and counts as failing.
     """
     areas = parse_content(content_dir)
-    examples = []  # (the dict that gets the Output, code, raises, where, where with the Entry's line)
+    examples = []  # (the dict that gets the Output, run code, raises, where, where with the Entry's line)
     for area in areas:
         for topic in area["topics"]:
             for entry in topic["entries"]:
                 where = f"{area['id']}/{topic['id']}.md ({topic['id']}/{entry['id']})"
                 here = f"{area['id']}/{topic['id']}.md:{entry.pop('line')} ({topic['id']}/{entry['id']})"
-                examples.append((entry, entry["code"], entry["raises"], where, here))
+                examples.append((entry, entry.pop("run"), entry["raises"], where, here))
                 pitfall = entry["pitfall"]
                 if pitfall:
                     pitfall["output"] = None
-                    if pitfall["code"]:
-                        examples.append((pitfall, pitfall["code"], pitfall["raises"], f"{where} Pitfall", f"{here} Pitfall"))
+                    run = pitfall.pop("run")
+                    if run:
+                        examples.append((pitfall, run, pitfall["raises"], f"{where} Pitfall", f"{here} Pitfall"))
 
     failures = []
     with ThreadPoolExecutor(max_workers=PARALLEL_KERNELS) as pool:
