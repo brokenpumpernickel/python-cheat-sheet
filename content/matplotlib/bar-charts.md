@@ -37,6 +37,7 @@ PL: Sześć słupków dla oczek od 1 do 6 o nierównej wysokości, od 6 dla oczk
 ### See also
 
 - collections/counting-with-counter
+- pandas-plots/bar-charts-of-counts
 
 ## A probability mass function
 
