@@ -45,7 +45,7 @@ Conventions from tickets 12–22 apply: Outputs show values, not English sentenc
 
 ## Comments
 
-- Resolved by the PR for branch `claude/ticket-23-reading-and-writing-files-a4bf67` (link added below once it is open).
+- Resolved by PR #33: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/33.
 - **Topics:**
   - `content/python-basics/files.md`: *Files* / *Pliki*, glyph `open`, last in the Python Basics Topic order (after Functions). Summary: "Text files: writing, reading whole files and lines, numbers, CSV, and where Python looks for them." / "Pliki (files) tekstowe: zapis, odczyt całych plików i wierszy, liczby, CSV oraz miejsce, w którym Python ich szuka."
   - `content/numpy/array-files.md`: *Saving and loading* / *Zapis i odczyt*, glyph `.npy`, last in the NumPy Topic order (after Random). Summary: "Arrays in files: text and CSV with savetxt, loadtxt and genfromtxt, binary .npy and .npz files." / "Tablice (arrays) w plikach: tekst i CSV przez savetxt, loadtxt i genfromtxt, binarne pliki .npy i .npz."
