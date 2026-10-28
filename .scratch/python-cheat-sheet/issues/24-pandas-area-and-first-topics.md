@@ -82,6 +82,7 @@ Conventions from tickets 12–23 apply:
 
 ## Comments
 
+- Resolved by PR #35: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/35.
 - **Setup:** `uv add pandas` installed pandas 3.1.0 (no pyarrow). It is in `EXAMPLE_LIBRARIES` after SciPy, so the footer lists it; `tests/test_content_build.py`'s versions test lists it too. The guide's *Libraries* line now names pandas, and its "To add one" hint says `uv add <library>` instead of `uv add pandas`.
 - **The Area:** `planned: true` removed, hue 260 kept. Blurb: "Tables of data: DataFrames, CSV files, exploring, selecting, filtering, sorting, changing columns, missing values, grouping, joining and plotting." / "Dane w tabelach: ramki danych (DataFrames), pliki CSV, przeglądanie, wybieranie, filtrowanie, sortowanie, zmiana kolumn, brakujące wartości, grupowanie, łączenie i wykresy."
 - **Topics** (English / Polish, glyph), in the Topic order:
