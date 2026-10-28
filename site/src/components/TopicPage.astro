@@ -29,7 +29,7 @@ const { area, topic, previous, next, links } = Astro.props;
       <span aria-hidden="true">←</span> <span data-arrangement="map"><Text label="map" /></span><span data-arrangement="trail"><Text label="trail" /></span>
     </a>
     <span class="hero-glyph" aria-hidden="true">{topic.glyph}</span>
-    <div>
+    <div class="hero-text">
       <p class="area-name"><Text en={area.title} pl={area.pl.title} /></p>
       <h1 id={`topic-${topic.id}`}><Text en={topic.title} pl={topic.pl.title} /></h1>
       {
@@ -129,6 +129,12 @@ const { area, topic, previous, next, links } = Astro.props;
     font: 700 28px var(--font-mono);
     color: hsl(var(--hue) 60% var(--deep-l));
   }
+  /* Takes the room beside the glyph and wraps its lines there, so a long summary doesn't push the whole
+     block below the glyph; only where less than 240px is left beside it (a phone) does it go below. */
+  .hero-text {
+    flex: 1 1 240px;
+    min-width: 0;
+  }
   .area-name {
     margin: 0;
     font: 800 12px var(--font-body);
@@ -145,6 +151,11 @@ const { area, topic, previous, next, links } = Astro.props;
     margin: 0;
     font-weight: 600;
     color: var(--ink-2);
+  }
+  /* The Map | Trail button sits over the header's top-right corner: the Area name keeps clear of it, and
+     the title starts below it, so a long title can use the full width. */
+  .area-name {
+    margin: 0 112px 10px 0;
   }
 
   /* Stays at the top (below the Index strip on a phone, --sticky-top) while the cards scroll under it;
@@ -227,6 +238,10 @@ const { area, topic, previous, next, links } = Astro.props;
       width: 64px;
       height: 64px;
       font-size: 20px;
+    }
+    /* The button has a row of its own above the header's text here. */
+    .area-name {
+      margin: 0;
     }
     .chips {
       flex-wrap: nowrap;

@@ -37,6 +37,22 @@ def site_url(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
+def long_text_url(tmp_path_factory):
+    """The fixture site with Numbers given a title and a summary as long as the real ones'."""
+    data = build_content(FIXTURES / "site")
+    numbers = data["areas"][0]["topics"][0]
+    numbers["title"] = "Continuous probability distributions"
+    numbers["pl"]["title"] = "Ciągłe rozkłady prawdopodobieństwa"
+    numbers["summary"] = "How a sample is spread: counting into bins, choosing bins, logarithmic bins, density with a PDF, comparing two samples."
+    numbers["pl"]["summary"] = (
+        "Histogramy (histograms), czyli rozkład próby: zliczanie w przedziałach, wybór przedziałów, "
+        "przedziały logarytmiczne, gęstość z krzywą PDF, porównanie dwóch próbek."
+    )
+    with built_site(data, tmp_path_factory.mktemp("long-text")) as url:
+        yield url
+
+
+@pytest.fixture(scope="session")
 def labels() -> dict:
     """The interface label table (site/src/labels.ts) by Language, read with Node as the site build reads it."""
     node = shutil.which("node")
