@@ -154,7 +154,7 @@ Exactly one ` ```python ` block per Entry, always with `python` as the language 
 - **Pastes into the `python` prompt too.** Leave a blank line after a compound block (`for`, `while`, `if`, `def`) when an unindented line follows it. Jupyter doesn't need it, but pasted into the plain `python` prompt the next line is a `SyntaxError` without it.
 - **Code is the same in both Languages.** Write names, strings and comments in English, and print values rather than sentences: `print(mean)` or `print("mean", mean)`, not `print(f"The mean is {mean}")`, since a Polish reader sees the same Output.
 - **NumPy numbers are printed on their own.** Print a single NumPy number (`data.mean()`, `a[0]`) by itself, beside other values in one `print(x, y)`, or in an f-string, rounding long decimals where needed (`f"{x:.3f}"`). Never print it inside a list, tuple or dict: NumPy 2 then shows its type, `[np.float64(18.0)]`. Arrays print fine as they are.
-- **Same Output on every build, no seed on the page.** The build seeds all randomness, but Students don't: in the lab they call `default_rng()` and `rvs` without a seed. So seed in the run code and show the unseeded form with a [`#| show:` marker](#shown-and-run-code): `rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()`. In SciPy, pass that generator as `random_state=rng` and show the call without it; hide the line that makes `rng` with `#| hide`, and `import numpy as np` too if nothing shown uses it. In NumPy always use a generator from `default_rng`, never the legacy `np.random.seed`; for the standard library, `random.seed(1)  #| hide`. Show the seed only where it is the point (NumPy's *A generator with a seed*, SciPy's *Reproducible samples*). Where the numbers matter to the explanation, say that the Student's will differ, because the Output comes from one run. Avoid the current date and time, memory addresses and anything else that changes between runs.
+- **Same Output on every build, no seed on the page.** The build seeds all randomness, but Students don't: in the lab they call the `np.random.*` functions (`np.random.normal(...)`, `np.random.randint(...)`) and `rvs` without a seed. So call those functions, never a generator from `np.random.default_rng`, and seed them in a [hidden line](#shown-and-run-code) after the imports: `np.random.seed(7)  #| hide`. SciPy's `rvs` without `random_state` draws from NumPy's global generator, so the same line seeds it: write plain `d.rvs(size=n)`, and hide `import numpy as np` with `#| hide` too if nothing shown uses it. For the standard library, `random.seed(1)  #| hide`. Show the seed only where it is the point (NumPy's *Setting a seed*, SciPy's *Reproducible samples*). Where the numbers matter to the explanation, say that the Student's will differ, because the Output comes from one run. Avoid the current date and time, memory addresses and anything else that changes between runs.
 - **No outside world.** The kernel starts in an empty temporary folder with no input: an example that reads a file must write it first, and `input()` fails. Don't use the network; to show a download, read a local copy in the run code and show the download with `#| show:`. Each example has 60 seconds.
 - **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib, SciPy and ipywidgets). To add one, run `uv add pandas` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
 
@@ -163,8 +163,7 @@ Exactly one ` ```python ` block per Entry, always with `python` as the language 
 The build runs the code block as written, and the page shows it with its marked lines changed (ADR 0006). A marker is a comment at the end of a line of code, after two or more spaces:
 
 ```python
-rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()
-sample = d.rvs(size=1000, random_state=rng)  #| show: sample = d.rvs(size=1000)
+np.random.seed(7)  #| hide
 open("scores.csv", "w").write("72,45,88\n")  #| hide
 data = np.loadtxt("scores.csv", delimiter=",")  #| show: data = np.loadtxt("https://example.org/scores.csv", delimiter=",")
 ```
@@ -196,7 +195,7 @@ Matplotlib draws with a non-interactive backend. Every figure open at `plt.show(
 
 - **One figure per Entry, one size.** Start it with `plt.figure(figsize=(6, 3.5))`, or pass `figsize=(6, 3.5)` to `plt.subplots`, keep Matplotlib's default style, and end the example with `plt.show()`, as Students do in Jupyter. Draw with the `plt` functions (`plt.plot`, `plt.xlabel`); use `ax.` methods only on the plots `plt.subplots` returns.
 - **Text in figures is language-neutral,** because both Languages share the Output: symbols and maths (`x`, `f(x)`, `N(0, 1)`, `n = 30`, `σ = 2`), variable names (`a`, `r`), group letters (`A`, `B`) and numbers, or no text at all. No English words and no sentence-like titles: `plt.xlabel("height")` or `plt.title("Exam scores")` would stay English on the Polish page. Say in the explanation, in both Languages, what the axes show.
-- **Random data** comes from a `default_rng` seeded in the run code and shown unseeded (`rng = np.random.default_rng(1)  #| show: rng = np.random.default_rng()`), as in any other example. The figure description describes the figure on the page, which comes from the seeded run.
+- **Random data** comes from the `np.random.*` functions, seeded in a hidden line (`np.random.seed(1)  #| hide`), as in any other example. The figure description describes the figure on the page, which comes from the seeded run.
 - **Checking warnings:** a plain `uv run python example.py` opens a window at `plt.show()`. Run it with `MPLBACKEND=Agg` instead; then `plt.show()` warns that `FigureCanvasAgg is non-interactive`, which is expected, and any other warning needs a fix.
 
 ### Figure description
@@ -295,7 +294,7 @@ To add an Area:
 
 **Glyph** is the short monospaced symbol on a Topic's bubble, in the Index and on the Topic page header.
 
-- One to five characters that look like the Topic's Python syntax: `[ ]` Lists, `( )` Tuples, `{k:v}` Dictionaries, `"Aa"` Strings, `for` Loops, `def` Functions, `if` Conditionals. For a library Topic, a short piece of what Students type for it: `rng` for random numbers, `df[ ]` for selecting, `.sum` for aggregates.
+- One to five characters that look like the Topic's Python syntax: `[ ]` Lists, `( )` Tuples, `{k:v}` Dictionaries, `"Aa"` Strings, `for` Loops, `def` Functions, `if` Conditionals. For a library Topic, a short piece of what Students type for it: `rand` for random numbers, `df[ ]` for selecting, `.sum` for aggregates.
 - Distinct within the Area, so Topics can be told apart at a glance.
 - Always quote it, since glyphs often start with a character YAML treats specially.
 
@@ -591,7 +590,7 @@ What it shows:
 - [ ] Every Entry: a title of one to four words, an explanation of 1–3 sentences in one paragraph, one self-contained ` ```python ` example that prints what it shows.
 - [ ] Every Output comes from the build, is not empty, and shows what the explanation promises; no warnings.
 - [ ] Expected errors only where the error is the point, with the raising line last.
-- [ ] No seed or `random_state` on the page unless the seed is the point: seeds run hidden behind `#| show:` and `#| hide`, and markers are used for nothing but seeds and data sources.
+- [ ] No seed or `random_state` on the page unless the seed is the point: seeds run in hidden `np.random.seed(...)  #| hide` lines, and markers are used for nothing but seeds and data sources.
 - [ ] Every example that draws a figure has a `### Figure` description in both Languages: what the plot shows and its shape, in plain text.
 - [ ] Pitfalls only for real, common mistakes; See-also links where an Entry relies on another.
 - [ ] Polish for every title, summary, blurb, explanation, Pitfall and figure description, with "polski termin (English term)" at first mention.

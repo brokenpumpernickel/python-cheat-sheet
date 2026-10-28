@@ -1,34 +1,28 @@
 ---
 title: Random
-glyph: "rng"
-summary: "Random numbers from a generator: seeds, uniform and normal samples, choosing, simulations."
+glyph: "rand"
+summary: "Random numbers with the np.random functions: seeds, uniform and normal samples, choosing, simulations."
 pl:
   title: Losowanie
-  summary: "Liczby losowe (random numbers) z generatora: ziarno, próbki jednostajne i normalne, losowy wybór, symulacje."
+  summary: "Liczby losowe (random numbers) z funkcji np.random: ziarno, próbki jednostajne i normalne, losowy wybór, symulacje."
 ---
 
-## A generator with a seed
+## Setting a seed
 
-PL: Generator z ziarnem
+PL: Ustawianie ziarna
 
-`rng = np.random.default_rng(42)` makes a random generator, and every random number comes from its methods, such as `rng.random(n)`. The same seed gives the same numbers on every run, so others can check your results. Without a seed, as in the other examples here, each run differs, so your numbers won't match the Output shown.
+`np.random.seed(42)` makes the numbers drawn after it the same on every run, SciPy's `rvs` included, so others can check your results; without it, as in the other examples here, your numbers won't match the Output shown. Newer code writes `rng = np.random.default_rng(42)` and then `rng.normal(...)`, which works the same way.
 
-PL: `rng = np.random.default_rng(42)` tworzy generator liczb losowych (random number generator), a każda liczba losowa pochodzi z jego metod, np. `rng.random(n)`. To samo ziarno (seed) daje te same liczby przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki. Bez ziarna, jak w pozostałych przykładach, każde uruchomienie daje inne liczby, więc twoje nie będą zgodne z pokazanym Wynikiem.
+PL: `np.random.seed(42)` ustawia ziarno (seed), więc liczby losowane po nim, także przez `rvs` z SciPy, są te same przy każdym uruchomieniu i inni mogą sprawdzić twoje wyniki; bez ziarna, jak w pozostałych przykładach, twoje liczby nie będą zgodne z pokazanym Wynikiem. W nowszym kodzie spotkasz `rng = np.random.default_rng(42)`, a potem `rng.normal(...)`; działa to tak samo.
 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(42)
-print(rng.random(3))
-rng = np.random.default_rng(42)
-print(rng.random(3))
+np.random.seed(42)
+print(np.random.random(3))
+np.random.seed(42)
+print(np.random.random(3))
 ```
-
-### Pitfall
-
-Older tutorials use `np.random.seed(42)` with `np.random.rand()` or `np.random.normal()`. That legacy style shares one hidden global state, so any other code that draws numbers changes yours; make a generator with `default_rng` and use its methods instead.
-
-PL: Starsze poradniki używają `np.random.seed(42)` z `np.random.rand()` lub `np.random.normal()`. Ten przestarzały styl dzieli jeden ukryty stan globalny, więc każdy inny kod, który losuje, zmienia twoje liczby; zamiast tego utwórz generator przez `default_rng` i używaj jego metod.
 
 ### See also
 
@@ -38,17 +32,17 @@ PL: Starsze poradniki używają `np.random.seed(42)` z `np.random.rand()` lub `n
 
 PL: Rozkład jednostajny i liczby całkowite
 
-`rng.uniform(low, high, n)` gives `n` decimals spread evenly between `low` and `high`. `rng.integers(low, high, n)` gives whole numbers and leaves `high` out, so a die is `rng.integers(1, 7, n)`; a shape `(rows, cols)` in place of `n` gives a matrix.
+`np.random.uniform(low, high, n)` gives `n` decimals spread evenly between `low` and `high`. `np.random.randint(low, high, n)` gives whole numbers and leaves `high` out, so a die is `np.random.randint(1, 7, n)`; a shape `(rows, cols)` in place of `n` gives a matrix.
 
-PL: `rng.uniform(low, high, n)` daje `n` ułamków z rozkładu jednostajnego (uniform distribution) między `low` a `high`. `rng.integers(low, high, n)` daje liczby całkowite i pomija `high`, więc kostka to `rng.integers(1, 7, n)`; kształt (shape) `(rows, cols)` zamiast `n` daje macierz (matrix).
+PL: `np.random.uniform(low, high, n)` daje `n` ułamków z rozkładu jednostajnego (uniform distribution) między `low` a `high`. `np.random.randint(low, high, n)` daje liczby całkowite i pomija `high`, więc kostka to `np.random.randint(1, 7, n)`; kształt (shape) `(rows, cols)` zamiast `n` daje macierz (matrix).
 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(1)  #| show: rng = np.random.default_rng()
-print(rng.uniform(0, 10, 3).round(2))
-print(rng.integers(1, 7, 10))
-print(rng.integers(1, 7, (2, 5)))
+np.random.seed(3)  #| hide
+print(np.random.uniform(0, 10, 3).round(2))
+print(np.random.randint(1, 7, 10))
+print(np.random.randint(1, 7, (2, 5)))
 ```
 
 ### See also
@@ -61,15 +55,15 @@ print(rng.integers(1, 7, (2, 5)))
 
 PL: Próbki z rozkładu normalnego
 
-`rng.normal(loc, scale, size)` draws from a normal distribution with mean `loc` and standard deviation `scale`. The sample mean and standard deviation come close to them, and closer as the sample grows.
+`np.random.normal(loc, scale, size)` draws from a normal distribution with mean `loc` and standard deviation `scale`. The sample mean and standard deviation come close to them, and closer as the sample grows.
 
-PL: `rng.normal(loc, scale, size)` losuje z rozkładu normalnego (normal distribution) o średniej `loc` i odchyleniu standardowym (standard deviation) `scale`. Średnia i odchylenie standardowe z próby są im bliskie, a tym bliższe, im większa próba.
+PL: `np.random.normal(loc, scale, size)` losuje z rozkładu normalnego (normal distribution) o średniej `loc` i odchyleniu standardowym (standard deviation) `scale`. Średnia i odchylenie standardowe z próby są im bliskie, a tym bliższe, im większa próba.
 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()
-heights = rng.normal(170, 10, size=1000)
+np.random.seed(3)  #| hide
+heights = np.random.normal(170, 10, size=1000)
 print(heights[:4].round(1))
 print(f"{heights.mean():.2f}")
 print(f"{heights.std(ddof=1):.2f}")
@@ -85,19 +79,19 @@ print(f"{heights.std(ddof=1):.2f}")
 
 PL: Losowy wybór i tasowanie
 
-`rng.choice(values, size)` picks from `values` with replacement, unless you pass `replace=False`, and `p=[...]` gives each value its probability. `rng.permutation(values)` returns a shuffled copy.
+`np.random.choice(values, size)` picks from `values` with replacement, unless you pass `replace=False`, and `p=[...]` gives each value its probability. `np.random.permutation(values)` returns a shuffled copy, while `np.random.shuffle(x)` shuffles `x` in place and returns `None`.
 
-PL: `rng.choice(values, size)` losuje z `values` ze zwracaniem (with replacement), chyba że podasz `replace=False`, a `p=[...]` nadaje każdej wartości jej prawdopodobieństwo. `rng.permutation(values)` zwraca potasowaną kopię.
+PL: `np.random.choice(values, size)` losuje z `values` ze zwracaniem (with replacement), chyba że podasz `replace=False`, a `p=[...]` nadaje każdej wartości jej prawdopodobieństwo. `np.random.permutation(values)` zwraca potasowaną kopię, a `np.random.shuffle(x)` tasuje `x` w miejscu i zwraca `None`.
 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(3)  #| show: rng = np.random.default_rng()
+np.random.seed(3)  #| hide
 coin = ["H", "T"]
-print(rng.choice(coin, 10, p=[0.7, 0.3]))
+print(np.random.choice(coin, 10, p=[0.7, 0.3]))
 names = ["Ola", "Jan", "Ewa", "Ala"]
-print(rng.choice(names, 2, replace=False))
-print(rng.permutation(names))
+print(np.random.choice(names, 2, replace=False))
+print(np.random.permutation(names))
 ```
 
 ## Simulating an experiment
@@ -111,8 +105,8 @@ PL: Symuluj wiele prób naraz: wylosuj macierz (matrix) z jednym wierszem na pr�
 ```python
 import numpy as np
 
-rng = np.random.default_rng(2024)  #| show: rng = np.random.default_rng()
-rolls = rng.integers(1, 7, (100_000, 2))
+np.random.seed(4)  #| hide
+rolls = np.random.randint(1, 7, (100_000, 2))
 totals = rolls.sum(axis=1)
 print(rolls[:3])
 print((totals == 7).mean())

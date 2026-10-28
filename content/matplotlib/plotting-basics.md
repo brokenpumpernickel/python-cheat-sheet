@@ -140,9 +140,9 @@ PL: `plt.plot(x, y, "C1o")` przyjmuje jako trzeci argument napis formatu (format
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(6)  #| show: rng = np.random.default_rng()
+np.random.seed(4)  #| hide
 x = np.arange(1, 11)
-y = 2 * x + rng.normal(0, 2, 10)
+y = 2 * x + np.random.normal(0, 2, 10)
 plt.figure(figsize=(6, 3.5))
 plt.plot(x, y, "C1o")
 plt.plot(x, 2 * x, "k--")
@@ -172,8 +172,8 @@ PL: `plt.xlim(low, high)` i `plt.ylim(low, high)` ustalają zakres (limits) każ
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(3)  #| show: rng = np.random.default_rng()
-flips = rng.integers(0, 2, 500)
+np.random.seed(5)  #| hide
+flips = np.random.randint(0, 2, 500)
 n = np.arange(1, 501)
 plt.figure(figsize=(6, 3.5))
 plt.plot(n, flips.cumsum() / n)
@@ -205,8 +205,8 @@ PL: `plt.axhline(y)` rysuje poziomą linię przez cały wykres na wysokości `y`
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(5)  #| show: rng = np.random.default_rng()
-scores = rng.normal(70, 8, 30)
+np.random.seed(23)  #| hide
+scores = np.random.normal(70, 8, 30)
 plt.figure(figsize=(6, 3.5))
 plt.plot(scores, marker="o")
 plt.axhline(scores.mean(), color="red")

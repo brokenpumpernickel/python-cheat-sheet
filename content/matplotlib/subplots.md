@@ -19,22 +19,22 @@ PL: `plt.subplot(121)` dzieli rysunek na 1 wiersz i 2 kolumny podwykresów (subp
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(15)  #| show: rng = np.random.default_rng()
+np.random.seed(6)  #| hide
 plt.figure(figsize=(6, 3.5))
 plt.subplot(121)
-plt.hist(rng.uniform(0, 1, 500))
+plt.hist(np.random.uniform(0, 1, 500))
 plt.title("U(0, 1)")
 plt.subplot(122)
-plt.hist(rng.normal(0, 1, 500))
+plt.hist(np.random.normal(0, 1, 500))
 plt.title("N(0, 1)")
 plt.show()
 ```
 
 ### Figure
 
-Two histograms side by side: on the left, U(0, 1), ten bars of similar height, between about 40 and 60; on the right, N(0, 1), a bell shape around 0.
+Two histograms side by side: on the left, U(0, 1), ten bars of similar height, between about 45 and 55; on the right, N(0, 1), a bell shape around 0.
 
-PL: Dwa histogramy obok siebie: po lewej U(0, 1), dziesięć słupków podobnej wysokości, od około 40 do 60; po prawej N(0, 1), kształt dzwonu wokół 0.
+PL: Dwa histogramy obok siebie: po lewej U(0, 1), dziesięć słupków podobnej wysokości, od około 45 do 55; po prawej N(0, 1), kształt dzwonu wokół 0.
 
 ## Plots spanning several columns
 
@@ -48,9 +48,9 @@ PL: Każde wywołanie `plt.subplot` może dzielić rysunek po swojemu, więc pod
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(19)  #| show: rng = np.random.default_rng()
-a = rng.normal(0, 1, 200)
-b = rng.normal(0, 3, 200)
+np.random.seed(7)  #| hide
+a = np.random.normal(0, 1, 200)
+b = np.random.normal(0, 3, 200)
 plt.figure(figsize=(6, 3.5))
 plt.subplot(221)
 plt.hist(a)
@@ -82,13 +82,13 @@ PL: `fig, axes = plt.subplots(2, 2)` tworzy rysunek z siatką 2 na 2 wykresów i
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(16)  #| show: rng = np.random.default_rng()
+np.random.seed(1)  #| hide
 sizes = [10, 100, 1000, 10000]
 fig, axes = plt.subplots(
     2, 2, figsize=(6, 3.5),
     layout="constrained")
 for ax, n in zip(axes.flat, sizes):
-    ax.hist(rng.normal(0, 1, n), bins=20)
+    ax.hist(np.random.normal(0, 1, n), bins=20)
     ax.set_title(f"n = {n}")
 
 plt.show()
@@ -140,9 +140,9 @@ PL: `sharex=True` daje wszystkim wykresom ten sam zakres osi x, a `sharey=True` 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(17)  #| show: rng = np.random.default_rng()
-a = rng.normal(0, 1, 500)
-b = rng.normal(2, 2, 500)
+np.random.seed(17)  #| hide
+a = np.random.normal(0, 1, 500)
+b = np.random.normal(2, 2, 500)
 fig, axes = plt.subplots(
     2, 1, sharex=True, figsize=(6, 3.5))
 axes[0].hist(a, bins=30)
