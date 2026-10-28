@@ -106,6 +106,7 @@ PL: `axis=0` wskazuje oś (axis), która znika: zwija wiersze, więc `scores.mea
 ### See also
 
 - arrays/two-dimensional-arrays
+- sampling/statistics-of-many-samples
 
 ## Median and percentiles
 

@@ -1,10 +1,10 @@
 ---
 title: Distributions
 glyph: "pdf"
-summary: "Distributions in scipy.stats: objects, parameters, frozen distributions, probabilities, quantiles, samples and summaries."
+summary: "Distributions in scipy.stats: objects, parameters, frozen distributions, probabilities, quantiles and summaries."
 pl:
   title: Rozkłady
-  summary: "Rozkłady (distributions) w scipy.stats: obiekty, parametry, rozkłady zamrożone, prawdopodobieństwa, kwantyle, próbki i podsumowania."
+  summary: "Rozkłady (distributions) w scipy.stats: obiekty, parametry, rozkłady zamrożone, prawdopodobieństwa, kwantyle i podsumowania."
 ---
 
 ## A distribution object
@@ -84,9 +84,9 @@ print(U.cdf(3.5, loc=0, scale=10))
 
 PL: Gęstość i prawdopodobieństwa
 
-`d.pdf(x)` gives the density of a continuous distribution at `x`, and `d.pmf(k)` the probability P(X = k) of a discrete one. `d.cdf(x)` gives P(X ≤ x), and `d.sf(x)` gives P(X > x), the same as `1 - d.cdf(x)`.
+`d.pdf(x)` gives the density of a continuous distribution at `x`, and `d.pmf(k)` the probability P(X = k) of a discrete one. `d.cdf(x)` gives P(X ≤ x), and `d.sf(x)` gives P(X > x), the same as `1 - d.cdf(x)`. To draw random values from the distribution instead, use `d.rvs(size=n)`.
 
-PL: `d.pdf(x)` daje gęstość (pdf) rozkładu ciągłego w punkcie `x`, a `d.pmf(k)` daje funkcję prawdopodobieństwa (pmf), czyli P(X = k), rozkładu dyskretnego. `d.cdf(x)` to dystrybuanta (cdf), P(X ≤ x), a `d.sf(x)` to funkcja przeżycia (survival function), P(X > x), czyli to samo co `1 - d.cdf(x)`.
+PL: `d.pdf(x)` daje gęstość (pdf) rozkładu ciągłego w punkcie `x`, a `d.pmf(k)` daje funkcję prawdopodobieństwa (pmf), czyli P(X = k), rozkładu dyskretnego. `d.cdf(x)` to dystrybuanta (cdf), P(X ≤ x), a `d.sf(x)` to funkcja przeżycia (survival function), P(X > x), czyli to samo co `1 - d.cdf(x)`. Wartości losowe z rozkładu daje natomiast `d.rvs(size=n)`.
 
 ```python
 from scipy import stats
@@ -104,6 +104,7 @@ print(f"{coin.pmf(5):.4f}")
 
 - discrete-distributions/binomial-distribution
 - plotting-distributions/the-cdf
+- sampling/random-samples-with-rvs
 
 ## Quantiles with ppf
 
@@ -129,57 +130,6 @@ print(f"{heights.ppf(0.9):.1f}")
 
 - continuous-distributions/student-s-t-distribution
 - plotting-distributions/a-pdf-curve
-
-## Random samples with rvs
-
-PL: Próbki losowe z rvs
-
-`d.rvs(size=n)` draws `n` random values from the distribution as an array. Every run draws a new sample, so your numbers will differ from the Output shown here, which comes from one run.
-
-PL: `d.rvs(size=n)` losuje `n` wartości z rozkładu i zwraca je jako tablicę (array). Każde uruchomienie losuje nową próbkę (sample), więc twoje liczby będą inne niż w pokazanym tu Wyniku, który pochodzi z jednego uruchomienia.
-
-```python
-import numpy as np  #| hide
-from scipy import stats
-
-np.random.seed(11)  #| hide
-d = stats.norm(loc=170, scale=10)
-sample = d.rvs(size=1000)
-print(sample[:4].round(1))
-print(f"{sample.mean():.2f}")
-print(f"{sample.std(ddof=1):.2f}")
-```
-
-### See also
-
-- random/normal-samples
-- random/setting-a-seed
-- plotting-distributions/a-histogram-with-the-pdf
-
-## Reproducible samples
-
-PL: Powtarzalne próbki
-
-`np.random.seed(42)` before `d.rvs(size=n)` gives the same samples on every run, so others can check your results: each call draws new numbers, but after the same seed the whole sequence repeats. To fix a single call instead, pass `random_state=42`.
-
-PL: `np.random.seed(42)` przed `d.rvs(size=n)` daje te same próbki przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki: każde wywołanie losuje nowe liczby, ale po tym samym ziarnie (seed) cały ich ciąg się powtarza. Żeby ustalić tylko jedno wywołanie, podaj `random_state=42`.
-
-```python
-import numpy as np
-from scipy import stats
-
-die = stats.randint(1, 7)
-np.random.seed(42)
-print(die.rvs(size=5))
-print(die.rvs(size=5))
-np.random.seed(42)
-print(die.rvs(size=5))
-print(die.rvs(size=5))
-```
-
-### See also
-
-- random/setting-a-seed
 
 ## Mean, spread and intervals
 

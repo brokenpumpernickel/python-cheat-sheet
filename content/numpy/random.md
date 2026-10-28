@@ -26,7 +26,7 @@ print(np.random.random(3))
 
 ### See also
 
-- distributions/reproducible-samples
+- sampling/reproducible-samples
 
 ## Uniform numbers and integers
 
@@ -73,7 +73,7 @@ print(f"{heights.std(ddof=1):.2f}")
 
 - aggregates/standard-deviation-and-variance
 - histograms/a-histogram
-- distributions/random-samples-with-rvs
+- sampling/random-samples-with-rvs
 
 ## Choosing and shuffling
 
