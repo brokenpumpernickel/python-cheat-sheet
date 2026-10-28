@@ -122,6 +122,7 @@ t = np.loadtxt(
 ### See also
 
 - indexing/changing-values-through-a-mask
+- missing-values/statistics-skip-nan
 
 ## Binary files with save and load
 
