@@ -56,6 +56,7 @@ print(data.mean(axis=0).round(1))
 
 - files/csv-files-with-the-csv-module
 - aggregates/along-an-axis
+- csv-files/reading-a-csv-file
 
 ## Columns as separate arrays
 

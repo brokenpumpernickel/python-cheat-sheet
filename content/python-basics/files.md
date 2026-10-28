@@ -153,6 +153,7 @@ print([int(r[1]) for r in back[1:]])
 
 - array-files/csv-files
 - lists/list-comprehensions
+- csv-files/reading-a-csv-file
 
 ## Where Python looks for files
 
