@@ -1,11 +1,94 @@
 ---
 title: Plotting with pandas
 glyph: ".plot"
-summary: "Plots straight from a Series or DataFrame with .plot(): line plots, bar charts of counts, scatter plots, histograms, and how they fit with plt."
+summary: "Plots from a Series or DataFrame two ways, columns passed to plt or pandas' .plot(): a column against a distribution, line plots, bar charts of counts, scatter plots, histograms."
 pl:
   title: Wykresy z pandas
-  summary: "Wykresy prosto z serii (Series) i ramki danych (DataFrame) przez .plot(): liniowe, słupkowe z liczebnościami, punktowe, histogramy i współpraca z plt."
+  summary: "Wykresy z serii (Series) i ramki danych (DataFrame) na dwa sposoby, kolumny podane funkcjom plt albo .plot() z pandas: kolumna na tle rozkładu, liniowe, słupkowe z liczebnościami, punktowe i histogramy."
 ---
+
+## Plotting columns with plt
+
+PL: Wykresy kolumn przez plt
+
+`plt.plot(df["year"], df["n"])`, `plt.scatter(df["height"], df["weight"])` and `plt.hist(df["score"], bins=20)` take columns as they are, and `.to_numpy()` gives plain arrays if you want them. When you already know Matplotlib this is often simpler than `.plot()`, the shortcut the next Entries show, which labels the axes with the column names. Here, on the left, the weight in kg against the height in cm of 200 students and, on the right, their scores.
+
+PL: `plt.plot(df["year"], df["n"])`, `plt.scatter(df["height"], df["weight"])` i `plt.hist(df["score"], bins=20)` przyjmują kolumny takie, jakie są, a `.to_numpy()` daje zwykłe tablice (arrays), jeśli ich potrzebujesz. Gdy znasz już Matplotlib, to często prostsze niż `.plot()`, skrót pokazany w kolejnych hasłach, który opisuje osie nazwami kolumn. Tu po lewej waga w kg względem wzrostu w cm 200 studentów, a po prawej ich wyniki.
+
+```python
+import numpy as np  #| hide
+import pandas as pd
+import matplotlib.pyplot as plt
+
+np.random.seed(7)  #| hide
+height = np.random.normal(172, 9, 200).round(1)  #| hide
+weight = (0.9 * (height - 100) + np.random.normal(0, 6, 200)).round(1)  #| hide
+score = np.random.normal(70, 12, 200).clip(0, 100).round()  #| hide
+pd.DataFrame({"height": height, "weight": weight, "score": score}).to_csv("students.csv", index=False)  #| hide
+df = pd.read_csv("students.csv")
+plt.figure(figsize=(6, 3.5))
+plt.subplot(121)
+plt.scatter(df["height"], df["weight"], s=10)
+plt.xlabel("cm")
+plt.ylabel("kg")
+plt.subplot(122)
+plt.hist(df["score"], bins=20)
+plt.show()
+```
+
+### Figure
+
+Two plots side by side. On the left, small dots in a loose band rising from lower left to upper right, x-axis labelled cm and y-axis kg; on the right, a histogram in a rough bell shape from about 35 to 100, tallest between 60 and 80.
+
+PL: Dwa wykresy obok siebie. Po lewej małe kropki w luźnym pasie rosnącym od lewego dołu do prawej góry, oś x opisana jako cm, oś y jako kg; po prawej histogram w przybliżeniu w kształcie dzwonu od około 35 do 100, najwyższy między 60 a 80.
+
+### See also
+
+- plotting-basics/a-line-plot
+- scatter-plots/a-scatter-plot
+- histograms/a-histogram
+
+## A column against a distribution
+
+PL: Kolumna na tle rozkładu
+
+`plt.hist(df["height"], bins=20, density=True)` draws a column on the scale of a pdf, and `plt.plot(x, stats.norm(m, s).pdf(x))` draws a normal curve over it, with `m` and `s` from the column's `.mean()` and `.std()`. Plot the curve on `x = np.linspace(...)` over the data's range, not on the column itself, which is unsorted. Here the x-axis shows the heights of 200 students in cm.
+
+PL: `plt.hist(df["height"], bins=20, density=True)` rysuje kolumnę w skali gęstości (pdf), a `plt.plot(x, stats.norm(m, s).pdf(x))` rysuje na niej krzywą rozkładu normalnego (normal distribution), z `m` i `s` wziętymi z `.mean()` i `.std()` kolumny. Krzywą rysuj na `x = np.linspace(...)` w zakresie danych, a nie na samej kolumnie, która nie jest posortowana. Tu oś x pokazuje wzrost 200 studentów w cm.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+np.random.seed(7)  #| hide
+height = np.random.normal(172, 9, 200).round(1)  #| hide
+weight = (0.9 * (height - 100) + np.random.normal(0, 6, 200)).round(1)  #| hide
+score = np.random.normal(70, 12, 200).clip(0, 100).round()  #| hide
+pd.DataFrame({"height": height, "weight": weight, "score": score}).to_csv("students.csv", index=False)  #| hide
+df = pd.read_csv("students.csv")
+m = df["height"].mean()
+s = df["height"].std()
+x = np.linspace(df["height"].min(),
+                df["height"].max(), 200)
+plt.figure(figsize=(6, 3.5))
+plt.hist(df["height"], bins=20, density=True)
+plt.plot(x, stats.norm(m, s).pdf(x))
+plt.show()
+```
+
+### Figure
+
+Twenty uneven bars in a rough bell shape from about 151 to 193, with a smooth bell curve drawn over them that peaks near 172 at about 0.045; one bar near 168 rises well above it.
+
+PL: Dwadzieścia nierównych słupków układa się w dzwon od około 151 do 193, a nałożona na nie gładka krzywa dzwonowa ma szczyt blisko 172, na wysokości około 0,045; jeden słupek przy 168 wyraźnie ją przewyższa.
+
+### See also
+
+- plotting-distributions/a-histogram-with-the-pdf
+- histograms/density-with-a-pdf-on-top
+- exploring/column-statistics
 
 ## A line plot of a Series
 
@@ -222,3 +305,4 @@ PL: Dwie poszarpane linie dla t od 0 do 49 z legendą A i B oraz szara kreskowan
 
 - subplots/a-grid-of-plots-with-plt-subplots
 - plotting-basics/axis-labels-and-a-title
+- pandas-plots/plotting-columns-with-plt

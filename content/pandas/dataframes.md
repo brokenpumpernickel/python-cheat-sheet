@@ -1,10 +1,10 @@
 ---
 title: DataFrames
 glyph: "df"
-summary: "Tables with named columns: building one from a dictionary, columns as Series, shape, column types and printing."
+summary: "Tables with named columns: building one from a dictionary, columns as Series and NumPy arrays, shape, column types and printing."
 pl:
   title: Ramki danych
-  summary: "Ramki danych (DataFrames), czyli tabele z nazwanymi kolumnami: tworzenie ze słownika, kolumny jako serie, kształt, typy kolumn i wypisywanie."
+  summary: "Ramki danych (DataFrames), czyli tabele z nazwanymi kolumnami: tworzenie ze słownika, kolumny jako serie i tablice NumPy, kształt, typy kolumn i wypisywanie."
 ---
 
 ## A DataFrame from a dictionary
@@ -48,6 +48,56 @@ df = pd.DataFrame({
 print(df["score"])
 print(type(df["score"]))
 ```
+
+## Columns as NumPy arrays
+
+PL: Kolumny jako tablice NumPy
+
+`df["score"].to_numpy()` gives one column as a 1-D NumPy array, and `df[["height", "weight"]].to_numpy()` a 2-D array with one row per row of the table. The older `.values` still works, but `.to_numpy()` is the recommended way. NumPy functions such as `np.percentile` take the array, but `np.std` divides by `n` unless you pass `ddof=1`, while pandas' `.std()` divides by `n - 1`.
+
+PL: `df["score"].to_numpy()` daje jedną kolumnę jako jednowymiarową tablicę NumPy (NumPy array), a `df[["height", "weight"]].to_numpy()` tablicę dwuwymiarową, z jednym wierszem na każdy wiersz tabeli. Starsze `.values` nadal działa, ale zalecane jest `.to_numpy()`. Tablicę przyjmują funkcje NumPy, takie jak `np.percentile`, tylko że `np.std` dzieli przez `n`, jeśli nie podasz `ddof=1`, a `.std()` w pandas dzieli przez `n - 1`.
+
+```python
+import numpy as np
+import pandas as pd
+
+df = pd.DataFrame({
+    "height": [165.5, 180.0, 172.5, 158.0],
+    "weight": [58.0, 77.5, 70.0, 52.5],
+    "score": [72, 85, 90, 64],
+})
+scores = df["score"].to_numpy()
+print(scores)
+print(df[["height", "weight"]].to_numpy())
+print(np.percentile(scores, 90))
+print(round(np.std(scores, ddof=1), 2))
+print(round(df["score"].std(), 2))
+```
+
+### Pitfall
+
+`df.to_numpy()` on a table with a text column gives one array of dtype `object`, so `a.sum(axis=0)` glues the names together and `a.mean(axis=0)` fails with a `TypeError` about `str`. Select the number columns before `.to_numpy()`.
+
+PL: `df.to_numpy()` na tabeli z kolumną tekstową daje jedną tablicę o typie `object`, więc `a.sum(axis=0)` skleja imiona, a `a.mean(axis=0)` kończy się wyjątkiem `TypeError`, który mówi o `str`. Przed `.to_numpy()` wybierz kolumny z liczbami.
+
+```python raises=TypeError
+import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["Ala", "Jan", "Ewa"],
+    "score": [72, 85, 90],
+})
+a = df.to_numpy()
+print(a.dtype)
+print(a.sum(axis=0))
+print(a.mean(axis=0))
+```
+
+### See also
+
+- arrays/two-dimensional-arrays
+- aggregates/median-and-percentiles
+- exploring/column-statistics
 
 ## Shape, columns and index
 
