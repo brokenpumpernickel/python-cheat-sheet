@@ -54,7 +54,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
-Resolved (ticket 31 session). Three Entries, with all their Polish:
+Resolved in PR brokenpumpernickel/python-cheat-sheet#43 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/43). Three Entries, with all their Polish:
 
 - **DataFrames**: *Columns as NumPy arrays* (PL: *Kolumny jako tablice NumPy*), right after *A column is a Series*. It prints a 1-D array, a 2-D array, `np.percentile` and `np.std(..., ddof=1)` beside pandas' `.std()`, and has a Pitfall. Its Pitfall shows `df.to_numpy()` on a table with a name column: it prints the dtype `object`, then `a.sum(axis=0)` as `['AlaJanEwa' 247]`, then `a.mean(axis=0)` raises `TypeError` (`raises=TypeError`). See also: `arrays/two-dimensional-arrays`, `aggregates/median-and-percentiles`, `exploring/column-statistics`.
 - **Plotting with pandas**: *Plotting columns with plt* (PL: *Wykresy kolumn przez plt*), the first Entry. One figure with `plt.subplot(121)`: `plt.scatter` of height against weight (axes `cm`, `kg`), and `(122)`: `plt.hist` of the scores. See also: `plotting-basics/a-line-plot`, `scatter-plots/a-scatter-plot`, `histograms/a-histogram`.
