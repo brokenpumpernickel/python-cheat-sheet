@@ -68,7 +68,7 @@ Decided with the Author:
 
 ## Comments
 
-- Resolved by the PR that adds this ticket (link added below once it is open).
+- Resolved by PR #30: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/30.
 - **Mechanism:** `cheatsheet/content.py` splits each code block into shown code (`code` in `generated/content.json`, used by the page, Copy, highlighting and search) and run code, which `cheatsheet/build.py` runs and then drops from the data, so `content.json` has no `run` field. The site needed no change.
 - **Entries whose code changed** (34; every Output, error, figure and widget list is identical to a fresh build from `main`, compared field by field):
   - NumPy Random: *Uniform numbers and integers*, *Normal samples*, *Choosing and shuffling*, *Simulating an experiment*.
