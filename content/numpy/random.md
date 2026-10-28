@@ -1,19 +1,19 @@
 ---
 title: Random
 glyph: "rng"
-summary: "Reproducible random numbers: a seeded generator, uniform and normal samples, choosing, simulations."
+summary: "Random numbers from a generator: seeds, uniform and normal samples, choosing, simulations."
 pl:
   title: Losowanie
-  summary: "Powtarzalne liczby losowe (random numbers): generator z ziarnem, próbki jednostajne i normalne, losowy wybór, symulacje."
+  summary: "Liczby losowe (random numbers) z generatora: ziarno, próbki jednostajne i normalne, losowy wybór, symulacje."
 ---
 
 ## A generator with a seed
 
 PL: Generator z ziarnem
 
-`rng = np.random.default_rng(42)` makes a random generator, and every random number comes from its methods, such as `rng.random(n)`. The same seed gives the same numbers on every run, so others can check your results; leave the seed out and each run differs.
+`rng = np.random.default_rng(42)` makes a random generator, and every random number comes from its methods, such as `rng.random(n)`. The same seed gives the same numbers on every run, so others can check your results. Without a seed, as in the other examples here, each run differs, so your numbers won't match the Output shown.
 
-PL: `rng = np.random.default_rng(42)` tworzy generator liczb losowych (random number generator), a każda liczba losowa pochodzi z jego metod, np. `rng.random(n)`. To samo ziarno (seed) daje te same liczby przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki; bez ziarna każde uruchomienie daje inne.
+PL: `rng = np.random.default_rng(42)` tworzy generator liczb losowych (random number generator), a każda liczba losowa pochodzi z jego metod, np. `rng.random(n)`. To samo ziarno (seed) daje te same liczby przy każdym uruchomieniu, więc inni mogą sprawdzić twoje wyniki. Bez ziarna, jak w pozostałych przykładach, każde uruchomienie daje inne liczby, więc twoje nie będą zgodne z pokazanym Wynikiem.
 
 ```python
 import numpy as np
@@ -30,6 +30,10 @@ Older tutorials use `np.random.seed(42)` with `np.random.rand()` or `np.random.n
 
 PL: Starsze poradniki używają `np.random.seed(42)` z `np.random.rand()` lub `np.random.normal()`. Ten przestarzały styl dzieli jeden ukryty stan globalny, więc każdy inny kod, który losuje, zmienia twoje liczby; zamiast tego utwórz generator przez `default_rng` i używaj jego metod.
 
+### See also
+
+- distributions/reproducible-samples
+
 ## Uniform numbers and integers
 
 PL: Rozkład jednostajny i liczby całkowite
@@ -41,7 +45,7 @@ PL: `rng.uniform(low, high, n)` daje `n` ułamków z rozkładu jednostajnego (un
 ```python
 import numpy as np
 
-rng = np.random.default_rng(1)
+rng = np.random.default_rng(1)  #| show: rng = np.random.default_rng()
 print(rng.uniform(0, 10, 3).round(2))
 print(rng.integers(1, 7, 10))
 print(rng.integers(1, 7, (2, 5)))
@@ -64,7 +68,7 @@ PL: `rng.normal(loc, scale, size)` losuje z rozkładu normalnego (normal distrib
 ```python
 import numpy as np
 
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()
 heights = rng.normal(170, 10, size=1000)
 print(heights[:4].round(1))
 print(f"{heights.mean():.2f}")
@@ -88,7 +92,7 @@ PL: `rng.choice(values, size)` losuje z `values` ze zwracaniem (with replacement
 ```python
 import numpy as np
 
-rng = np.random.default_rng(3)
+rng = np.random.default_rng(3)  #| show: rng = np.random.default_rng()
 coin = ["H", "T"]
 print(rng.choice(coin, 10, p=[0.7, 0.3]))
 names = ["Ola", "Jan", "Ewa", "Ala"]
@@ -107,7 +111,7 @@ PL: Symuluj wiele prób naraz: wylosuj macierz (matrix) z jednym wierszem na pr�
 ```python
 import numpy as np
 
-rng = np.random.default_rng(2024)
+rng = np.random.default_rng(2024)  #| show: rng = np.random.default_rng()
 rolls = rng.integers(1, 7, (100_000, 2))
 totals = rolls.sum(axis=1)
 print(rolls[:3])

@@ -10,7 +10,7 @@ The content build (`cheatsheet/content.py`, then `cheatsheet/build.py`) is the o
 - [Folder layout](#folder-layout)
 - [Area description](#area-description-_areamd)
 - [Topic file](#topic-file-topic-idmd)
-- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [Output](#output), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [widgets](#widgets), [Pitfall](#pitfall), [See also](#see-also)
+- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [shown and run code](#shown-and-run-code), [Output](#output), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [widgets](#widgets), [Pitfall](#pitfall), [See also](#see-also)
 - [Topic order](#topic-order)
 - [Polish](#polish)
 - [New Areas: hue and glyphs](#new-areas-hue-and-glyphs)
@@ -148,15 +148,32 @@ Inside a Topic file there is nothing but Entries, and inside an Entry nothing bu
 
 Exactly one ` ```python ` block per Entry, always with `python` as the language (not `py`, and never a bare ```` ``` ````).
 
-- **Self-contained (ADR 0003).** Every example runs in its own fresh kernel, so it includes all its own imports and data and never uses a variable from another Entry. Repeating `import numpy as np` in every Entry is deliberate; don't factor it out. A Student must be able to paste the block into an empty Jupyter cell and get the same Output.
+- **Self-contained (ADR 0003).** Every example runs in its own fresh kernel, so it includes all its own imports and data and never uses a variable from another Entry. Repeating `import numpy as np` in every Entry is deliberate; don't factor it out. A Student must be able to paste the block into an empty Jupyter cell and run it.
 - **Prints explicitly.** Show every value with `print(...)`. A bare expression on the last line prints nothing here: the build captures only what is printed (and figures), so `x + 1` as the last line gives an empty Output without any error. The exception is a figure Entry, whose Output is the figure.
 - **Short and focused:** about 3–8 lines that show this Entry's concept and nothing else. Small, readable data with a statistics flavour (scores, measurements, dice rolls) beats `foo` and `bar`.
 - **Pastes into the `python` prompt too.** Leave a blank line after a compound block (`for`, `while`, `if`, `def`) when an unindented line follows it. Jupyter doesn't need it, but pasted into the plain `python` prompt the next line is a `SyntaxError` without it.
 - **Code is the same in both Languages.** Write names, strings and comments in English, and print values rather than sentences: `print(mean)` or `print("mean", mean)`, not `print(f"The mean is {mean}")`, since a Polish reader sees the same Output.
 - **NumPy numbers are printed on their own.** Print a single NumPy number (`data.mean()`, `a[0]`) by itself, beside other values in one `print(x, y)`, or in an f-string, rounding long decimals where needed (`f"{x:.3f}"`). Never print it inside a list, tuple or dict: NumPy 2 then shows its type, `[np.float64(18.0)]`. Arrays print fine as they are.
-- **Same Output on every build.** Seed any randomness (`rng = np.random.default_rng(42)`, `random.seed(1)`; in NumPy always a generator from `default_rng`, never the legacy `np.random.seed`) and avoid the current date and time, memory addresses and anything else that changes between runs.
-- **No outside world.** The kernel starts in an empty temporary folder with no input: an example that reads a file must write it first, and `input()` fails. Don't use the network. Each example has 60 seconds.
+- **Same Output on every build, no seed on the page.** The build seeds all randomness, but Students don't: in the lab they call `default_rng()` and `rvs` without a seed. So seed in the run code and show the unseeded form with a [`#| show:` marker](#shown-and-run-code): `rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()`. In SciPy, pass that generator as `random_state=rng` and show the call without it; hide the line that makes `rng` with `#| hide`, and `import numpy as np` too if nothing shown uses it. In NumPy always use a generator from `default_rng`, never the legacy `np.random.seed`; for the standard library, `random.seed(1)  #| hide`. Show the seed only where it is the point (NumPy's *A generator with a seed*, SciPy's *Reproducible samples*). Where the numbers matter to the explanation, say that the Student's will differ, because the Output comes from one run. Avoid the current date and time, memory addresses and anything else that changes between runs.
+- **No outside world.** The kernel starts in an empty temporary folder with no input: an example that reads a file must write it first, and `input()` fails. Don't use the network; to show a download, read a local copy in the run code and show the download with `#| show:`. Each example has 60 seconds.
 - **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib, SciPy and ipywidgets). To add one, run `uv add pandas` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
+
+### Shown and run code
+
+The build runs the code block as written, and the page shows it with its marked lines changed (ADR 0006). A marker is a comment at the end of a line of code, after two or more spaces:
+
+```python
+rng = np.random.default_rng(7)  #| show: rng = np.random.default_rng()
+sample = d.rvs(size=1000, random_state=rng)  #| show: sample = d.rvs(size=1000)
+open("scores.csv", "w").write("72,45,88\n")  #| hide
+data = np.loadtxt("scores.csv", delimiter=",")  #| show: data = np.loadtxt("https://example.org/scores.csv", delimiter=",")
+```
+
+- `code  #| show: <shown code>` runs `code` and shows `<shown code>` in its place, with the line's indentation kept.
+- `code  #| hide` runs `code` and leaves the line out of what is shown. Blank lines left at the top of the shown code are dropped.
+- Unmarked lines run exactly as shown. The marker is the last `#| ` on the line that follows two or more spaces; those spaces belong to neither the run code nor the shown code.
+- The page, the Copy button, syntax highlighting and search all use the shown code. Entry and Pitfall code take markers alike.
+- **Only for seeds and data sources.** The build can't check that a shown line means the same as its run line, so never use a marker to change what the example does or to hide a step the Output depends on. A Student who pastes the shown code must get the same kind of Output, only with other random numbers or the real data.
 
 ### Output
 
@@ -179,7 +196,7 @@ Matplotlib draws with a non-interactive backend. Every figure open at `plt.show(
 
 - **One figure per Entry, one size.** Start it with `plt.figure(figsize=(6, 3.5))`, or pass `figsize=(6, 3.5)` to `plt.subplots`, keep Matplotlib's default style, and end the example with `plt.show()`, as Students do in Jupyter. Draw with the `plt` functions (`plt.plot`, `plt.xlabel`); use `ax.` methods only on the plots `plt.subplots` returns.
 - **Text in figures is language-neutral,** because both Languages share the Output: symbols and maths (`x`, `f(x)`, `N(0, 1)`, `n = 30`, `σ = 2`), variable names (`a`, `r`), group letters (`A`, `B`) and numbers, or no text at all. No English words and no sentence-like titles: `plt.xlabel("height")` or `plt.title("Exam scores")` would stay English on the Polish page. Say in the explanation, in both Languages, what the axes show.
-- **Random data** comes from a seeded `default_rng`, as in any other example.
+- **Random data** comes from a `default_rng` seeded in the run code and shown unseeded (`rng = np.random.default_rng(1)  #| show: rng = np.random.default_rng()`), as in any other example. The figure description describes the figure on the page, which comes from the seeded run.
 - **Checking warnings:** a plain `uv run python example.py` opens a window at `plt.show()`. Run it with `MPLBACKEND=Agg` instead; then `plt.show()` warns that `FigureCanvasAgg is non-interactive`, which is expected, and any other warning needs a fix.
 
 ### Figure description
@@ -384,6 +401,9 @@ Every rule below stops the build with `Content error:`. The message starts with 
 | `code blocks must be ```python, not ```<lang> (line <n>)` | ` ```py `, ` ```pycon `, ` ```text `… | Use ` ```python `. Output isn't written in the file at all. |
 | `unknown code block option '<option>'; the only option is raises=<ExceptionType>` | e.g. `raises KeyError`, `raises=KeyError,ValueError`, `title=…` | Write `raises=KeyError` with no spaces, one type. |
 | `the code block at line <n> is empty` | ` ```python ` with nothing inside | Write the example. |
+| `unknown marker '<marker>' at line <n>; the only markers are '#\| show: <code>' and '#\| hide', two spaces after the code` | A `#\|` comment that isn't a [marker](#shown-and-run-code): `#\| hidden`, `#\|show:x`, one space before it, or no code before it | Write `code  #\| show: <shown code>` or `code  #\| hide`. |
+| `'#\| show:' at line <n> has no code after it; write the code to show, or use '#\| hide'` | `#\| show:` with nothing after it | Write the code to show, or use `#\| hide` to leave the line out. |
+| `every line of the code block at line <n> is hidden; show at least one` | Every line has `#\| hide` | Show at least one line; an example the page can't show doesn't belong on it. |
 
 ### Figure descriptions
 
@@ -419,7 +439,7 @@ These are checked only after everything parses, and all failures are listed at o
 | `Figure: the example draws no figure; remove the '### Figure' description` | A description on code that drew nothing: no plotting, or every figure closed with `plt.close()` | Remove the section, or fix the code if it should draw. |
 | `the example displays a <Model> widget, which the site can't draw yet` (e.g. `ButtonModel`) | The example shows a widget the site can't draw: `interact_manual`'s button, `FloatLogSlider`, `RadioButtons`… | Use a [supported control](#widgets) (`interact` instead of `interact_manual`, a `FloatSlider`, a dropdown). |
 
-**Not caught by the build** (check them yourself): an empty Output from a missing `print`, warnings (stderr is ignored), Output that changes between builds, length, tone, Topic order and the quality of the Polish.
+**Not caught by the build** (check them yourself): an empty Output from a missing `print`, warnings (stderr is ignored), Output that changes between builds, a `#| show:` line that doesn't mean the same as its run line, length, tone, Topic order and the quality of the Polish.
 
 ## Complete example Topic
 
@@ -571,6 +591,7 @@ What it shows:
 - [ ] Every Entry: a title of one to four words, an explanation of 1–3 sentences in one paragraph, one self-contained ` ```python ` example that prints what it shows.
 - [ ] Every Output comes from the build, is not empty, and shows what the explanation promises; no warnings.
 - [ ] Expected errors only where the error is the point, with the raising line last.
+- [ ] No seed or `random_state` on the page unless the seed is the point: seeds run hidden behind `#| show:` and `#| hide`, and markers are used for nothing but seeds and data sources.
 - [ ] Every example that draws a figure has a `### Figure` description in both Languages: what the plot shows and its shape, in plain text.
 - [ ] Pitfalls only for real, common mistakes; See-also links where an Entry relies on another.
 - [ ] Polish for every title, summary, blurb, explanation, Pitfall and figure description, with "polski termin (English term)" at first mention.

@@ -19,7 +19,7 @@ PL: `plt.scatter(x, y)` rysuje wykres punktowy (scatter plot): jedną kropkę dl
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(11)
+rng = np.random.default_rng(11)  #| show: rng = np.random.default_rng()
 x = rng.uniform(0, 10, 50)
 y = 2 * x + rng.normal(0, 3, 50)
 plt.figure(figsize=(6, 3.5))
@@ -51,7 +51,7 @@ PL: `c=values` koloruje każdą kropkę według jej wartości przez mapę kolor�
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(12)
+rng = np.random.default_rng(12)  #| show: rng = np.random.default_rng()
 x = rng.normal(0, 1, 100)
 y = rng.normal(0, 1, 100)
 r = np.sqrt(x ** 2 + y ** 2)
@@ -79,7 +79,7 @@ PL: `a, b = np.polyfit(x, y, 1)` dopasowuje prostą metodą najmniejszych kwadra
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(11)
+rng = np.random.default_rng(11)  #| show: rng = np.random.default_rng()
 x = rng.uniform(0, 10, 50)
 y = 2 * x + 1 + rng.normal(0, 3, 50)
 a, b = np.polyfit(x, y, 1)

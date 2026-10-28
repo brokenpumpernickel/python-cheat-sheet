@@ -52,9 +52,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-rng = np.random.default_rng(12)
+rng = np.random.default_rng(12)  #| hide
 d = stats.norm(loc=170, scale=8)
-sample = d.rvs(size=500, random_state=rng)
+sample = d.rvs(size=500, random_state=rng)  #| show: sample = d.rvs(size=500)
 x = np.linspace(d.ppf(0.001),
                 d.ppf(0.999), 200)
 plt.figure(figsize=(6, 3.5))
@@ -80,10 +80,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-rng = np.random.default_rng(12)
+rng = np.random.default_rng(12)  #| hide
 d = stats.norm(loc=170, scale=8)
-sample = d.rvs(size=500,
-               random_state=rng)
+sample = d.rvs(size=500,  #| show: sample = d.rvs(size=500)
+               random_state=rng)  #| hide
 plt.figure(figsize=(6, 3.5))
 plt.hist(sample, bins=25,
          density=True)
@@ -115,10 +115,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-rng = np.random.default_rng(3)
+rng = np.random.default_rng(3)  #| hide
 d = stats.binom(10, 0.3)
 n = 200
-sample = d.rvs(size=n, random_state=rng)
+sample = d.rvs(size=n, random_state=rng)  #| show: sample = d.rvs(size=n)
 freq = np.bincount(sample, minlength=11)
 k = np.arange(0, 11)
 plt.figure(figsize=(6, 3.5))

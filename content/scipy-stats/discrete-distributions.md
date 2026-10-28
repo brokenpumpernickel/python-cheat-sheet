@@ -96,11 +96,11 @@ PL: `stats.randint(low, high)` to dyskretny rozkład jednostajny (discrete unifo
 import numpy as np
 from scipy import stats
 
-rng = np.random.default_rng(8)
+rng = np.random.default_rng(8)  #| hide
 die = stats.randint(1, 7)
 print(die.pmf(np.arange(0, 8)).round(3))
 print(die.mean())
-print(die.rvs(size=10, random_state=rng))
+print(die.rvs(size=10, random_state=rng))  #| show: print(die.rvs(size=10))
 ```
 
 ### See also

@@ -20,6 +20,7 @@ _FRONTMATTER = re.compile(r"\A---\n(.*?)\n---[ \t]*(?:\n|\Z)(.*)\Z", re.DOTALL)
 _ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _SEE_ALSO = re.compile(r"^[a-z0-9-]+/[a-z0-9-]+$")
 _RAISES = re.compile(r"^raises=([A-Za-z_][A-Za-z0-9_]*)$")
+_MARKER = re.compile(r"(?<!\S)#\|")  # a '#|' that starts a word; the last on a line is its marker
 
 
 class ContentError(Exception):
@@ -201,7 +202,7 @@ def _parse_entry(
     explain, pl_explain, fences = _prose_and_code(main[1:], here)
     if len(fences) != 1:
         raise ContentError(f"{here}: an Entry needs exactly one ```python code block, found {len(fences)}")
-    code, raises = _example(fences[0], here)
+    code, run, raises = _example(fences[0], here)
     figure, pl_figure = _figure(parts["Figure"], f"{here} Figure") if "Figure" in parts else (None, None)
 
     pitfall = pl_pitfall = pl_pitfall_figure = None
@@ -209,13 +210,15 @@ def _parse_entry(
         text, pl_pitfall, pitfall_fences = _prose_and_code(parts["Pitfall"], f"{here} Pitfall")
         if len(pitfall_fences) > 1:
             raise ContentError(f"{here} Pitfall: at most one ```python code block, found {len(pitfall_fences)}")
-        pitfall_code, pitfall_raises = _example(pitfall_fences[0], f"{here} Pitfall") if pitfall_fences else (None, None)
+        pitfall_code, pitfall_run, pitfall_raises = (
+            _example(pitfall_fences[0], f"{here} Pitfall") if pitfall_fences else (None, None, None)
+        )
         pitfall_figure = None
         if "Pitfall Figure" in parts:
             if not pitfall_code:
                 raise ContentError(f"{here} Pitfall Figure: the Pitfall has no code, so it draws no figure; remove the '### Figure' description")
             pitfall_figure, pl_pitfall_figure = _figure(parts["Pitfall Figure"], f"{here} Pitfall Figure")
-        pitfall = {"text": text, "code": pitfall_code, "raises": pitfall_raises, "figure": pitfall_figure}
+        pitfall = {"text": text, "code": pitfall_code, "run": pitfall_run, "raises": pitfall_raises, "figure": pitfall_figure}
 
     see = _see_also(parts["See also"], here) if "See also" in parts else []
     references.extend((here, reference) for reference in see)
@@ -224,7 +227,8 @@ def _parse_entry(
         "id": entry_id,
         "title": heading.text,
         "explain": explain,
-        "code": code,
+        "code": code,  # the shown code
+        "run": run,  # the code the build runs; not part of the content data (ADR 0006)
         "raises": raises,
         "figure": figure,
         "see": see,
@@ -276,7 +280,8 @@ def _paragraphs(blocks: list[_Block], here: str) -> tuple[str, str, list[_Block]
     return english[0].text, _strip_polish(polish[0].text), fences
 
 
-def _example(fence: _Block, here: str) -> tuple[str, str | None]:
+def _example(fence: _Block, here: str) -> tuple[str, str, str | None]:
+    """The shown code, the run code and the expected error of a code block."""
     if not fence.info.strip():
         raise ContentError(f"{here}: the code block at line {fence.line} has no language; fence examples as ```python")
     language, *attributes = fence.info.split()
@@ -290,7 +295,38 @@ def _example(fence: _Block, here: str) -> tuple[str, str | None]:
         raises = match.group(1)
     if not fence.text.strip():
         raise ContentError(f"{here}: the code block at line {fence.line} is empty")
-    return fence.text.rstrip("\n"), raises
+    shown, run = [], []
+    for number, line in enumerate(fence.text.rstrip("\n").split("\n"), start=fence.line + 1):
+        run_line, shown_line = _marked_line(line, number, here)
+        run.append(run_line)
+        if shown_line is not None:
+            shown.append(shown_line)
+    while shown and not shown[0].strip():
+        shown.pop(0)
+    if not shown:
+        raise ContentError(f"{here}: every line of the code block at line {fence.line} is hidden; show at least one")
+    return "\n".join(shown).rstrip("\n"), "\n".join(run), raises
+
+
+def _marked_line(line: str, number: int, here: str) -> tuple[str, str | None]:
+    """A code line's run code and its shown code, which is None for a hidden line (ADR 0006)."""
+    found = list(_MARKER.finditer(line))
+    if not found:
+        return line, line
+    code, marker = line[: found[-1].start()], line[found[-1].start() :].rstrip()
+    option = marker[3:].strip()
+    if not (code.endswith("  ") and code.strip() and marker.startswith("#| ")) or not (
+        option == "hide" or option.startswith("show:")
+    ):
+        raise ContentError(
+            f"{here}: unknown marker '{marker}' at line {number}; the only markers are '#| show: <code>' and '#| hide', two spaces after the code"
+        )
+    if option == "hide":
+        return code.rstrip(), None
+    shown = option.removeprefix("show:").strip()
+    if not shown:
+        raise ContentError(f"{here}: '#| show:' at line {number} has no code after it; write the code to show, or use '#| hide'")
+    return code.rstrip(), code[: len(code) - len(code.lstrip())] + shown
 
 
 def _see_also(blocks: list[_Block], here: str) -> list[str]:

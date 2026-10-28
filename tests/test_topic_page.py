@@ -87,6 +87,19 @@ def test_copy_puts_the_exact_code_on_the_clipboard_and_confirms(page: Page, cont
     expect(card.get_by_role("button")).to_have_text("Copy", use_inner_text=True, timeout=3000)
 
 
+def test_the_page_and_copy_give_the_shown_code_not_the_run_code(page: Page, context: BrowserContext, site_url):
+    context.grant_permissions(["clipboard-read", "clipboard-write"], origin=site_url.rstrip("/"))
+    page.goto(f"{site_url}#strings/repeating")
+    card = entry(page, "strings/repeating")
+    shown = "import random\n\nrng = random.Random()\nprint(\"ha\" * rng.randint(2, 4))"
+
+    expect(card.locator("pre code")).to_have_text(shown)
+    card.hover()
+    card.get_by_role("button", name="Copy").click()
+    assert page.evaluate("navigator.clipboard.readText()").replace("\r\n", "\n") == shown
+    expect(card.locator("[data-output] pre")).not_to_be_empty()  # the seeded run code made the Output
+
+
 def test_code_is_syntax_highlighted(page: Page, site_url):
     page.goto(f"{site_url}#strings")
 
@@ -219,7 +232,7 @@ def test_pitfall_without_code_is_just_the_callout(page: Page, site_url):
 
 @pytest.mark.parametrize(
     ("topic", "width", "columns"),
-    [("numbers", 1280, 2), ("numbers", 900, 1), ("numbers", 375, 1), ("strings", 1280, 2)],  # Strings: two cards
+    [("numbers", 1280, 2), ("numbers", 900, 1), ("numbers", 375, 1), ("strings", 1280, 2)],  # Strings: three cards
 )
 def test_cards_take_two_columns_only_on_wide_screens_and_never_widen_the_page(
     page: Page, site_url, topic, width, columns

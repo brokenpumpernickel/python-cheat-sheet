@@ -19,7 +19,7 @@ PL: `plt.subplot(121)` dzieli rysunek na 1 wiersz i 2 kolumny podwykresów (subp
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(15)
+rng = np.random.default_rng(15)  #| show: rng = np.random.default_rng()
 plt.figure(figsize=(6, 3.5))
 plt.subplot(121)
 plt.hist(rng.uniform(0, 1, 500))
@@ -48,7 +48,7 @@ PL: Każde wywołanie `plt.subplot` może dzielić rysunek po swojemu, więc pod
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(19)
+rng = np.random.default_rng(19)  #| show: rng = np.random.default_rng()
 a = rng.normal(0, 1, 200)
 b = rng.normal(0, 3, 200)
 plt.figure(figsize=(6, 3.5))
@@ -82,7 +82,7 @@ PL: `fig, axes = plt.subplots(2, 2)` tworzy rysunek z siatką 2 na 2 wykresów i
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(16)
+rng = np.random.default_rng(16)  #| show: rng = np.random.default_rng()
 sizes = [10, 100, 1000, 10000]
 fig, axes = plt.subplots(
     2, 2, figsize=(6, 3.5),
@@ -140,7 +140,7 @@ PL: `sharex=True` daje wszystkim wykresom ten sam zakres osi x, a `sharey=True` 
 import numpy as np
 import matplotlib.pyplot as plt
 
-rng = np.random.default_rng(17)
+rng = np.random.default_rng(17)  #| show: rng = np.random.default_rng()
 a = rng.normal(0, 1, 500)
 b = rng.normal(2, 2, 500)
 fig, axes = plt.subplots(

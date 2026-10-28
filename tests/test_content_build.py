@@ -185,6 +185,40 @@ def test_widget_controls_are_captured_in_display_order():
     assert nested["pitfall"]["output"]["text"] == "0.5"
 
 
+@pytest.fixture(scope="module")
+def markers():
+    return build_content(FIXTURES / "markers")["areas"][0]["topics"][0]
+
+
+def test_marked_lines_run_as_written_and_show_their_replacement(markers):
+    loading = markers["entries"][0]
+
+    # The hidden line is left out, and the shown line keeps its indentation.
+    assert loading["code"] == (
+        'with open("scores.csv") as file:\n'
+        '    scores = fetch("https://example.org/scores.csv")\n'
+        "print(max(scores))"
+    )
+    # The Output comes from the code as written: the file it wrote, not the download.
+    assert loading["output"] == {"text": "88", "error": None, "figures": [], "widgets": []}
+    assert "run" not in loading  # the run code is for the build only
+
+
+def test_pitfall_code_takes_markers_too(markers):
+    pitfall = markers["entries"][0]["pitfall"]
+
+    assert pitfall["code"] == 'counts = {"heads": 0}\nprint(counts["heads"])\ncounts["tails"] += 1'
+    assert pitfall["output"] == {"text": "2", "error": "KeyError: 'tails'", "figures": [], "widgets": []}
+    assert "run" not in pitfall
+
+
+def test_hidden_lines_leave_no_blank_lines_at_the_top(markers):
+    hidden_import = markers["entries"][1]
+
+    assert hidden_import["code"] == "print(round(3.14159, 2))"
+    assert hidden_import["output"]["text"] == "3.14"
+
+
 # One small content folder per rule in tests/fixtures/invalid/, and the exact message it must give.
 INVALID = {
     # Required fields
@@ -194,6 +228,11 @@ INVALID = {
     "two-code-blocks": "basics/names.md:10 (names/binding): an Entry needs exactly one ```python code block, found 2",
     "bare-code-fence": "basics/names.md:10 (names/binding): the code block at line 18 has no language; fence examples as ```python",
     "duplicate-entry-ids": "basics/names.md:23: two Entries have the id 'binding'",
+    # Shown and run code: the #| markers
+    "unknown-marker": "basics/names.md:10 (names/binding): unknown marker '#| hidden' at line 19; the only markers are '#| show: <code>' and '#| hide', two spaces after the code",
+    "marker-without-space": "basics/names.md:10 (names/binding): unknown marker '#|show: x = 2' at line 19; the only markers are '#| show: <code>' and '#| hide', two spaces after the code",
+    "empty-show": "basics/names.md:10 (names/binding): '#| show:' at line 19 has no code after it; write the code to show, or use '#| hide'",
+    "all-hidden": "basics/names.md:10 (names/binding): every line of the code block at line 18 is hidden; show at least one",
     # Polish counterparts (ADR 0005)
     "missing-polish-title": "basics/names.md:10 (names/binding): the heading must be followed by a 'PL: <Polish title>' paragraph",
     "missing-polish-explanation": "basics/names.md:10 (names/binding): expected one 'PL:' paragraph with the Polish text, found 0",
