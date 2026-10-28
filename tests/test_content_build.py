@@ -117,6 +117,7 @@ def test_meta_lists_the_versions_examples_ran_with(full_syntax):
         {"name": "NumPy", "version": version("numpy")},
         {"name": "Matplotlib", "version": version("matplotlib")},
         {"name": "SciPy", "version": version("scipy")},
+        {"name": "pandas", "version": version("pandas")},
         {"name": "ipywidgets", "version": version("ipywidgets")},
     ]
 
