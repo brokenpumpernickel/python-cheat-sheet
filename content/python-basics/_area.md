@@ -12,6 +12,7 @@ topics:
   - sets
   - loops
   - functions
+  - files
 pl:
   title: Podstawy Pythona
   blurb: "Rdzeń języka: nazwy, sterowanie przepływem, funkcje i wbudowane kolekcje."

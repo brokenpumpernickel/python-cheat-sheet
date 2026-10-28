@@ -8,6 +8,7 @@ topics:
   - array-maths
   - aggregates
   - random
+  - array-files
 pl:
   title: NumPy
   blurb: "Szybkie tablice (arrays) liczb: macierze, obliczenia wektorowe, statystyki z próby i symulacje."
