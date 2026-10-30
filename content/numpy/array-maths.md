@@ -124,7 +124,8 @@ import numpy as np
 
 first = np.array([72, 45, 88, 51])
 retake = np.array([65, 58, 90, 40])
-best = np.where(retake > first, retake, first)
+best = np.where(retake > first,
+                retake, first)
 print(best)
 print(np.where(first >= 50, first, retake))
 ```

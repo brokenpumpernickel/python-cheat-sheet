@@ -98,8 +98,9 @@ df = pd.DataFrame({
 parts = df["student"].str.split(" ")
 print(parts)
 print(parts.str[0])
-df[["surname", "name"]] = (
-    df["student"].str.split(" ", expand=True))
+names = df["student"].str.split(
+    " ", expand=True)
+df[["surname", "name"]] = names
 print(df)
 ```
 
@@ -121,13 +122,15 @@ PL: `.str.contains("exam")` daje `True`, gdy tekst zawiera `exam` w dowolnym mie
 import pandas as pd
 
 df = pd.DataFrame({
-    "file": ["exam_2024.csv", "Exam_2025.CSV",
+    "file": ["exam_2024.csv",
+             "Exam_2025.CSV",
              "notes.txt", None],
 })
 f = df["file"]
 df["exam"] = f.str.contains(
     "exam", case=False, na=False)
-df["starts"] = f.str.startswith("exam", na=False)
+df["starts"] = f.str.startswith(
+    "exam", na=False)
 df["csv"] = f.str.endswith(".csv", na=False)
 print(df)
 ```

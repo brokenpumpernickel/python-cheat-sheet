@@ -86,7 +86,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 np.random.seed(116)  #| hide
-data = np.random.normal([5, 6, 4], 1.5, (20, 3))
+data = np.random.normal([5, 6, 4], 1.5,
+                        (20, 3))
 means = data.mean(axis=0)
 sd = data.std(axis=0, ddof=1)
 sem = sd / np.sqrt(len(data))

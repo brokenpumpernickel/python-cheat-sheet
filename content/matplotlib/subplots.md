@@ -88,7 +88,8 @@ fig, axes = plt.subplots(
     2, 2, figsize=(6, 3.5),
     layout="constrained")
 for ax, n in zip(axes.flat, sizes):
-    ax.hist(np.random.normal(0, 1, n), bins=20)
+    sample = np.random.normal(0, 1, n)
+    ax.hist(sample, bins=20)
     ax.set_title(f"n = {n}")
 
 plt.show()
