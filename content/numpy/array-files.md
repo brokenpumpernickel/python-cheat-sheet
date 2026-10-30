@@ -21,7 +21,8 @@ import numpy as np
 a = np.array([[1.5, 2.0],
               [3.25, 4.0]])
 np.savetxt("data.txt", a, fmt="%.2f")
-with open("data.txt", encoding="utf-8") as f:
+with open("data.txt",
+          encoding="utf-8") as f:
     print(f.read())
 
 print(np.loadtxt("data.txt"))

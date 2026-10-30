@@ -89,7 +89,8 @@ PL: lambda
 PL: `lambda p: p[1]` tworzy małą, jednolinijkową funkcję (function) bez nazwy. Najczęściej służy jako `key` przy sortowaniu.
 
 ```python
-people = [("Ola", 23), ("Jan", 19), ("Ewa", 31)]
+people = [("Ola", 23), ("Jan", 19),
+          ("Ewa", 31)]
 print(sorted(people, key=lambda p: p[1]))
 ```
 

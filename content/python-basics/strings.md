@@ -45,8 +45,11 @@ PL: `format(x, spec)` formatuje liczbę tak samo jak `f"{x:spec}"`. W tabeli `.2
 ```python
 n = 1234.5678
 p = 0.04567
-for spec in [".2f", ".3g", "10.2f", "010.2f", ",.2f", ".1%", ".2e"]:
-    print(f"{spec:8}{format(n, spec):14}{format(p, spec)}")
+specs = [".2f", ".3g", "10.2f", "010.2f",
+         ",.2f", ".1%", ".2e"]
+for s in specs:
+    a, b = format(n, s), format(p, s)
+    print(f"{s:8}{a:14}{b}")
 ```
 
 ### See also

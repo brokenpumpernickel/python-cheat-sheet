@@ -154,7 +154,8 @@ PL: `df["score"].astype("float64")` w osobnej linii niczego nie zmienia: zwraca 
 ```python
 import pandas as pd
 
-df = pd.DataFrame({"score": [72, 85, 90]})
+df = pd.DataFrame(
+    {"score": [72, 85, 90]})
 df["score"].astype("float64")
 print(df.dtypes)
 ```
