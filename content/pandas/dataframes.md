@@ -95,9 +95,9 @@ print(a.mean(axis=0))
 
 ### See also
 
-- arrays/two-dimensional-arrays
 - aggregates/median-and-percentiles
 - exploring/column-statistics
+- columns/text-to-numbers
 
 ## Shape, columns and index
 

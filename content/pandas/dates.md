@@ -36,6 +36,7 @@ print(df.dtypes)
 
 - columns/text-to-numbers
 - missing-values/finding-missing-values
+- text-columns/cleaning-text
 
 ## Dates from a CSV file
 
@@ -104,6 +105,7 @@ print(df["date"].dt.year)
 ### See also
 
 - dataframes/column-types
+- text-columns/the-str-accessor
 
 ## Time between dates
 
