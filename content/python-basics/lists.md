@@ -113,7 +113,8 @@ PL: `len`, `sum`, `min` i `max` działają na każdej liście (list) liczb. Raze
 
 ```python
 data = [4, 8, 15, 16, 23, 42]
-print(len(data), sum(data), min(data), max(data))
+print(len(data), sum(data))
+print(min(data), max(data))
 print(sum(data) / len(data))
 ```
 

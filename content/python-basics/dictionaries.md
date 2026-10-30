@@ -125,7 +125,8 @@ PL: `defaultdict(list)` z modułu (module) `collections` to słownik (dictionary
 ```python
 from collections import defaultdict
 
-measurements = [("A", 4.1), ("B", 3.8), ("A", 4.5), ("B", 3.9)]
+measurements = [("A", 4.1), ("B", 3.8),
+                ("A", 4.5), ("B", 3.9)]
 groups = defaultdict(list)
 for group, value in measurements:
     groups[group].append(value)

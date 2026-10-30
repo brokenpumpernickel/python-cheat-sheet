@@ -63,7 +63,7 @@ PL: `np.random.normal(loc, scale, size)` losuje z rozkładu normalnego (normal d
 import numpy as np
 
 np.random.seed(3)  #| hide
-heights = np.random.normal(170, 10, size=1000)
+heights = np.random.normal(170, 10, 1000)
 print(heights[:4].round(1))
 print(f"{heights.mean():.2f}")
 print(f"{heights.std(ddof=1):.2f}")
@@ -88,9 +88,13 @@ import numpy as np
 
 np.random.seed(3)  #| hide
 coin = ["H", "T"]
-print(np.random.choice(coin, 10, p=[0.7, 0.3]))
+flips = np.random.choice(coin, 10,
+                         p=[0.7, 0.3])
+print(flips)
 names = ["Ola", "Jan", "Ewa", "Ala"]
-print(np.random.choice(names, 2, replace=False))
+pair = np.random.choice(names, 2,
+                        replace=False)
+print(pair)
 print(np.random.permutation(names))
 ```
 
@@ -106,7 +110,7 @@ PL: Symuluj wiele prób naraz: wylosuj macierz (matrix) z jednym wierszem na pr�
 import numpy as np
 
 np.random.seed(4)  #| hide
-rolls = np.random.randint(1, 7, (100_000, 2))
+rolls = np.random.randint(1, 7, (100000, 2))
 totals = rolls.sum(axis=1)
 print(rolls[:3])
 print((totals == 7).mean())

@@ -163,7 +163,10 @@ print(sixes.sum())
 print(sixes.mean())
 print((rolls >= 4).mean())
 
-scores = np.array([[72, 45, 88], [91, 58, 64], [40, 62, 95], [55, 30, 70]])
+scores = np.array([[72, 45, 88],
+                   [91, 58, 64],
+                   [40, 62, 95],
+                   [55, 30, 70]])
 print((scores >= 50).mean(axis=0))
 print((scores >= 50).sum(axis=1))
 ```

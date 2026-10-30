@@ -16,11 +16,13 @@ PL: Zapis pliku tekstowego
 PL: `with open("notes.txt", "w", encoding="utf-8") as f:` otwiera plik (file) do zapisu, `f.write(text)` zapisuje w nim napis (string), a `with` zamyka plik po zakończeniu bloku. Zawsze podawaj `encoding="utf-8"`: w Windowsie domyślne kodowanie (encoding) psuje polskie litery, takie jak `ź`.
 
 ```python
-with open("notes.txt", "w", encoding="utf-8") as f:
+with open("notes.txt", "w",
+          encoding="utf-8") as f:
     f.write("źdźbło\n")
     f.write("n = 30\n")
 
-with open("notes.txt", encoding="utf-8") as f:
+with open("notes.txt",
+          encoding="utf-8") as f:
     print(f.read())
 ```
 
@@ -31,13 +33,16 @@ with open("notes.txt", encoding="utf-8") as f:
 PL: `"w"` opróżnia plik przed zapisem, więc ponowne otwarcie z `"w"` kasuje to, co w nim było. Aby dopisać na końcu, otwórz plik z `"a"` (append).
 
 ```python
-with open("log.txt", "w", encoding="utf-8") as f:
+with open("log.txt", "w",
+          encoding="utf-8") as f:
     f.write("run 1\n")
 
-with open("log.txt", "w", encoding="utf-8") as f:
+with open("log.txt", "w",
+          encoding="utf-8") as f:
     f.write("run 2\n")
 
-with open("log.txt", encoding="utf-8") as f:
+with open("log.txt",
+          encoding="utf-8") as f:
     print(f.read())
 ```
 
@@ -51,7 +56,8 @@ PL: `f.read()` zwraca cały plik (file) jako jeden napis (string), a `.splitline
 
 ```python
 with open("cities.txt", "w", encoding="utf-8") as f: f.write("Łódź\nKraków\nGdańsk\n")  #| hide
-with open("cities.txt", encoding="utf-8") as f:
+with open("cities.txt",
+          encoding="utf-8") as f:
     text = f.read()
 
 print(repr(text))
@@ -73,7 +79,8 @@ PL: `for line in f:` czyta plik (file) po jednym wierszu, więc nawet duży plik
 ```python
 with open("names.txt", "w", encoding="utf-8") as f: f.write("Ala\nJan\nEwa\n")  #| hide
 names = []
-with open("names.txt", encoding="utf-8") as f:
+with open("names.txt",
+          encoding="utf-8") as f:
     for line in f:
         names.append(line.strip())
 
@@ -90,7 +97,8 @@ PL: Każdy `line` zachowuje na końcu swoje `"\n"`, więc bez `line.strip()` lis
 ```python
 with open("names.txt", "w", encoding="utf-8") as f: f.write("Ala\nJan\nEwa\n")  #| hide
 names = []
-with open("names.txt", encoding="utf-8") as f:
+with open("names.txt",
+          encoding="utf-8") as f:
     for line in f:
         names.append(line)
 
@@ -114,7 +122,8 @@ PL: Wiersz odczytany z pliku (file) jest zawsze napisem (string), więc zamień 
 ```python
 with open("heights.txt", "w", encoding="utf-8") as f: f.write("168.5\n175.0\n181.5\n")  #| hide
 heights = []
-with open("heights.txt", encoding="utf-8") as f:
+with open("heights.txt",
+          encoding="utf-8") as f:
     for line in f:
         heights.append(float(line.strip()))
 
@@ -138,11 +147,14 @@ PL: Z modułu (module) `csv` funkcja `csv.writer(f).writerows(rows)` zapisuje ka
 ```python
 import csv
 
-rows = [["name", "score"], ["Ala", 72], ["Jan", 85]]
-with open("scores.csv", "w", newline="", encoding="utf-8") as f:
+rows = [["name", "score"],
+        ["Ala", 72], ["Jan", 85]]
+with open("scores.csv", "w", newline="",
+          encoding="utf-8") as f:
     csv.writer(f).writerows(rows)
 
-with open("scores.csv", newline="", encoding="utf-8") as f:
+with open("scores.csv", newline="",
+          encoding="utf-8") as f:
     back = list(csv.reader(f))
 
 print(back)

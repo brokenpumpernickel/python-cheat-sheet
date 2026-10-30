@@ -96,7 +96,8 @@ PL: `.dt` działa tylko na kolumnie z datami, więc na datach zapisanych jeszcze
 import pandas as pd
 
 df = pd.DataFrame({
-    "date": ["2024-03-04", "2024-03-16"],
+    "date": ["2024-03-04",
+             "2024-03-16"],
 })
 print(df["date"].dtype)
 print(df["date"].dt.year)

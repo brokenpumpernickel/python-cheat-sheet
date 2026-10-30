@@ -41,7 +41,8 @@ PL: `counts.most_common(n)` daje `n` najczęstszych wartości z ich licznikami j
 ```python
 from collections import Counter
 
-answers = ["yes", "no", "yes", "maybe", "yes", "no"]
+answers = ["yes", "no", "yes",
+           "maybe", "yes", "no"]
 counts = Counter(answers)
 print(counts.most_common(2))
 print(counts.total())
