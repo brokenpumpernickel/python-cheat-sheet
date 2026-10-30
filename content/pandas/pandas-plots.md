@@ -1,19 +1,53 @@
 ---
 title: Plotting with pandas
 glyph: ".plot"
-summary: "Plots from a Series or DataFrame two ways, columns passed to plt or pandas' .plot(): a column against a distribution, line plots, bar charts of counts, scatter plots, histograms."
+summary: "Two ways to plot a table: columns passed to plt, or pandas' own .plot(). A column against a distribution, line plots, bar charts of counts, scatter plots, histograms."
 pl:
   title: Wykresy z pandas
-  summary: "Wykresy z serii (Series) i ramki danych (DataFrame) na dwa sposoby, kolumny podane funkcjom plt albo .plot() z pandas: kolumna na tle rozkładu, liniowe, słupkowe z liczebnościami, punktowe i histogramy."
+  summary: "Dwa sposoby rysowania tabeli: kolumny podane funkcjom plt albo własne .plot() z pandas. Kolumna na tle rozkładu, wykresy liniowe, słupkowe z liczebnościami, punktowe i histogramy."
 ---
+
+## Two ways to plot
+
+PL: Dwa sposoby rysowania
+
+There are two ways to plot the data in a table, and both draw the same Matplotlib plot. The first, on the left, passes columns to the `plt` functions, as you would pass arrays: `plt.plot(df["t"], df["n"])`, and you add the labels yourself. The second, on the right, is pandas' own `.plot()` method on the Series or DataFrame: `df.plot(x="t", y="n")` takes the column names and labels the plot with them, here the x-axis `t` and the legend `n`. The same pairs exist for other plots: `plt.scatter(df["a"], df["b"])` and `df.plot(kind="scatter", x="a", y="b")`, or `plt.hist(df["a"])` and `df["a"].plot(kind="hist")`. On its own `df.plot(...)` makes a figure of its own; `ax=plt.subplot(122)` only puts it into the right half. The next two Entries use `plt`, the rest `.plot()`.
+
+PL: Dane z tabeli można narysować na dwa sposoby, a oba dają ten sam wykres Matplotlib. Pierwszy, po lewej, podaje kolumny funkcjom `plt` tak, jak podaje się tablice (arrays): `plt.plot(df["t"], df["n"])`, a opisy dodajesz sam. Drugi, po prawej, to własna metoda `.plot()` serii (Series) lub ramki danych (DataFrame) z pandas: `df.plot(x="t", y="n")` bierze nazwy kolumn i opisuje nimi wykres, tu oś x jako `t` i legendę jako `n`. Te same pary istnieją dla innych wykresów: `plt.scatter(df["a"], df["b"])` i `df.plot(kind="scatter", x="a", y="b")` albo `plt.hist(df["a"])` i `df["a"].plot(kind="hist")`. Samo `df.plot(...)` tworzy własny rysunek; `ax=plt.subplot(122)` tylko umieszcza go w prawej połowie. Kolejne dwa hasła używają `plt`, a pozostałe `.plot()`.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame({
+    "t": [2020, 2021, 2022, 2023, 2024],
+    "n": [18, 25, 31, 29, 40]})
+plt.figure(figsize=(6, 3.5))
+plt.subplot(121)
+plt.plot(df["t"], df["n"])
+df.plot(x="t", y="n", ax=plt.subplot(122))
+plt.show()
+```
+
+### Figure
+
+Two identical line plots side by side, rising unevenly from 18 in 2020 to 40 in 2024 with a dip in 2023. The left one has no labels; the right one has its x-axis labelled t and a legend, n.
+
+PL: Dwa jednakowe wykresy liniowe obok siebie, rosnące nierówno od 18 w 2020 do 40 w 2024, ze spadkiem w 2023. Lewy nie ma żadnych opisów; prawy ma oś x opisaną jako t i legendę n.
+
+### See also
+
+- plotting-basics/a-line-plot
+- subplots/side-by-side-plots-with-plt-subplot-121
+- pandas-plots/pandas-plots-are-matplotlib-plots
 
 ## Plotting columns with plt
 
 PL: Wykresy kolumn przez plt
 
-`plt.plot(df["year"], df["n"])`, `plt.scatter(df["height"], df["weight"])` and `plt.hist(df["score"], bins=20)` take columns as they are, and `.to_numpy()` gives plain arrays if you want them. When you already know Matplotlib this is often simpler than `.plot()`, the shortcut the next Entries show, which labels the axes with the column names. Here, on the left, the weight in kg against the height in cm of 200 students and, on the right, their scores.
+`plt.plot(df["year"], df["n"])`, `plt.scatter(df["height"], df["weight"])` and `plt.hist(df["score"], bins=20)` take columns as they are, and `.to_numpy()` gives plain arrays if you want them. This is the first way, and when you already know Matplotlib it is often simpler than pandas' `.plot()`. Here, on the left, the weight in kg against the height in cm of 200 students and, on the right, their scores.
 
-PL: `plt.plot(df["year"], df["n"])`, `plt.scatter(df["height"], df["weight"])` i `plt.hist(df["score"], bins=20)` przyjmują kolumny takie, jakie są, a `.to_numpy()` daje zwykłe tablice (arrays), jeśli ich potrzebujesz. Gdy znasz już Matplotlib, to często prostsze niż `.plot()`, skrót pokazany w kolejnych hasłach, który opisuje osie nazwami kolumn. Tu po lewej waga w kg względem wzrostu w cm 200 studentów, a po prawej ich wyniki.
+PL: `plt.plot(df["year"], df["n"])`, `plt.scatter(df["height"], df["weight"])` i `plt.hist(df["score"], bins=20)` przyjmują kolumny takie, jakie są, a `.to_numpy()` daje zwykłe tablice (arrays), jeśli ich potrzebujesz. To pierwszy sposób, a gdy znasz już Matplotlib, często prostszy niż `.plot()` z pandas. Tu po lewej waga w kg względem wzrostu w cm 200 studentów, a po prawej ich wyniki.
 
 ```python
 import numpy as np  #| hide
@@ -28,7 +62,7 @@ pd.DataFrame({"height": height, "weight": weight, "score": score}).to_csv("stude
 df = pd.read_csv("students.csv")
 plt.figure(figsize=(6, 3.5))
 plt.subplot(121)
-plt.scatter(df["height"], df["weight"], s=10)
+plt.scatter(df["height"], df["weight"], s=9)
 plt.xlabel("cm")
 plt.ylabel("kg")
 plt.subplot(122)
@@ -73,7 +107,8 @@ s = df["height"].std()
 x = np.linspace(df["height"].min(),
                 df["height"].max(), 200)
 plt.figure(figsize=(6, 3.5))
-plt.hist(df["height"], bins=20, density=True)
+plt.hist(df["height"], bins=20,
+         density=True)
 plt.plot(x, stats.norm(m, s).pdf(x))
 plt.show()
 ```
@@ -94,9 +129,9 @@ PL: Dwadzieścia nierównych słupków układa się w dzwon od około 151 do 193
 
 PL: Wykres liniowy serii
 
-`df.groupby("year").size()` counts the rows of each year, and `.plot()` draws it as a line with the index, the years, on the x-axis. Here `sightings.csv` has one row per sighting, so the y-axis shows sightings per year; `plt.xlabel`, `plt.ylabel` and `plt.grid(ls="--")` work as on any plot.
+From here on the plots use the second way, pandas' `.plot()`. `df.groupby("year").size()` counts the rows of each year, and `.plot()` draws it as a line with the index, the years, on the x-axis. Here `sightings.csv` has one row per sighting, so the y-axis shows sightings per year; `plt.xlabel`, `plt.ylabel` and `plt.grid(ls="--")` work as on any plot.
 
-PL: `df.groupby("year").size()` zlicza wiersze z każdego roku, a `.plot()` rysuje wynik jako linię, z indeksem (index), czyli latami, na osi x. Tu `sightings.csv` ma jeden wiersz na obserwację, więc oś y pokazuje liczbę obserwacji w roku; `plt.xlabel`, `plt.ylabel` i `plt.grid(ls="--")` działają jak na każdym wykresie.
+PL: Od tego miejsca wykresy używają drugiego sposobu, `.plot()` z pandas. `df.groupby("year").size()` zlicza wiersze z każdego roku, a `.plot()` rysuje wynik jako linię, z indeksem (index), czyli latami, na osi x. Tu `sightings.csv` ma jeden wiersz na obserwację, więc oś y pokazuje liczbę obserwacji w roku; `plt.xlabel`, `plt.ylabel` i `plt.grid(ls="--")` działają jak na każdym wykresie.
 
 ```python
 import numpy as np  #| hide
@@ -149,13 +184,13 @@ minutes = (np.random.exponential(1, 400) * pd.Series(shape).map({"○": 12, "□
 pd.DataFrame({"year": year, "shape": shape, "minutes": minutes}).to_csv("sightings.csv", index=False)  #| hide
 df = pd.read_csv("sightings.csv")
 counts = df["shape"].value_counts()
-means = df.groupby("shape")["minutes"].mean()
+mean = df.groupby("shape")["minutes"].mean()
 plt.figure(figsize=(6, 3.5))
 plt.subplot(121)
 counts.plot(kind="bar", rot=0)
 plt.xlabel("")
 plt.subplot(122)
-means.sort_values().plot(kind="bar", rot=0)
+mean.sort_values().plot(kind="bar", rot=0)
 plt.xlabel("")
 plt.show()
 ```
