@@ -1,10 +1,10 @@
 ---
 title: Plotting basics
 glyph: "plt"
-summary: "Line plots with plt: labels and a title, legends, colours and styles, format strings, limits, reference lines, saving."
+summary: "Line plots with plt: labels and a title, legends, colours and styles, format strings, limits, reference lines, shaded regions, saving."
 pl:
   title: Podstawy wykresów
-  summary: "Wykresy liniowe (line plots) z plt: opisy osi i tytuł, legenda, kolory i style, napisy formatu, zakresy, linie odniesienia, zapis do pliku."
+  summary: "Wykresy liniowe (line plots) z plt: opisy osi i tytuł, legenda, kolory i style, napisy formatu, zakresy, linie odniesienia, zacieniowane obszary, zapis do pliku."
 ---
 
 ## A line plot
@@ -225,6 +225,40 @@ PL: Trzydzieści punktów połączonych zygzakiem między około 55 a 85, czerwo
 
 - aggregates/where-the-minimum-and-maximum-are
 - aggregates/sum-mean-min-and-max
+
+## Shaded regions
+
+PL: Zacieniowane obszary
+
+`plt.fill_between(x, low, high)` shades the area between two curves, here a band from `y - e` to `y + e` around `y`; `e` can also be an array, one value per point. `alpha` makes the shading see-through, and `plt.axvspan(a, b)` shades a vertical strip from x = `a` to `b`.
+
+PL: `plt.fill_between(x, low, high)` zacienia obszar między dwiema krzywymi, tu pasmo od `y - e` do `y + e` wokół `y`; `e` może też być tablicą, z jedną wartością na punkt. `alpha` robi cień przezroczystym, a `plt.axvspan(a, b)` zacienia pionowy pas od x = `a` do `b`.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+e = 0.3
+plt.figure(figsize=(6, 3.5))
+plt.plot(x, y)
+plt.fill_between(x, y - e, y + e, alpha=0.3)
+plt.axvspan(4, 6, color="gray", alpha=0.2)
+plt.show()
+```
+
+### Figure
+
+A sine wave over x from 0 to 10 inside a light band of the same colour reaching 0.3 above and below it, and a grey vertical strip shading x from 4 to 6.
+
+PL: Sinusoida dla x od 0 do 10 w jasnym paśmie tego samego koloru, sięgającym 0,3 nad nią i pod nią, oraz szary pionowy pas zacieniający x od 4 do 6.
+
+### See also
+
+- bar-charts/means-with-error-bars
+- plotting-basics/horizontal-and-vertical-lines
+- plotting-distributions/probability-as-an-area
 
 ## Saving a figure
 
