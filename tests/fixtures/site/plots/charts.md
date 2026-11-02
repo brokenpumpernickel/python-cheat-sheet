@@ -42,14 +42,17 @@ import matplotlib.pyplot as plt
 from ipywidgets import interact
 
 
-def plot(mu=1.0, n=10, kind="b", show=True, grid=False, name="x"):
+def plot(mu=1.0, n=10, kind="b", show=True,
+         grid=False, name="x"):
     plt.figure(figsize=(6, 3.5))
     plt.plot([0, 1], [mu, n / 10])
     plt.grid(grid)
     plt.show()
 
 
-interact(plot, mu=(-3.0, 3.0), n=(0, 100, 5), kind=["a", "b"], show=True, grid=False, name="x")
+interact(plot, mu=(-3.0, 3.0),
+         n=(0, 100, 5), kind=["a", "b"],
+         show=True, grid=False, name="x")
 ```
 
 ### Figure

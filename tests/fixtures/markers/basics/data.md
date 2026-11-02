@@ -18,7 +18,7 @@ PL: Strona pokazuje pobieranie; build czyta plik, który najpierw zapisuje.
 ```python
 open("scores.csv", "w").write("72,45,88\n")  #| hide
 with open("scores.csv") as file:
-    scores = [int(s) for s in file.read().split(",")]  #| show: scores = fetch("https://example.org/scores.csv")
+    scores = [int(s) for s in file.read().split(",")]  #| show: scores = fetch("https://x.org/s.csv")
 print(max(scores))
 ```
 

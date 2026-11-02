@@ -14,6 +14,9 @@ from markdown_it import MarkdownIt
 AREA_FILE = "_area.md"
 AREA_ORDER_FILE = "areas.yaml"
 POLISH = "PL:"
+# The most characters a shown code line may have: what its code box fits on a 1280-pixel-wide screen (wider screens fit more).
+ENTRY_CODE_WIDTH = 44
+PITFALL_CODE_WIDTH = 40
 
 _MD = MarkdownIt("commonmark", {"html": False})
 _FRONTMATTER = re.compile(r"\A---\n(.*?)\n---[ \t]*(?:\n|\Z)(.*)\Z", re.DOTALL)
@@ -202,7 +205,7 @@ def _parse_entry(
     explain, pl_explain, fences = _prose_and_code(main[1:], here)
     if len(fences) != 1:
         raise ContentError(f"{here}: an Entry needs exactly one ```python code block, found {len(fences)}")
-    code, run, raises = _example(fences[0], here)
+    code, run, raises = _example(fences[0], here, ENTRY_CODE_WIDTH)
     figure, pl_figure = _figure(parts["Figure"], f"{here} Figure") if "Figure" in parts else (None, None)
 
     pitfall = pl_pitfall = pl_pitfall_figure = None
@@ -211,7 +214,7 @@ def _parse_entry(
         if len(pitfall_fences) > 1:
             raise ContentError(f"{here} Pitfall: at most one ```python code block, found {len(pitfall_fences)}")
         pitfall_code, pitfall_run, pitfall_raises = (
-            _example(pitfall_fences[0], f"{here} Pitfall") if pitfall_fences else (None, None, None)
+            _example(pitfall_fences[0], f"{here} Pitfall", PITFALL_CODE_WIDTH) if pitfall_fences else (None, None, None)
         )
         pitfall_figure = None
         if "Pitfall Figure" in parts:
@@ -280,8 +283,8 @@ def _paragraphs(blocks: list[_Block], here: str) -> tuple[str, str, list[_Block]
     return english[0].text, _strip_polish(polish[0].text), fences
 
 
-def _example(fence: _Block, here: str) -> tuple[str, str, str | None]:
-    """The shown code, the run code and the expected error of a code block."""
+def _example(fence: _Block, here: str, width: int) -> tuple[str, str, str | None]:
+    """The shown code, the run code and the expected error of a code block, whose shown lines fit in width characters."""
     if not fence.info.strip():
         raise ContentError(f"{here}: the code block at line {fence.line} has no language; fence examples as ```python")
     language, *attributes = fence.info.split()
@@ -300,6 +303,10 @@ def _example(fence: _Block, here: str) -> tuple[str, str, str | None]:
         run_line, shown_line = _marked_line(line, number, here)
         run.append(run_line)
         if shown_line is not None:
+            if len(shown_line) > width:
+                raise ContentError(
+                    f"{here}: line {number} shows {len(shown_line)} characters, but the code box fits {width}; wrap the line inside its brackets, or shorten a name"
+                )
             shown.append(shown_line)
     while shown and not shown[0].strip():
         shown.pop(0)

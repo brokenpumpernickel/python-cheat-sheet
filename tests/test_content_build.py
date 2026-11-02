@@ -197,7 +197,7 @@ def test_marked_lines_run_as_written_and_show_their_replacement(markers):
     # The hidden line is left out, and the shown line keeps its indentation.
     assert loading["code"] == (
         'with open("scores.csv") as file:\n'
-        '    scores = fetch("https://example.org/scores.csv")\n'
+        '    scores = fetch("https://x.org/s.csv")\n'
         "print(max(scores))"
     )
     # The Output comes from the code as written: the file it wrote, not the download.
@@ -234,6 +234,9 @@ INVALID = {
     "marker-without-space": "basics/names.md:10 (names/binding): unknown marker '#|show: x = 2' at line 19; the only markers are '#| show: <code>' and '#| hide', two spaces after the code",
     "empty-show": "basics/names.md:10 (names/binding): '#| show:' at line 19 has no code after it; write the code to show, or use '#| hide'",
     "all-hidden": "basics/names.md:10 (names/binding): every line of the code block at line 18 is hidden; show at least one",
+    # Shown code lines fit in the code box; hidden lines and the run side of '#| show:' don't count
+    "code-line-too-wide": "basics/names.md:10 (names/binding): line 22 shows 45 characters, but the code box fits 44; wrap the line inside its brackets, or shorten a name",
+    "pitfall-code-line-too-wide": "basics/names.md:10 (names/binding) Pitfall: line 32 shows 41 characters, but the code box fits 40; wrap the line inside its brackets, or shorten a name",
     # Polish counterparts (ADR 0005)
     "missing-polish-title": "basics/names.md:10 (names/binding): the heading must be followed by a 'PL: <Polish title>' paragraph",
     "missing-polish-explanation": "basics/names.md:10 (names/binding): expected one 'PL:' paragraph with the Polish text, found 0",
