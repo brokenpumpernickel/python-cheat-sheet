@@ -258,6 +258,7 @@ PL: Sinusoida dla x od 0 do 10 w jasnym paśmie tego samego koloru, sięgającym
 
 - bar-charts/means-with-error-bars
 - plotting-basics/horizontal-and-vertical-lines
+- plotting-distributions/probability-as-an-area
 
 ## Saving a figure
 

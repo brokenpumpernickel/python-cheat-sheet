@@ -1,10 +1,10 @@
 ---
 title: Plotting distributions
 glyph: "f(x)"
-summary: "Drawing distributions with Matplotlib: a pdf curve, a histogram with the pdf, a pmf as bars, the cdf, comparing parameters."
+summary: "Drawing distributions with Matplotlib: a pdf curve, a histogram with the pdf, a pmf as bars, the cdf, probability as an area, comparing parameters."
 pl:
   title: Wykresy rozkładów
-  summary: "Wykresy rozkładów (distributions) w Matplotlib: krzywa gęstości, histogram z gęstością, funkcja prawdopodobieństwa jako słupki, dystrybuanta, porównanie parametrów."
+  summary: "Wykresy rozkładów (distributions) w Matplotlib: krzywa gęstości, histogram z gęstością, funkcja prawdopodobieństwa jako słupki, dystrybuanta, prawdopodobieństwo jako pole, porównanie parametrów."
 ---
 
 ## A pdf curve
@@ -179,6 +179,42 @@ PL: Dwa wykresy obok siebie: po lewej N(0, 1), gładka krzywa w kształcie liter
 ### See also
 
 - subplots/side-by-side-plots-with-plt-subplot-121
+- distributions/density-and-probabilities
+
+## Probability as an area
+
+PL: Prawdopodobieństwo jako pole
+
+P(a < X < b) is the area under the pdf between `a` and `b`. Shade it with `plt.fill_between(xs, d.pdf(xs))` on a grid `xs` of its own from `a` to `b`; given one curve, it fills down to 0. `d.cdf(b) - d.cdf(a)` gives the area's size.
+
+PL: P(a < X < b) to pole pod gęstością (pdf) między `a` i `b`. Zacieniuj je przez `plt.fill_between(xs, d.pdf(xs))` na osobnej siatce `xs` od `a` do `b`; z jedną krzywą wypełnia obszar w dół do 0. `d.cdf(b) - d.cdf(a)` daje wielkość tego pola.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+d = stats.norm(loc=170, scale=8)
+x = np.linspace(d.ppf(0.001),
+                d.ppf(0.999), 200)
+a, b = 160, 180
+xs = np.linspace(a, b, 100)
+print(f"{d.cdf(b) - d.cdf(a):.4f}")
+plt.figure(figsize=(6, 3.5))
+plt.plot(x, d.pdf(x))
+plt.fill_between(xs, d.pdf(xs), alpha=0.3)
+plt.show()
+```
+
+### Figure
+
+A bell curve from about 145 to 195 peaking at 170, with the area under it between 160 and 180 shaded, nearly four fifths of the whole.
+
+PL: Krzywa w kształcie dzwonu od około 145 do 195 ze szczytem przy 170; pole pod nią między 160 a 180 jest zacieniowane i zajmuje prawie cztery piąte całości.
+
+### See also
+
+- plotting-basics/shaded-regions
 - distributions/density-and-probabilities
 
 ## Comparing parameters
