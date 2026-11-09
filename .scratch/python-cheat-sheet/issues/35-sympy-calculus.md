@@ -57,6 +57,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #56: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/56.
 - **Topics** (English / Polish, glyph unchanged):
   - `derivatives`: *Derivatives and limits* / *Pochodne i granice*, `diff`. Summary: "Derivatives and limits of SymPy expressions: diff, higher and partial derivatives, one-sided limits and Taylor series." / "Pochodne (derivatives) i granice (limits) wyrażeń SymPy: diff, pochodne wyższych rzędów i cząstkowe, granice jednostronne i szereg Taylora."
   - `integrals`: *Integrals and sums* / *Całki i sumy*, `∫`. Summary: "Integrals and sums in SymPy: indefinite and definite integrals, integrals to infinity, unevaluated integrals and finite and infinite sums." / "Całki (integrals) i sumy w SymPy: całki nieoznaczone i oznaczone, całki do nieskończoności, całki nieobliczone oraz sumy skończone i nieskończone."
