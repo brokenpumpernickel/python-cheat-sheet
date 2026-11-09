@@ -1,10 +1,14 @@
 ---
 // What a code example produced: the widget controls it displayed (drawn as a picture, see Widgets.astro),
-// its printed text, the expected error's final line, and its figures.
+// its printed text and displayed maths in the order it made them, the expected error's final line, and
+// its figures.
+// Maths is typeset at build time with KaTeX (maths.ts), one block per displayed result.
 // Figures are Matplotlib's SVGs, inlined, on a white card in both themes (their own background is white).
 // Each is an image named by the example's figure description, in the page's Language.
+import "katex/dist/katex.min.css";
 import type { Output } from "../content";
 import { labelAttributes, type Twin } from "../labels";
+import { typeset } from "../maths";
 import Text from "./Text.astro";
 import Widgets from "./Widgets.astro";
 
@@ -20,7 +24,7 @@ if (output.figures.length > 0 && !figure) throw new Error("OutputBlock: figures 
 <div class="output" data-output>
   <p class="output-label"><Text label="output" /></p>
   {output.widgets.length > 0 && <Widgets widgets={output.widgets} />}
-  {output.text && <pre class="text">{output.text}</pre>}
+  {output.parts.map((part) => ("text" in part ? <pre class="text" data-scrolls>{part.text}</pre> : <div class="maths" data-scrolls set:html={typeset(part.maths)} />))}
   {output.error && <pre class="error">{output.error}</pre>}
   {output.figures.map((svg) => <div class="figure" role="img" {...labelAttributes({ "aria-label": figure! })} set:html={svg} />)}
 </div>
@@ -50,6 +54,22 @@ if (output.figures.length > 0 && !figure) throw new Error("OutputBlock: figures 
     font-weight: 600;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+  /* Maths sits left like the text, in its colour, and a formula wider than the card scrolls like long text.
+     KaTeX centres display maths and sizes it at 1.21 em; this makes it 16 px, a little above the text,
+     as Jupyter shows it. The padding keeps tall formulas from being clipped by the scroll box. */
+  .maths {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0;
+    font-size: 13.25px;
+  }
+  .maths :global(.katex-display) {
+    margin: 0;
+    text-align: left;
+  }
+  .maths :global(.katex-display > .katex) {
+    text-align: left;
   }
   .figure {
     max-width: 560px;

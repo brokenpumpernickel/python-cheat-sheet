@@ -27,7 +27,7 @@ def kernels_that_die_first(monkeypatch, deaths: int) -> list[None]:
 def test_a_kernel_that_dies_while_starting_is_started_again(monkeypatch):
     starts = kernels_that_die_first(monkeypatch, 2)
 
-    assert run_example("print(6 * 7)").stdout == "42"
+    assert run_example("print(6 * 7)").parts == ({"text": "42"},)
     assert len(starts) == 3
 
 

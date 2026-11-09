@@ -4,8 +4,10 @@ import json
 import logging
 import os
 import platform
+import re
 import shutil
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from importlib.metadata import version
 from pathlib import Path
@@ -25,11 +27,15 @@ EXAMPLE_LIBRARIES = {
     "Matplotlib": "matplotlib",
     "SciPy": "scipy",
     "pandas": "pandas",
+    "SymPy": "sympy",
     "ipywidgets": "ipywidgets",
 }
 
 # Kernels running at once. Starting a kernel is mostly waiting, so a few per core is fine.
 PARALLEL_KERNELS = min(8, 2 * (os.cpu_count() or 1))
+
+# How the site build starts the message of a content problem it finds (site/src/maths.ts).
+_CONTENT_ERROR = "Content error: "
 
 log = logging.getLogger(__name__)
 
@@ -77,11 +83,18 @@ def write_content_data(data: dict, path: Path) -> None:
 
 
 def build_site(content_data: Path, out_dir: Path, base: str = "/") -> None:
-    """Render the content data into a static site with Astro."""
+    """Render the content data into a static site with Astro.
+
+    Displayed maths that KaTeX can't typeset fails the site build (site/src/maths.ts); that raises a
+    ContentError naming each Entry, like the content build's own checks.
+    """
     npm = shutil.which("npm")
     if npm is None:
         raise RuntimeError("npm not found; install Node.js to build the site")
-    if not (SITE_DIR / "node_modules").is_dir():
+    # npm records what it installed in node_modules/.package-lock.json; an older record means the site's
+    # packages changed since (a pull that added one), so they are installed again.
+    installed = SITE_DIR / "node_modules" / ".package-lock.json"
+    if not installed.is_file() or installed.stat().st_mtime < (SITE_DIR / "package-lock.json").stat().st_mtime:
         subprocess.run([npm, "ci"], cwd=SITE_DIR, check=True)
     # Astro moves built assets into its output folder by renaming them, which fails across drives
     # (EXDEV on Windows), so it builds inside the site folder and the result is copied to out_dir.
@@ -93,9 +106,22 @@ def build_site(content_data: Path, out_dir: Path, base: str = "/") -> None:
         "SITE_BASE": base,
         "ASTRO_TELEMETRY_DISABLED": "1",
     }
-    subprocess.run([npm, "run", "build"], cwd=SITE_DIR, env=env, check=True)
+    # Astro logs progress to stdout and problems to stderr, which is kept to find content errors in.
+    astro = subprocess.run([npm, "run", "build"], cwd=SITE_DIR, env=env, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    content_errors = _content_errors(astro.stderr)
+    if astro.returncode and content_errors:
+        raise ContentError("\n".join(content_errors))
+    sys.stderr.write(astro.stderr)
+    astro.check_returncode()
     shutil.rmtree(out_dir, ignore_errors=True)
     shutil.copytree(staging, out_dir)
+
+
+def _content_errors(log: str) -> list[str]:
+    """The content errors the site build reported, once each, in order and without the prefix: Astro
+    repeats an error's message, and its first line may follow "[ERROR] Error: "."""
+    lines = (re.sub(r"\x1b\[[0-9;]*m", "", line) for line in log.splitlines())
+    return list(dict.fromkeys(line.partition(_CONTENT_ERROR)[2] for line in lines if _CONTENT_ERROR in line))
 
 
 def _output(code: str, raises: str | None, where: str, timeout: float) -> dict:
@@ -109,7 +135,7 @@ def _output(code: str, raises: str | None, where: str, timeout: float) -> dict:
         raise ContentError(f"{where}: marked raises={raises}, but the example ran without an error")
     if run.unsupported_widget:
         raise ContentError(f"{where}: the example displays a {run.unsupported_widget} widget, which the site can't draw yet")
-    return {"text": run.stdout, "error": run.error, "figures": list(run.figures), "widgets": list(run.widgets)}
+    return {"parts": list(run.parts), "error": run.error, "figures": list(run.figures), "widgets": list(run.widgets)}
 
 
 def _check_figure_description(example: dict, here: str) -> None:

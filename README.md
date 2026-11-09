@@ -14,7 +14,7 @@ You need [uv](https://docs.astral.sh/uv/) and Node.js 22.23 or newer. uv install
 uv run cheatsheet build
 ```
 
-Runs every example and builds the site into `site/dist/` (runs `npm ci` first if `site/node_modules` is missing). Add `--base /python-cheat-sheet/` to build for GitHub Pages.
+Runs every example and builds the site into `site/dist/` (runs `npm ci` first if `site/node_modules` is missing or older than `site/package-lock.json`). Add `--base /python-cheat-sheet/` to build for GitHub Pages.
 
 ```bash
 uv run cheatsheet serve

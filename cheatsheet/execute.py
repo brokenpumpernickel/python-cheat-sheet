@@ -20,10 +20,13 @@ _START_ATTEMPTS = 3
 
 # Matplotlib draws with the non-interactive inline backend, which sends every figure open at
 # plt.show() or at the end of the example as SVG. The fixed hash salt and missing date keep the
-# SVG the same from build to build.
+# SVG the same from build to build. No display makes a PNG: the build never uses one, and SymPy's
+# init_printing() would draw every displayed result as a PNG with Matplotlib's mathtext, which
+# takes seconds per result.
 _KERNEL_CONFIG = """c.InlineBackend.figure_formats = {"svg"}
 c.InlineBackend.rc = {"svg.hashsalt": "cheatsheet"}
 c.InlineBackend.print_figure_kwargs = {"bbox_inches": "tight", "metadata": {"Date": None}}
+c.PNGFormatter.enabled = False
 """
 
 
@@ -40,9 +43,16 @@ _CONTROLS = {
 }
 
 
+# A display_data shown as text when it has nothing else to show: display(3) gives only text/plain
+# (image/png is never used, see _KERNEL_CONFIG).
+_PLAIN = {"text/plain", "image/png"}
+
+
 @dataclass(frozen=True)
 class Run:
-    stdout: str
+    # What the example printed and displayed as text or maths, in order: {"text": ...} or {"maths": <LaTeX>}
+    # items, with neighbouring text joined, text's last line break dropped and empty text left out.
+    parts: tuple[dict, ...] = ()
     error_type: str | None = None
     error: str | None = None  # the final traceback line, e.g. "KeyError: 'sd'"
     figures: tuple[str, ...] = ()  # SVG documents, in the order they were shown
@@ -74,7 +84,7 @@ async def _run(code: str, timeout: float) -> Run:
         (root / "ipython" / "profile_default" / "ipython_kernel_config.py").write_text(_KERNEL_CONFIG, encoding="utf-8")
         manager, client = await _start_kernel(root)
         try:
-            stdout: list[str] = []
+            parts: list[dict] = []  # {"text": ...} as it arrives, and {"maths": ...}, in order
             errors: list[dict] = []
             figures: list[str] = []
             # A widget's model is sent when it is made, then changed by updates (interact sets each
@@ -85,7 +95,7 @@ async def _run(code: str, timeout: float) -> Run:
             def collect(message: dict) -> None:
                 content = message["content"]
                 if message["msg_type"] == "stream" and content["name"] == "stdout":
-                    stdout.append(content["text"])
+                    parts.append({"text": content["text"]})
                 elif message["msg_type"] == "error":
                     errors.append(content)
                 elif message["msg_type"] == "display_data" and "image/svg+xml" in content["data"]:
@@ -93,6 +103,10 @@ async def _run(code: str, timeout: float) -> Run:
                     figures.append(svg[svg.index("<svg") :])  # without the XML prolog, so it can sit inline in HTML
                 elif message["msg_type"] == "display_data" and _WIDGET_VIEW in content["data"]:
                     shown.append(content["data"][_WIDGET_VIEW]["model_id"])
+                elif message["msg_type"] == "display_data" and "text/latex" in content["data"]:
+                    parts.append({"maths": _latex(content["data"]["text/latex"])})
+                elif message["msg_type"] == "display_data" and _plain_only(content["data"]):
+                    parts.append({"text": content["data"]["text/plain"] + "\n"})
                 elif message["msg_type"] == "comm_open" and content["target_name"] == "jupyter.widget":
                     models[content["comm_id"]] = dict(content["data"]["state"])
                 elif message["msg_type"] == "comm_msg" and content["data"].get("method") == "update":
@@ -110,9 +124,9 @@ async def _run(code: str, timeout: float) -> Run:
             client.stop_channels()
             await manager.shutdown_kernel(now=True)
 
-    text = "".join(stdout).rstrip("\n")
+    shown_parts = _joined(parts)
     if timed_out:
-        return Run(stdout=text, timed_out=True)
+        return Run(parts=shown_parts, timed_out=True)
     controls = [control for model_id in shown for control in _controls(models, model_id)]
     captured = {
         "figures": tuple(figures),
@@ -120,9 +134,36 @@ async def _run(code: str, timeout: float) -> Run:
         "unsupported_widget": next((control["model"] for control in controls if "kind" not in control), None),
     }
     if not errors:
-        return Run(stdout=text, **captured)
+        return Run(parts=shown_parts, **captured)
     name, value = errors[0]["ename"], errors[0]["evalue"]
-    return Run(stdout=text, error_type=name, error=f"{name}: {value}" if value else name, **captured)
+    return Run(parts=shown_parts, error_type=name, error=f"{name}: {value}" if value else name, **captured)
+
+
+def _plain_only(data: dict) -> bool:
+    return "text/plain" in data and data.keys() <= _PLAIN
+
+
+def _joined(parts: list[dict]) -> tuple[dict, ...]:
+    """The parts with neighbouring text joined, as Jupyter shows printed lines in one block, each text's
+    last line break dropped (the page shows each part as a block of its own) and empty text left out."""
+    joined: list[dict] = []
+    for part in parts:
+        if "text" in part and joined and "text" in joined[-1]:
+            joined[-1] = {"text": joined[-1]["text"] + part["text"]}
+        else:
+            joined.append(part)
+    tidied = [{"text": part["text"].rstrip("\n")} if "text" in part else part for part in joined]
+    return tuple(part for part in tidied if part.get("text") != "")
+
+
+def _latex(latex: str) -> str:
+    """The LaTeX of displayed maths without the dollars around it: SymPy sends `$\\displaystyle x^{2}$`,
+    and IPython's Math object `$$ … $$`. The page typesets it in display mode, so they would be noise."""
+    latex = latex.strip()
+    for dollars in ("$$", "$"):
+        if len(latex) > 2 * len(dollars) and latex.startswith(dollars) and latex.endswith(dollars):
+            return latex[len(dollars) : -len(dollars)].strip()
+    return latex
 
 
 def _controls(models: dict[str, dict], model_id: str) -> list[dict]:
