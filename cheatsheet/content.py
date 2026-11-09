@@ -15,6 +15,7 @@ AREA_FILE = "_area.md"
 AREA_ORDER_FILE = "areas.yaml"
 POLISH = "PL:"
 # The most characters a shown code line may have: what its code box fits on a 1280-pixel-wide screen (wider screens fit more).
+# The Topic page's columns (site/src/components/TopicPage.astro) are never narrower than that.
 ENTRY_CODE_WIDTH = 44
 PITFALL_CODE_WIDTH = 40
 

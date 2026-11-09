@@ -6,6 +6,8 @@ import re
 import pytest
 from playwright.sync_api import BrowserContext, Page, expect
 
+from cheatsheet.content import ENTRY_CODE_WIDTH, PITFALL_CODE_WIDTH
+
 FLASHING = re.compile(r"\bflash\b")
 
 
@@ -243,6 +245,46 @@ def test_cards_take_two_columns_only_on_wide_screens_and_never_widen_the_page(
     lefts = {round(box["x"]) for box in (card.bounding_box() for card in page.locator(".entry:visible").all())}
     assert len(lefts) == columns
     assert page.evaluate("document.documentElement.scrollWidth") <= width
+
+
+CODE_BOX_CHARACTERS = """
+(ref) => {
+  const card = document.querySelector(`[data-entry="${ref}"]`);
+  const fits = (pre) => {
+    const style = getComputedStyle(pre);
+    const context = document.createElement('canvas').getContext('2d');
+    context.font = style.font;
+    const inner = pre.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return inner / (context.measureText('x'.repeat(100)).width / 100);
+  };
+  return {
+    entry: fits(card.querySelector('pre.astro-code')),
+    pitfall: fits(card.querySelector('[class*=pitfall] pre.astro-code')),
+  };
+}
+"""
+
+
+def column_count(page: Page, width: int) -> int:
+    page.set_viewport_size({"width": width, "height": 800})
+    return len({round(box["x"]) for box in (card.bounding_box() for card in page.locator(".entry:visible").all())})
+
+
+def test_code_boxes_fit_the_longest_lines_the_build_allows_at_the_narrowest_two_column_width(page: Page, site_url):
+    # The boxes are narrowest just after the cards split into two columns; a line the build accepts
+    # (cheatsheet/content.py) must not make them scroll sideways there.
+    page.goto(f"{site_url}#numbers")
+    expect(entry(page, "numbers/division")).to_be_visible()
+    one, two = 861, 1600  # one column at 861 (the rail beside the page starts there), two at 1600
+    assert column_count(page, one) == 1 and column_count(page, two) == 2
+    while two - one > 1:
+        middle = (one + two) // 2
+        one, two = (one, middle) if column_count(page, middle) == 2 else (middle, two)
+    column_count(page, two)
+
+    fits = page.evaluate(CODE_BOX_CHARACTERS, "numbers/division")
+    assert fits["entry"] >= ENTRY_CODE_WIDTH, (two, fits)
+    assert fits["pitfall"] >= PITFALL_CODE_WIDTH, (two, fits)
 
 
 STICKER_PIECES = """
