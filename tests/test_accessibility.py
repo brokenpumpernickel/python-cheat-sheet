@@ -49,11 +49,17 @@ RESTORE_GRADIENTS = """() => {
 }"""
 
 
+# KaTeX draws typeset maths as single glyphs stacked and positioned over each other, whose contrast axe can't
+# judge. That drawing is hidden from screen readers, which read its MathML twin, and it has the Output text's
+# colour (test_maths), whose contrast axe does judge; so it is left out.
+AXE_CONTEXT = {"exclude": [[".katex-html"]]}
+
+
 def run_axe(page: Page, rules: list[str] | None = None) -> dict:
     if not page.evaluate("'axe' in window"):
         page.add_script_tag(path=str(AXE))
     options = {"runOnly": {"type": "rule", "values": rules}} if rules else {"runOnly": {"type": "tag", "values": AXE_TAGS}}
-    return page.evaluate("(options) => axe.run(document, options)", options)
+    return page.evaluate("([context, options]) => axe.run(context, options)", [AXE_CONTEXT, options])
 
 
 def describe(results: list[dict]) -> str:
@@ -172,14 +178,14 @@ def hue_entry(topic_id: str, see: str) -> dict:
         "code": "# a comment\nx = [1, 'a', len('b')]\nprint(x)",
         "raises": None,
         "figure": None,
-        "output": {"text": "[1, 'a', 1]\n", "error": None, "figures": [], "widgets": HUE_WIDGETS},
+        "output": {"parts": [{"text": "[1, 'a', 1]"}], "error": None, "figures": [], "widgets": HUE_WIDGETS},
         "see": [see],
         "pitfall": {
             "text": "Indexes start at <code>0</code>.",
             "code": "x = []\nx[0]",
             "raises": "IndexError",
             "figure": None,
-            "output": {"text": "", "error": "IndexError: list index out of range", "figures": [], "widgets": []},
+            "output": {"parts": [], "error": "IndexError: list index out of range", "figures": [], "widgets": []},
         },
         "pl": {
             "title": "Wartości",

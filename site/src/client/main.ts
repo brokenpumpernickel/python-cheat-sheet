@@ -2,6 +2,7 @@
 import { startArrangement } from "./arrangement";
 import { startCopy } from "./copy";
 import { startLanguage } from "./language";
+import { startScrollers } from "./scrollers";
 import { startSearch } from "./search";
 import { startTrail } from "./trail";
 import { startViews } from "./views";
@@ -15,3 +16,4 @@ startLanguage((change) => {
 });
 startTrail();
 startCopy();
+startScrollers();

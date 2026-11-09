@@ -3,6 +3,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "astro/zod";
+import { checkMaths } from "./maths";
 
 // An ipywidgets control the example displayed, with its starting state (cheatsheet/execute.py).
 const Widget = z.discriminatedUnion("kind", [
@@ -27,8 +28,12 @@ const Widget = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("text"), description: z.string(), value: z.string() }),
 ]);
 
+// What the example printed and displayed, in order: printed text, or displayed maths as LaTeX (typeset by
+// maths.ts). Neighbouring text is one part.
+const Part = z.union([z.strictObject({ text: z.string().min(1) }), z.strictObject({ maths: z.string().min(1) })]);
+
 const Output = z.strictObject({
-  text: z.string(),
+  parts: z.array(Part),
   error: z.string().nullable(),
   figures: z.array(z.string()),
   widgets: z.array(Widget),
@@ -102,5 +107,6 @@ export function loadContent(): Content {
   if (!result.success) {
     throw new Error(`${path} does not match the content schema:\n${z.prettifyError(result.error)}`);
   }
+  checkMaths(result.data.areas);
   return result.data;
 }

@@ -10,6 +10,7 @@ import pytest
 
 from cheatsheet.build import build_content
 from cheatsheet.content import ContentError
+from cheatsheet.execute import run_example
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -49,7 +50,7 @@ def test_valid_topic_produces_data_with_captured_output(full_syntax):
         "figure": None,
         "see": [],
         "pitfall": None,
-        "output": {"text": "[20, 30]\n[10, 30]", "error": None, "figures": [], "widgets": []},
+        "output": {"parts": [{"text": "[20, 30]\n[10, 30]"}], "error": None, "figures": [], "widgets": []},
         "pl": {
             "title": "Wycinanie (slicing)",
             "explain": "<code>data[start:stop]</code> wybiera <em>fragment</em> listy.",
@@ -68,7 +69,7 @@ def test_pitfall_and_see_also_are_parsed(full_syntax):
         "code": "data = [3, 1, 2]\ndata = data.sort()\nprint(data)",
         "raises": None,
         "figure": None,
-        "output": {"text": "None", "error": None, "figures": [], "widgets": []},
+        "output": {"parts": [{"text": "None"}], "error": None, "figures": [], "widgets": []},
     }
     assert sorting["pl"]["pitfall"] == (
         "<code>data = data.sort()</code> zastępuje listę wartością <code>None</code>."
@@ -81,7 +82,7 @@ def test_expected_error_ends_output_with_its_final_line(full_syntax):
 
     assert missing["raises"] == "IndexError"
     assert missing["output"] == {
-        "text": "1",
+        "parts": [{"text": "1"}],
         "error": "IndexError: list index out of range",
         "figures": [],
         "widgets": [],
@@ -92,7 +93,7 @@ def test_pitfall_code_runs_like_entry_code(full_syntax):
     missing = full_syntax["areas"][0]["topics"][0]["entries"][2]
 
     assert missing["pitfall"]["raises"] == "KeyError"
-    assert missing["pitfall"]["output"] == {"text": "2.5", "error": "KeyError: 'sd'", "figures": [], "widgets": []}
+    assert missing["pitfall"]["output"] == {"parts": [{"text": "2.5"}], "error": "KeyError: 'sd'", "figures": [], "widgets": []}
 
 
 def test_planned_areas_and_topics_have_no_entries(full_syntax):
@@ -118,6 +119,7 @@ def test_meta_lists_the_versions_examples_ran_with(full_syntax):
         {"name": "Matplotlib", "version": version("matplotlib")},
         {"name": "SciPy", "version": version("scipy")},
         {"name": "pandas", "version": version("pandas")},
+        {"name": "SymPy", "version": version("sympy")},
         {"name": "ipywidgets", "version": version("ipywidgets")},
     ]
 
@@ -126,15 +128,15 @@ def test_entries_cannot_see_each_others_variables():
     names = build_content(FIXTURES / "isolation")["areas"][0]["topics"][0]
 
     defining, fresh = names["entries"]
-    assert defining["output"]["text"] == "42"
-    assert fresh["output"]["text"] == "False"
+    assert defining["output"]["parts"] == [{"text": "42"}]
+    assert fresh["output"]["parts"] == [{"text": "False"}]
 
 
 def test_matplotlib_figures_are_captured_as_svg():
     plots = build_content(FIXTURES / "figures")["areas"][0]["topics"][0]
     shown, closed = plots["entries"]
 
-    assert shown["output"]["text"] == "two figures"
+    assert shown["output"]["parts"] == [{"text": "two figures"}]
     assert len(shown["output"]["figures"]) == 2  # one at plt.show(), one still open at the end
     for svg in shown["output"]["figures"]:
         assert ElementTree.fromstring(svg).tag == "{http://www.w3.org/2000/svg}svg"
@@ -183,7 +185,7 @@ def test_widget_controls_are_captured_in_display_order():
         {"kind": "slider", "description": "σ", "min": 0.0, "max": 2.0, "step": 0.1, "value": 0.5,
          "readout": "0.50", "minReadout": "0.00", "maxReadout": "2.00"},
     ]
-    assert nested["pitfall"]["output"]["text"] == "0.5"
+    assert nested["pitfall"]["output"]["parts"] == [{"text": "0.5"}]
 
 
 @pytest.fixture(scope="module")
@@ -201,7 +203,7 @@ def test_marked_lines_run_as_written_and_show_their_replacement(markers):
         "print(max(scores))"
     )
     # The Output comes from the code as written: the file it wrote, not the download.
-    assert loading["output"] == {"text": "88", "error": None, "figures": [], "widgets": []}
+    assert loading["output"] == {"parts": [{"text": "88"}], "error": None, "figures": [], "widgets": []}
     assert "run" not in loading  # the run code is for the build only
 
 
@@ -209,7 +211,7 @@ def test_pitfall_code_takes_markers_too(markers):
     pitfall = markers["entries"][0]["pitfall"]
 
     assert pitfall["code"] == 'counts = {"heads": 0}\nprint(counts["heads"])\ncounts["tails"] += 1'
-    assert pitfall["output"] == {"text": "2", "error": "KeyError: 'tails'", "figures": [], "widgets": []}
+    assert pitfall["output"] == {"parts": [{"text": "2"}], "error": "KeyError: 'tails'", "figures": [], "widgets": []}
     assert "run" not in pitfall
 
 
@@ -217,7 +219,57 @@ def test_hidden_lines_leave_no_blank_lines_at_the_top(markers):
     hidden_import = markers["entries"][1]
 
     assert hidden_import["code"] == "print(round(3.14159, 2))"
-    assert hidden_import["output"]["text"] == "3.14"
+    assert hidden_import["output"]["parts"] == [{"text": "3.14"}]
+
+
+# Displayed maths (ticket 32): SymPy's display(expr) after sp.init_printing() keeps its LaTeX, in order
+# with the printed text.
+
+
+@pytest.fixture(scope="module")
+def algebra():
+    return {entry["id"]: entry for entry in build_content(FIXTURES / "maths")["areas"][0]["topics"][0]["entries"]}
+
+
+def test_displayed_maths_keeps_its_latex_in_order_with_printed_text(algebra):
+    assert algebra["printed-and-displayed"]["output"]["parts"] == [
+        {"text": "expand"},
+        {"maths": r"\displaystyle x^{2} + 2 x + 1"},
+        {"text": "factor"},
+        {"maths": r"\displaystyle \left(x - 2\right) \left(x + 2\right)"},
+    ]
+
+
+def test_lists_dicts_and_tuples_are_maths_after_init_printing(algebra):
+    assert algebra["collections"]["output"]["parts"] == [
+        {"maths": r"\displaystyle \left[ -2, \  2\right]"},
+        {"maths": r"\displaystyle \left\{ x : 1\right\}"},
+        {"maths": r"\displaystyle \left( x, \  2\right)"},
+    ]
+
+
+def test_a_display_with_only_plain_text_is_text(algebra):
+    assert algebra["plain-display"]["output"]["parts"] == [{"text": "1\n3\n2"}]
+
+
+def test_the_error_line_still_ends_an_output_with_maths(algebra):
+    assert algebra["wide-formula"]["pitfall"]["output"] == {
+        "parts": [{"maths": r"\displaystyle \frac{x}{2}"}],
+        "error": 'TypeError: can only concatenate str (not "int") to str',
+        "figures": [],
+        "widgets": [],
+    }
+
+
+def test_kernels_make_no_pngs_of_displayed_results():
+    """SymPy's init_printing() draws a PNG of every result with Matplotlib's mathtext, which takes seconds."""
+    code = (
+        "import sympy as sp\n"
+        "sp.init_printing()\n"
+        "data, _ = get_ipython().display_formatter.format(sp.Symbol('x'))\n"
+        "print(sorted(data))"
+    )
+    assert run_example(code).parts == ({"text": "['text/latex', 'text/plain']"},)
 
 
 # One small content folder per rule in tests/fixtures/invalid/, and the exact message it must give.

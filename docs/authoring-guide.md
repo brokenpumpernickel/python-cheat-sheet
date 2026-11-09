@@ -10,7 +10,7 @@ The content build (`cheatsheet/content.py`, then `cheatsheet/build.py`) is the o
 - [Folder layout](#folder-layout)
 - [Area description](#area-description-_areamd)
 - [Topic file](#topic-file-topic-idmd)
-- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [shown and run code](#shown-and-run-code), [Output](#output), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [widgets](#widgets), [Pitfall](#pitfall), [See also](#see-also)
+- [Entry](#entry): [title](#title), [explanation](#explanation), [code example](#code-example), [shown and run code](#shown-and-run-code), [Output](#output), [maths](#maths), [expected error](#expected-error), [figures](#figures), [figure description](#figure-description), [widgets](#widgets), [Pitfall](#pitfall), [See also](#see-also)
 - [Topic order](#topic-order)
 - [Polish](#polish)
 - [New Areas: hue and glyphs](#new-areas-hue-and-glyphs)
@@ -149,7 +149,7 @@ Inside a Topic file there is nothing but Entries, and inside an Entry nothing bu
 Exactly one ` ```python ` block per Entry, always with `python` as the language (not `py`, and never a bare ```` ``` ````).
 
 - **Self-contained (ADR 0003).** Every example runs in its own fresh kernel, so it includes all its own imports and data and never uses a variable from another Entry. Repeating `import numpy as np` in every Entry is deliberate; don't factor it out. A Student must be able to paste the block into an empty Jupyter cell and run it.
-- **Prints explicitly.** Show every value with `print(...)`. A bare expression on the last line prints nothing here: the build captures only what is printed (and figures), so `x + 1` as the last line gives an empty Output without any error. The exception is a figure Entry, whose Output is the figure.
+- **Prints explicitly.** Show every value with `print(...)`, or a SymPy result with `display(...)` (see [Maths](#maths)). A bare expression on the last line shows nothing here: the build captures only what is printed or displayed (and figures), so `x + 1` as the last line gives an empty Output without any error. The exception is a figure Entry, whose Output is the figure.
 - **Short and focused:** about 3–8 lines that show this Entry's concept and nothing else. Small, readable data with a statistics flavour (scores, measurements, dice rolls) beats `foo` and `bar`.
 - **Fits its box:** at most 44 characters per shown line, and 40 in a Pitfall, which is what the code box fits on a 1280-pixel-wide screen; a longer line makes the box scroll sideways, and the build rejects it. Break a long call inside its brackets, with the next line lined up under the first argument, or shorten a name. Hidden lines, and the run side of a `#| show:` line, don't count.
 - **Pastes into the `python` prompt too.** Leave a blank line after a compound block (`for`, `while`, `if`, `def`) when an unindented line follows it. Jupyter doesn't need it, but pasted into the plain `python` prompt the next line is a `SyntaxError` without it.
@@ -157,7 +157,7 @@ Exactly one ` ```python ` block per Entry, always with `python` as the language 
 - **NumPy numbers are printed on their own.** Print a single NumPy number (`data.mean()`, `a[0]`) by itself, beside other values in one `print(x, y)`, or in an f-string, rounding long decimals where needed (`f"{x:.3f}"`). Never print it inside a list, tuple or dict: NumPy 2 then shows its type, `[np.float64(18.0)]`. Arrays print fine as they are.
 - **Same Output on every build, no seed on the page.** The build seeds all randomness, but Students don't: in the lab they call the `np.random.*` functions (`np.random.normal(...)`, `np.random.randint(...)`) and `rvs` without a seed. So call those functions, never a generator from `np.random.default_rng`, and seed them in a [hidden line](#shown-and-run-code) after the imports: `np.random.seed(7)  #| hide`. SciPy's `rvs` without `random_state` draws from NumPy's global generator, so the same line seeds it: write plain `d.rvs(size=n)`, and hide `import numpy as np` with `#| hide` too if nothing shown uses it. For the standard library, `random.seed(1)  #| hide`. Show the seed only where it is the point (NumPy's *Setting a seed*, SciPy's *Reproducible samples*). Where the numbers matter to the explanation, say that the Student's will differ, because the Output comes from one run. Avoid the current date and time, memory addresses and anything else that changes between runs.
 - **No outside world.** The kernel starts in an empty temporary folder with no input: an example that reads a file must write it first, and `input()` fails. Don't use the network; to show a download, read a local copy in the run code and show the download with `#| show:`. Each example has 60 seconds.
-- **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib, SciPy, pandas and ipywidgets). To add one, run `uv add <library>` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
+- **Libraries:** only what `pyproject.toml` installs (now NumPy, Matplotlib, SciPy, pandas, SymPy and ipywidgets). To add one, run `uv add <library>` and add it to `EXAMPLE_LIBRARIES` in `cheatsheet/build.py`, so the footer shows the version the Outputs came from. Commit `uv.lock` with it.
 
 ### Shown and run code
 
@@ -177,9 +177,33 @@ data = np.loadtxt("scores.csv", delimiter=",")  #| show: data = np.loadtxt("http
 
 ### Output
 
-The Output is never written by hand (ADR 0002). The build runs the code and keeps what it prints, its figures and, for an expected error, the error's final line. Don't paste an Output into the file, and don't describe a specific printed value in the explanation in a way that would go stale if a library changed it.
+The Output is never written by hand (ADR 0002). The build runs the code and keeps what it prints and the [maths](#maths) it displays, in the order it made them, then its figures and, for an expected error, the error's final line. Don't paste an Output into the file, and don't describe a specific printed value in the explanation in a way that would go stale if a library changed it.
 
-The build ignores stderr, so a library warning doesn't fail it and doesn't show up anywhere. Run an example on its own with `uv run python example.py` (in a scratch folder) when you want to see its warnings, and change the code so it has none.
+The build ignores stderr, so a library warning doesn't fail it and doesn't show up anywhere. Run an example on its own with `uv run python example.py` (in a scratch folder) when you want to see its warnings, and change the code so it has none. An example that calls `display` needs IPython, which has it built in: `uv run ipython example.py` shows the maths as text.
+
+### Maths
+
+SymPy results are shown as typeset maths, as Jupyter shows them: the build keeps the LaTeX of each displayed result, and the site typesets it (ADR 0007).
+
+- **Start every SymPy example** with `import sympy as sp`, then `sp.init_printing()`, shown, as in the lab notebook. Without it, Jupyter typesets a single expression but shows a list (from `solve`), a dict (from `eigenvals`) or a tuple as plain text; with it, they are all maths.
+- **`display(x)` shows a result as maths.** `display` is built into Jupyter, so it needs no import. Each displayed result is a line of its own in the Output, in order with the printed text.
+- **`print(x)` shows SymPy's one-line text** (`x**2 + 2*x + 1`). Use it for plain values (a number, `True`, a count) and where the text form is the point, such as the Python syntax of an expression.
+- **No bare last line:** as everywhere, an expression on the last line shows nothing; `display` it.
+- **Keep results readable:** a formula wider than the card scrolls sideways inside the Output, so prefer small cases (a 2×2 matrix, a low power) that fit.
+
+```python
+import sympy as sp
+sp.init_printing()
+
+x = sp.symbols("x")
+print("expanded")
+display(sp.expand((x + 1)**2))
+print(sp.expand((x + 1)**2))
+```
+
+The Output is `expanded`, then the maths x² + 2x + 1, then the text `x**2 + 2*x + 1`.
+
+A `display` of something that isn't maths, such as `display(3)` without `sp.init_printing()`, shows as text, as in Jupyter. Don't use `display` for tables or other rich Outputs: the build keeps only maths and plain text, and drops the rest.
 
 ### Expected error
 
@@ -319,13 +343,13 @@ To add an Area:
 
    Parsing stops at the first problem, so fix it and build again; several parse problems take several builds. Examples run only when everything parses, and then every failing example is listed, one per line. Look the message up in [Validation rules](#validation-rules). A Python traceback instead of `Content error:` means the build itself broke, not the content; report it rather than working around it.
 
-5. **Check the Outputs.** A clean build doesn't mean a good Output: an empty Output means a missing `print`, and an Output that doesn't show what the explanation promises means the example needs work. Look on the page (step 6), or list every Output from `generated/content.json`, one line per example (the Pitfall's on the line after its Entry's), in a POSIX shell such as Git Bash:
+5. **Check the Outputs.** A clean build doesn't mean a good Output: an empty Output means a missing `print` or `display`, and an Output that doesn't show what the explanation promises means the example needs work. Look on the page (step 6), or list every Output from `generated/content.json`, one line per example (the Pitfall's on the line after its Entry's), in a POSIX shell such as Git Bash:
 
    ```bash
-   uv run python -X utf8 -c "import json; d=json.load(open('generated/content.json',encoding='utf-8')); [print(f\"{t['id']}/{e['id']}\", repr(o['text']), o['error'] or '', f\"{len(o['figures'])} figure(s)\" if o['figures'] else '') for a in d['areas'] for t in a['topics'] for e in t['entries'] for o in [e['output']] + ([e['pitfall']['output']] if e['pitfall'] and e['pitfall']['output'] else [])]"
+   uv run python -X utf8 -c "import json; d=json.load(open('generated/content.json',encoding='utf-8')); [print(f\"{t['id']}/{e['id']}\", [p.get('text', '\$' + p.get('maths', '') + '\$') for p in o['parts']], o['error'] or '', f\"{len(o['figures'])} figure(s)\" if o['figures'] else '') for a in d['areas'] for t in a['topics'] for e in t['entries'] for o in [e['output']] + ([e['pitfall']['output']] if e['pitfall'] and e['pitfall']['output'] else [])]"
    ```
 
-   In that file an Entry's Output is `output` (`text`, `error`, `figures`, `widgets`), and its Pitfall's is `pitfall.output` (`null` when the Pitfall has no code).
+   Displayed maths shows as its LaTeX between `$`. In that file an Entry's Output is `output` (`parts`: printed text and displayed maths in order, each `{"text": ...}` or `{"maths": <LaTeX>}`; then `error`, `figures`, `widgets`), and its Pitfall's is `pitfall.output` (`null` when the Pitfall has no code).
 6. **Preview:**
 
    ```bash
@@ -440,7 +464,15 @@ These are checked only after everything parses, and all failures are listed at o
 | `Figure: the example draws no figure; remove the '### Figure' description` | A description on code that drew nothing: no plotting, or every figure closed with `plt.close()` | Remove the section, or fix the code if it should draw. |
 | `the example displays a <Model> widget, which the site can't draw yet` (e.g. `ButtonModel`) | The example shows a widget the site can't draw: `interact_manual`'s button, `FloatLogSlider`, `RadioButtons`… | Use a [supported control](#widgets) (`interact` instead of `interact_manual`, a `FloatSlider`, a dropdown). |
 
-**Not caught by the build** (check them yourself): an empty Output from a missing `print`, warnings (stderr is ignored), Output that changes between builds, a `#| show:` line that doesn't mean the same as its run line, length, tone, Topic order and the quality of the Polish.
+### Typesetting the maths
+
+The site build typesets every [displayed maths](#maths) with KaTeX, after all the examples ran, and lists every failure at once. The place is `<file> (topic-id/entry-id)`, plus ` Pitfall` for the Pitfall's code.
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `KaTeX can't typeset the displayed maths <LaTeX> (<reason>)` (KaTeX's reason, e.g. `Undefined control sequence: \<command>`) | The example displays a result whose LaTeX uses something KaTeX doesn't support | Display the result in another form (`sp.simplify` it, or `display` its parts), or `print` it; if SymPy's LaTeX for an ordinary result fails, report it rather than working around it. |
+
+**Not caught by the build** (check them yourself): an empty Output from a missing `print` or `display`, warnings (stderr is ignored), Output that changes between builds, a `#| show:` line that doesn't mean the same as its run line, length, tone, Topic order and the quality of the Polish.
 
 ## Complete example Topic
 

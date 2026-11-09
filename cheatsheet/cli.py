@@ -26,10 +26,10 @@ def main() -> None:
     if args.command == "build":
         try:
             data = build_content(args.content)
+            write_content_data(data, CONTENT_DATA)
+            build_site(CONTENT_DATA, args.out, args.base)  # fails on maths KaTeX can't typeset
         except ContentError as error:
             sys.exit(f"Content error: {error}")
-        write_content_data(data, CONTENT_DATA)
-        build_site(CONTENT_DATA, args.out, args.base)
         print(f"Built the site in {args.out}")
     else:
         if not (args.dir / "index.html").is_file():
