@@ -152,3 +152,4 @@ print(f"{d.ppf(0.025):.1f}")
 ### See also
 
 - aggregates/standard-deviation-and-variance
+- probability/distributions-in-sympy-stats

@@ -57,6 +57,7 @@ display(sp.sqrt(a_pos**2))
 ### See also
 
 - integrals/integrals-to-infinity
+- differential-equations/solving-an-ode
 
 ## Exact numbers
 
@@ -123,6 +124,10 @@ sp.init_printing()
 
 print(sp.Float(0.3, 30))
 ```
+
+### See also
+
+- evaluating/decimal-values
 
 ## Constants
 
