@@ -299,6 +299,7 @@ INVALID = {
     "see-also-unknown-entry": "basics/names.md:23 (names/rebinding) See also: 'names/unbinding' names no Entry of Topic 'names'",
     "see-also-unknown-topic": "basics/names.md:10 (names/binding) See also: 'loops/for-over-a-list' names Topic 'loops', which does not exist",
     "see-also-planned-topic": "basics/names.md:10 (names/binding) See also: 'sets/union' points into planned Topic 'sets'",
+    "see-also-too-many": "basics/names.md:10 (names/binding) See also: 4 links, but an Entry has at most 3; keep the ones a Student most needs next",
     "topic-order-unknown": "basics/_area.md: Topic order names 'loops', but there is no basics/loops.md",
     "topic-not-in-order": "basics/extra.md: Topic is not listed in the Topic order of basics/_area.md",
     "area-not-in-order": "numpy/: Area folder is not listed in areas.yaml",
