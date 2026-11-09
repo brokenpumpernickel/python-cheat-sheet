@@ -69,6 +69,8 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
+- Resolved by PR #54: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/54.
+
 - **Topics** (English / Polish, glyph kept from ticket 33):
   - `equations`: *Equations* / *Równania*, `Eq`. Summary: "Equations in SymPy: Eq and solve, solving an expression equal to 0, systems of equations, solving a formula for one symbol and numeric solutions." / "Równania (equations) w SymPy: Eq i solve, rozwiązywanie wyrażenia równego 0, układy równań, wyznaczanie jednego symbolu ze wzoru i rozwiązania numeryczne."
   - `matrices`: *Matrices* / *Macierze*, `Mat`. Summary: "Exact, symbolic matrices in SymPy: making a matrix, the matrix product, transpose and inverse, determinants, eigenvalues and eigenvectors." / "Dokładne, symboliczne macierze (matrices) w SymPy: tworzenie macierzy, iloczyn macierzy, transpozycja i odwrotność, wyznaczniki, wartości i wektory własne."
