@@ -41,6 +41,7 @@ print(data + [10, 20, 30])
 ### See also
 
 - lists/list-comprehensions
+- matrices/matrix-arithmetic
 
 ## Maths functions
 
