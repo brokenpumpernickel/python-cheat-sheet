@@ -89,6 +89,7 @@ print(sp.N(val, 30))
 ### See also
 
 - symbols/decimals-to-many-digits
+- derivatives/higher-derivatives
 
 ## Functions for NumPy
 
