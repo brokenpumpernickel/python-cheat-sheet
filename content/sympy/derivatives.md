@@ -29,6 +29,7 @@ display(sp.diff(x**3 + 2*x, x))
 ### See also
 
 - expressions/building-expressions
+- evaluating/substituting-values
 
 ## Higher derivatives
 
@@ -48,6 +49,11 @@ display(f.diff(x, x))
 display(f.diff(x, 2))
 display(sp.sin(2*x).diff(x, 10))
 ```
+
+### See also
+
+- differential-equations/functions-and-their-derivatives
+- probability/moment-generating-functions
 
 ## Partial derivatives
 

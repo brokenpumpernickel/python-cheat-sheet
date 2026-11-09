@@ -108,6 +108,7 @@ print(sol[0].subs({z: 2, mu: 100,
 ### See also
 
 - symbols/assumptions
+- evaluating/substituting-values
 
 ## Numeric solutions
 
@@ -130,3 +131,4 @@ print(sp.cos(r) - r)
 ### See also
 
 - symbols/decimals-to-many-digits
+- evaluating/decimal-values

@@ -33,6 +33,8 @@ display(sp.solve(total - 1, c))
 ### See also
 
 - plotting-distributions/probability-as-an-area
+- equations/solving-expr-0
+- integrals/integrals-to-infinity
 
 ## Mean and variance
 
@@ -60,6 +62,7 @@ display(ex2 - mean**2)
 
 - symbols/assumptions
 - distributions/mean-spread-and-intervals
+- integrals/integrals-to-infinity
 
 ## Discrete distributions
 
@@ -90,6 +93,7 @@ display(sp.Sum(geo, (k, 0, sp.oo)).doit())
 
 - discrete-distributions/poisson-distribution
 - symbols/assumptions
+- integrals/sums
 
 ## Moment generating functions
 
@@ -116,6 +120,11 @@ m2 = M.diff(t, 2).subs(t, 0)
 display(m1)
 display(m2 - m1**2)
 ```
+
+### See also
+
+- derivatives/higher-derivatives
+- integrals/integrals-to-infinity
 
 ## Distributions in sympy.stats
 

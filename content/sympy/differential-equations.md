@@ -26,6 +26,10 @@ display(x(t).diff(t))
 display(x(t).diff(t, t))
 ```
 
+### See also
+
+- derivatives/derivatives
+
 ## Solving an ODE
 
 PL: Rozwiązywanie równania różniczkowego (ODE)
@@ -100,4 +104,6 @@ print(f(np.array([0, 1, 2])))
 
 ### See also
 
-- array-maths/maths-functions
+- evaluating/substituting-values
+- evaluating/functions-for-numpy
+- sympy-plots/plotting-with-lambdify

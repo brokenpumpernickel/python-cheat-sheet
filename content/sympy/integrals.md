@@ -51,6 +51,7 @@ print(area.evalf())
 ### See also
 
 - symbols/decimals-to-many-digits
+- evaluating/decimal-values
 
 ## Integrals to infinity
 
@@ -92,6 +93,7 @@ display(r)
 
 - symbols/assumptions
 - symbols/constants
+- probability/mean-and-variance
 
 ## Unevaluated integrals
 
@@ -112,6 +114,10 @@ display(q)
 display(q.doit())
 display(sp.Eq(q, q.doit()))
 ```
+
+### See also
+
+- equations/equations-with-eq
 
 ## Sums
 
@@ -136,3 +142,4 @@ display(sp.summation(1/k**2, (k, 1, sp.oo)))
 ### See also
 
 - symbols/constants
+- probability/discrete-distributions
