@@ -99,9 +99,9 @@ display(sp.Sum(geo, (k, 0, sp.oo)).doit())
 
 PL: Funkcje tworzące momenty
 
-M(t) = E[e^(tX)] is the integral of `sp.exp(t*x) * f`; `conds="none"` drops its convergence condition, t < λ, and `sp.simplify` tidies the result, which otherwise gives `nan` at `t = 0`. The n-th moment is `M.diff(t, n).subs(t, 0)`, so the first two give the mean and variance of *Mean and variance*.
+M(t) = E[e^(tX)] is a sum of e^(tk) p(k) over the values of a discrete X, and an integral of e^(tx) f(x) for a continuous one, as for the exponential here: `conds="none"` drops the integral's convergence condition, t < λ, and `sp.simplify` tidies the result, which otherwise gives `nan` at `t = 0`. The n-th moment is `M.diff(t, n).subs(t, 0)`, so the first two give the mean and variance of *Mean and variance*.
 
-PL: Funkcja tworząca momenty (moment generating function) M(t) = E[e^(tX)] to całka z `sp.exp(t*x) * f`; `conds="none"` pomija warunek zbieżności tej całki, t < λ, a `sp.simplify` porządkuje wynik, który inaczej daje `nan` w `t = 0`. n-ty moment to `M.diff(t, n).subs(t, 0)`, więc dwa pierwsze dają wartość oczekiwaną i wariancję z hasła *Wartość oczekiwana i wariancja*.
+PL: Funkcja tworząca momenty (moment generating function) M(t) = E[e^(tX)] to dla dyskretnej zmiennej X suma e^(tk) p(k) po jej wartościach, a dla ciągłej całka z e^(tx) f(x), jak tu dla rozkładu wykładniczego: `conds="none"` pomija warunek zbieżności tej całki, t < λ, a `sp.simplify` porządkuje wynik, który inaczej daje `nan` w `t = 0`. n-ty moment to `M.diff(t, n).subs(t, 0)`, więc dwa pierwsze dają wartość oczekiwaną i wariancję z hasła *Wartość oczekiwana i wariancja*.
 
 ```python
 import sympy as sp
@@ -125,6 +125,7 @@ display(m2 - m1**2)
 
 - derivatives/higher-derivatives
 - integrals/integrals-to-infinity
+- integrals/sums
 
 ## Distributions in sympy.stats
 
