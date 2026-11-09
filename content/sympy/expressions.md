@@ -44,6 +44,7 @@ print(np.sin(x))
 ### See also
 
 - array-maths/maths-functions
+- evaluating/functions-for-numpy
 
 ## Expanding and factoring
 

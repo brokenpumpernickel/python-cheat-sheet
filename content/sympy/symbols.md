@@ -124,6 +124,10 @@ sp.init_printing()
 print(sp.Float(0.3, 30))
 ```
 
+### See also
+
+- evaluating/decimal-values
+
 ## Constants
 
 PL: Stałe
