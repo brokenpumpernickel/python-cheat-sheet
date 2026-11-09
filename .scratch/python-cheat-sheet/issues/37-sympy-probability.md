@@ -61,7 +61,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
-- Resolved by PR (link below once opened).
+- Resolved by PR #57: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/57.
 - **The Topic:** `content/sympy/probability.md`, *Probability with SymPy* / *Prawdopodobieństwo w SymPy*, `E(X)`, no longer planned. Summary: "Probability by hand and with sympy.stats: normalising a pdf, mean and variance, discrete distributions, moment generating functions and random variables." / "Prawdopodobieństwo ręcznie i z sympy.stats: normowanie gęstości (pdf), wartość oczekiwana i wariancja, rozkłady dyskretne, funkcje tworzące momenty (moment generating functions) i zmienne losowe (random variables)."
 - **Entries** (English / Polish), checked against SymPy 1.14.0:
   - *Normalising a pdf* / *Normowanie gęstości (pdf)*: `c*(1 - x**2)` on [-1, 1] integrates to 4c/3, `sp.solve(total - 1, c)[0]` gives 3/4 and the normalised pdf 3/4 − 3x²/4; then `c*x*sp.exp(-2*x)` on [0, ∞) gives `[4]`. See also: plotting-distributions/probability-as-an-area.
