@@ -54,7 +54,7 @@ Decided with the Author (every recommendation accepted):
 
 ## Comments
 
-Resolved in PR PRLINK. SymPy 1.14.0 is installed and listed in the footer, and KaTeX 0.19.1 comes from npm. No SymPy content was written: ticket 33 does that.
+Resolved in PR brokenpumpernickel/python-cheat-sheet#52 (https://github.com/brokenpumpernickel/python-cheat-sheet/pull/52). SymPy 1.14.0 is installed and listed in the footer, and KaTeX 0.19.1 comes from npm. No SymPy content was written: ticket 33 does that.
 
 Decisions made on the way:
 
