@@ -184,7 +184,10 @@ const { area, topic, previous, next, links } = Astro.props;
   }
 
   .cards {
-    columns: 2 440px;
+    /* 452px is the narrowest column whose code boxes still fit the longest code lines the build allows
+       (ENTRY_CODE_WIDTH, and PITFALL_CODE_WIDTH in a Pitfall, in cheatsheet/content.py). Below it the
+       page keeps one column; tests/test_topic_page.py checks this at the narrowest two-column width. */
+    columns: 2 452px;
     column-gap: 20px;
     /* The cards are inline-blocks (EntryCard), one per line; the default 2 would keep a two-card Topic
        in one column. */
