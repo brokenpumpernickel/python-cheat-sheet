@@ -18,6 +18,8 @@ POLISH = "PL:"
 # The Topic page's columns (site/src/components/TopicPage.astro) are never narrower than that.
 ENTRY_CODE_WIDTH = 44
 PITFALL_CODE_WIDTH = 40
+# The most See-also links an Entry may have.
+SEE_ALSO_LIMIT = 3
 
 _MD = MarkdownIt("commonmark", {"html": False})
 _FRONTMATTER = re.compile(r"\A---\n(.*?)\n---[ \t]*(?:\n|\Z)(.*)\Z", re.DOTALL)
@@ -340,6 +342,10 @@ def _marked_line(line: str, number: int, here: str) -> tuple[str, str | None]:
 def _see_also(blocks: list[_Block], here: str) -> list[str]:
     if len(blocks) != 1 or blocks[0].kind != "list":
         raise ContentError(f"{here} See also: expected one bullet list of topic-id/entry-id references")
+    if len(blocks[0].items) > SEE_ALSO_LIMIT:
+        raise ContentError(
+            f"{here} See also: {len(blocks[0].items)} links, but an Entry has at most {SEE_ALSO_LIMIT}; keep the ones a Student most needs next"
+        )
     for item in blocks[0].items:
         if not _SEE_ALSO.match(item):
             raise ContentError(f"{here} See also: '{item}' is not a topic-id/entry-id reference")

@@ -280,7 +280,7 @@ An optional `### See also` section with a bullet list of `topic-id/entry-id` ref
 - functions/lambda
 ```
 
-- **When:** the Entry uses a concept explained in another Entry (especially in a later Topic; see [Topic order](#topic-order)), or another Entry is the natural next step or contrast (`sorted(key=...)` → `functions/lambda`). One to three links; none is fine.
+- **When:** the Entry uses a concept explained in another Entry (especially in a later Topic; see [Topic order](#topic-order)), or another Entry is the natural next step or contrast (`sorted(key=...)` → `functions/lambda`). One to three links, and the build rejects a fourth; none is fine. A link to an Entry in the same Topic is the first to drop.
 - Each reference must name an existing Entry. A link into a planned Topic fails the build until that Topic has Entries, so note it in the ticket and add it when the Entry exists.
 - Links within the same Topic are allowed but rarely needed: the chips at the top of the page already list its Entries.
 
@@ -445,6 +445,7 @@ The place ends in ` Figure` for the Entry's description and ` Pitfall Figure` fo
 | Message | Cause | Fix |
 | --- | --- | --- |
 | `See also: expected one bullet list of topic-id/entry-id references` | Not a bullet list, or text besides it | One list, one `- topic-id/entry-id` per line, nothing else. |
+| `See also: <n> links, but an Entry has at most 3; keep the ones a Student most needs next` | Four or more links | Keep three; drop links within the same Topic first, since its chips already list its Entries. |
 | `See also: '<item>' is not a topic-id/entry-id reference` | A title, a link, `#topic/entry`, backticks or an Entry id alone | Write `lists/sorting`: the ids, lowercase, no `#`. |
 | `See also: '<ref>' names Topic '<id>', which does not exist` | Wrong Topic id | Use the Topic's file name, without `.md`. |
 | `See also: '<ref>' points into planned Topic '<id>', which has no Entries yet` | Link to a planned Topic | Remove it for now; add it when that Topic has Entries. |
