@@ -56,7 +56,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
-- Resolved by PR (link to follow).
+- Resolved by PR #55: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/55.
 - **Topics** (English / Polish, glyph unchanged):
   - `evaluating`: *Substituting and evaluating* / *Podstawianie i obliczanie*, `subs`. Summary: "Putting values into SymPy expressions: substituting numbers and expressions, decimal values, and NumPy functions with lambdify." / "Podstawianie (substitution) wartości do wyrażeń SymPy: liczby i wyrażenia w miejsce symboli, wartości dziesiętne i funkcje dla NumPy z lambdify."
   - `sympy-plots`: *Plotting with SymPy* / *Wykresy w SymPy*, `plot`. Summary: "Plots of SymPy expressions: sp.plot for a quick curve, several curves at once, and lambdify with plt for everything Matplotlib can do." / "Wykresy (plots) wyrażeń SymPy: sp.plot do szybkiej krzywej, kilka krzywych naraz oraz lambdify z plt, gdy potrzebujesz wszystkiego, co daje Matplotlib."
