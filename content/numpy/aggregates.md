@@ -174,6 +174,5 @@ print((scores >= 50).sum(axis=1))
 ### See also
 
 - array-maths/true-and-false-as-numbers
-- aggregates/along-an-axis
 - indexing/boolean-masks
 - dictionaries/counting-occurrences
