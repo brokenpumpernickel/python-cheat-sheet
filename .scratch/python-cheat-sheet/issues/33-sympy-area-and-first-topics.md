@@ -75,7 +75,7 @@ Conventions from tickets 12–24 apply:
 
 ## Comments
 
-- Resolved by the PR on branch `claude/sympy-area-f0b752` (link added after it is opened).
+- Resolved by PR #53: https://github.com/brokenpumpernickel/python-cheat-sheet/pull/53.
 - **The Area:** `content/sympy/_area.md`, last in `areas.yaml`, hue 55. Blurb: "Symbolic maths with SymPy: symbols, exact numbers and simplifying, substituting, derivatives, integrals, equations, matrices, differential equations, plots and probability." / "Matematyka symboliczna w SymPy: symbole, liczby dokładne i upraszczanie, podstawianie, pochodne, całki, równania, macierze, równania różniczkowe, wykresy i prawdopodobieństwo."
 - **Topics** (English / Polish, glyph), in the Topic order:
   1. `symbols`: *Symbols and numbers* / *Symbole i liczby*, `Sym`. Summary: "Symbols and exact numbers in SymPy: making symbols, assumptions, exact fractions, decimals to many digits and constants." / "Symbole (symbols) i liczby dokładne w SymPy: tworzenie symboli, założenia, dokładne ułamki, liczby dziesiętne z wieloma cyframi i stałe."
