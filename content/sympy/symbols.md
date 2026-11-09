@@ -54,6 +54,10 @@ display(sp.sqrt(a**2))
 display(sp.sqrt(a_pos**2))
 ```
 
+### See also
+
+- integrals/integrals-to-infinity
+
 ## Exact numbers
 
 PL: Liczby dokładne

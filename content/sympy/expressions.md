@@ -44,6 +44,7 @@ print(np.sin(x))
 ### See also
 
 - array-maths/maths-functions
+- derivatives/derivatives
 
 ## Expanding and factoring
 
