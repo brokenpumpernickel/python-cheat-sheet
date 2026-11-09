@@ -79,7 +79,7 @@ Conventions from tickets 12–24 apply:
   - One back-link: SciPy stats' *Mean, spread and intervals* → `probability/distributions-in-sympy-stats`.
   - Code box width: at 1280 px the box's client width is 396 px, which fits about 43.6 characters of JetBrains Mono at 14 px, so every 44-character line on the site (e.g. in pandas' *Grouping*) scrolls by 6 px in the in-app browser. This Topic's longest line is 43 characters, so it doesn't scroll. The site-wide 44-character limit may need a look.
 - **Links to add later** (their Topics are still planned):
-  - *Normalising a pdf* → equations/solving-expr-0 (Equations' *Solving expr = 0*), and integrals' *Integrals to infinity*.
+  - *Normalising a pdf* → Equations' *Solving expr = 0*, and integrals' *Integrals to infinity*.
   - *Mean and variance* → integrals' *Integrals to infinity*.
   - *Discrete distributions* → integrals' *Sums*.
   - *Moment generating functions* → derivatives' *Higher derivatives*, and integrals' *Integrals to infinity*.
